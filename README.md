@@ -1,75 +1,110 @@
-# React + TypeScript + Vite
+# Logos Page Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Logos Page Engine é um núcleo experimental para compor e renderizar páginas a
+partir de entidades tipadas. O projeto investiga uma arquitetura simples em que
+conteúdo estruturado é transformado em interface por um pipeline explícito, sem
+acoplar o domínio da aplicação ao mecanismo de renderização.
 
-Currently, two official plugins are available:
+O software está em estágio experimental (`0.1.0`). A API, os contratos e a
+organização interna ainda podem mudar.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Instituto Logos
 
-## React Compiler
+O Instituto Logos é a primeira aplicação pública construída sobre a engine. A
+rota `/` apresenta sua página inicial institucional, com conteúdo sobre áreas de
+investigação, projetos, documentos fundamentais e visão.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Neste MVP, todo o conteúdo da Home é definido em uma única entidade `Page`. A
+aplicação fornece os componentes visuais, o conteúdo, o repository concreto e a
+configuração do registry; a engine permanece independente desses elementos.
 
-## Expanding the ESLint configuration
+## Arquitetura atual
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+O fluxo de renderização é:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+PageRepository
+  → Page
+  → PageRenderer
+  → SectionRenderer
+  → PageSectionRegistry
+  → componentes visuais
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- `Page` reúne SEO e uma lista ordenada de seções.
+- `PageSection` é uma união discriminada; cada `type` determina seu payload.
+- `PageRenderer` aplica os metadados da página e percorre suas seções.
+- `SectionRenderer` resolve cada seção no registry.
+- `PageSectionRegistry` associa tipos de seção a componentes compatíveis.
+- `InstitutoLogosPageRepository` fornece a página pública atual.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Instalação
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Requer Node.js compatível com Vite 8 e npm.
 
+```bash
+npm install
 ```
+
+## Execução
+
+```bash
+npm run dev
+```
+
+O Vite exibirá no terminal o endereço local da aplicação. Para gerar e
+inspecionar o bundle de produção:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Scripts
+
+- `npm run dev`: inicia o servidor de desenvolvimento com HMR.
+- `npm run lint`: verifica os arquivos TypeScript e React com ESLint.
+- `npm run build`: executa o TypeScript e gera o bundle em `dist/`.
+- `npm run preview`: serve localmente o bundle gerado.
+
+## Estrutura principal
+
+```text
+src/
+├── engine/
+│   ├── page.ts
+│   ├── PageRepository.ts
+│   ├── PageRenderer.tsx
+│   ├── SectionRenderer.tsx
+│   └── PageSectionRegistry.ts
+└── apps/
+    └── instituto-logos/
+        ├── components/
+        ├── content/
+        ├── pages/
+        ├── registry/
+        └── repositories/
+```
+
+As investigações arquiteturais existentes são mantidas em
+`docs/investigations/`.
+
+## Limitações
+
+- Há somente a Home do Instituto Logos e uma página de conteúdo não encontrado.
+- O conteúdo está definido em TypeScript e exige novo build para publicação.
+- Não há backend, CMS, autenticação, busca ou leitura de Markdown.
+- Os cards de documentos ainda não possuem páginas individuais.
+- Não existe suíte de testes automatizados; lint e build são as verificações
+  disponíveis.
+
+## Próximos passos
+
+- amadurecer os contratos da engine a partir de novos casos reais;
+- criar testes para o pipeline e para os metadados da página;
+- avaliar composição e extensão de tipos de seção sem perder segurança de tipos;
+- melhorar acessibilidade e validação visual em diferentes navegadores;
+- definir uma estratégia de publicação para documentos quando o domínio estiver
+  suficientemente compreendido.
+
+Este pacote é privado e não deve ser publicado no npm.
