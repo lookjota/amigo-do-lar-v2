@@ -4,7 +4,7 @@ import { NotFoundPage } from './apps/instituto-logos/pages/NotFoundPage'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="*" element={<NotFoundPage />} />
