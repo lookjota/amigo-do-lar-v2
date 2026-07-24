@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="256" height="256" viewBox="0 0 256 256" xml:space="preserve">
+<g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+	<path d="M 45 89.818 c 24.712 -9.852 37.069 -19.703 37.069 -73.469 C 68.154 12.953 55.798 7.443 45 -0.182 C 34.202 7.443 21.846 12.953 7.931 16.348 C 7.931 70.115 20.288 79.966 45 89.818 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(188,130,45); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
+	<linearGradient id="SVGID_1" gradientUnits="userSpaceOnUse" x1="83.3989" y1="47.2182" x2="-9.8411" y2="42.1782">
+<stop offset="0%" style="stop-color:rgb(174,123,44);stop-opacity: 1"/>
+<stop offset="8.1%" style="stop-color:rgb(190,146,45);stop-opacity: 1"/>
+<stop offset="22.32%" style="stop-color:rgb(220,188,81);stop-opacity: 1"/>
+<stop offset="33.29%" style="stop-color:rgb(237,214,114);stop-opacity: 1"/>
+<stop offset="39.61%" style="stop-color:rgb(242,223,123);stop-opacity: 1"/>
+<stop offset="44.190000000000005%" style="stop-color:rgb(238,215,116);stop-opacity: 1"/>
+<stop offset="68.25%" style="stop-color:rgb(213,178,83);stop-opacity: 1"/>
+<stop offset="87.71%" style="stop-color:rgb(195,154,60);stop-opacity: 1"/>
+<stop offset="100%" style="stop-color:rgb(189,147,51);stop-opacity: 1"/>
+</linearGradient>
+<path d="M 45 10.858 C 45 10.858 45 10.858 45 10.858 C 45 10.858 45 10.858 45 10.858 c -8.353 5.439 -17.719 9.633 -27.926 12.503 C 17.616 65.059 27.16 72.144 45 79.427 c 0 0 0 0 0 0 c 0 0 0 0 0 0 c 17.84 -7.283 27.384 -14.368 27.925 -56.065 C 62.719 20.491 53.353 16.298 45 10.858 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: url(#SVGID_1); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
+</g>
+</svg>
