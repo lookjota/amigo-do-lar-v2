@@ -1,110 +1,228 @@
 # Logos Page Engine
 
-Logos Page Engine é um núcleo experimental para compor e renderizar páginas a
-partir de entidades tipadas. O projeto investiga uma arquitetura simples em que
-conteúdo estruturado é transformado em interface por um pipeline explícito, sem
-acoplar o domínio da aplicação ao mecanismo de renderização.
+> **A Domain-Oriented Engine for Building Living Pages**
 
-O software está em estágio experimental (`0.1.0`). A API, os contratos e a
-organização interna ainda podem mudar.
+The **Logos Page Engine** is an open-source engine for building websites through domain entities instead of UI composition.
 
-## Instituto Logos
+Rather than creating pages directly with React components, pages are described as structured domain models and rendered dynamically by the Engine.
 
-O Instituto Logos é a primeira aplicação pública construída sobre a engine. A
-rota `/` apresenta sua página inicial institucional, com conteúdo sobre áreas de
-investigação, projetos, documentos fundamentais e visão.
+The first public implementation of this architecture is the **Instituto Logos**, where the Engine renders the institution itself.
 
-Neste MVP, todo o conteúdo da Home é definido em uma única entidade `Page`. A
-aplicação fornece os componentes visuais, o conteúdo, o repository concreto e a
-configuração do registry; a engine permanece independente desses elementos.
+---
 
-## Arquitetura atual
+# Why
 
-O fluxo de renderização é:
+Modern websites are usually built around components.
 
-```text
-PageRepository
-  → Page
-  → PageRenderer
-  → SectionRenderer
-  → PageSectionRegistry
-  → componentes visuais
+As projects grow, components become tightly coupled to layouts, routes and business rules, making evolution increasingly difficult.
+
+The Logos Page Engine follows a different approach.
+
+Instead of asking:
+
+> *"Which components should this page render?"*
+
+it asks:
+
+> *"What is this page?"*
+
+A page becomes a domain object.
+
+Rendering becomes an implementation detail.
+
+---
+
+# Core Principles
+
+The project is guided by a small set of architectural principles.
+
+## Domain First
+
+Pages belong to the domain.
+
+React belongs to the infrastructure.
+
+---
+
+## Declarative Composition
+
+Pages describe **what exists**, not **how it is rendered**.
+
+---
+
+## Stable Contracts
+
+A page should evolve without requiring changes to the rendering pipeline.
+
+---
+
+## Separation of Concerns
+
+Domain
+
+↓
+
+Rendering
+
+↓
+
+Presentation
+
+Each layer has a single responsibility.
+
+---
+
+## Extensibility
+
+Adding a new section should require configuration rather than modification.
+
+---
+
+# Architecture
+
+```
+Page
+      │
+      ▼
+PageRenderer
+      │
+      ▼
+SectionRenderer
+      │
+      ▼
+Registry
+      │
+      ▼
+React Components
 ```
 
-- `Page` reúne SEO e uma lista ordenada de seções.
-- `PageSection` é uma união discriminada; cada `type` determina seu payload.
-- `PageRenderer` aplica os metadados da página e percorre suas seções.
-- `SectionRenderer` resolve cada seção no registry.
-- `PageSectionRegistry` associa tipos de seção a componentes compatíveis.
-- `InstitutoLogosPageRepository` fornece a página pública atual.
+The Engine knows **how to render**.
 
-## Instalação
+The domain knows **what should exist**.
 
-Requer Node.js compatível com Vite 8 e npm.
+---
 
-```bash
-npm install
+# Features
+
+Current capabilities include:
+
+- Domain-oriented pages
+- Dynamic section rendering
+- Section Registry
+- Generic Page Renderer
+- GitHub Pages deployment
+- Modular architecture
+- TypeScript-first development
+
+---
+
+# Project Structure
+
 ```
-
-## Execução
-
-```bash
-npm run dev
-```
-
-O Vite exibirá no terminal o endereço local da aplicação. Para gerar e
-inspecionar o bundle de produção:
-
-```bash
-npm run build
-npm run preview
-```
-
-## Scripts
-
-- `npm run dev`: inicia o servidor de desenvolvimento com HMR.
-- `npm run lint`: verifica os arquivos TypeScript e React com ESLint.
-- `npm run build`: executa o TypeScript e gera o bundle em `dist/`.
-- `npm run preview`: serve localmente o bundle gerado.
-
-## Estrutura principal
-
-```text
 src/
-├── engine/
-│   ├── page.ts
-│   ├── PageRepository.ts
-│   ├── PageRenderer.tsx
-│   ├── SectionRenderer.tsx
-│   └── PageSectionRegistry.ts
-└── apps/
-    └── instituto-logos/
-        ├── components/
-        ├── content/
-        ├── pages/
-        ├── registry/
-        └── repositories/
+
+domain/
+pages/
+renderers/
+registry/
+components/
+sections/
 ```
 
-As investigações arquiteturais existentes são mantidas em
-`docs/investigations/`.
+The project is intentionally organized around domain concepts rather than framework conventions.
 
-## Limitações
+---
 
-- Há somente a Home do Instituto Logos e uma página de conteúdo não encontrado.
-- O conteúdo está definido em TypeScript e exige novo build para publicação.
-- Não há backend, CMS, autenticação, busca ou leitura de Markdown.
-- Os cards de documentos ainda não possuem páginas individuais.
-- Não existe suíte de testes automatizados; lint e build são as verificações
-  disponíveis.
+# Current Status
 
-## Próximos passos
+Current version:
 
-- amadurecer os contratos da engine a partir de novos casos reais;
-- criar testes para o pipeline e para os metadados da página;
-- avaliar composição e extensão de tipos de seção sem perder segurança de tipos;
-- melhorar acessibilidade e validação visual em diferentes navegadores;
-- definir uma estratégia de publicação para documentos quando o domínio estiver
-  suficientemente compreendido.
+```
+v0.1
+```
 
-Este pacote é privado e não deve ser publicado no npm.
+Implemented:
+
+- Initial rendering pipeline
+- Page abstraction
+- Section abstraction
+- Dynamic rendering
+- GitHub Pages deployment
+
+In progress:
+
+- Documentation Engine
+- Architecture documentation
+- Registry improvements
+
+---
+
+# Roadmap
+
+## v0.2
+
+- Documentation Pages
+- Markdown support
+- Theme system
+- Generic Registry improvements
+
+---
+
+## v0.3
+
+- Navigation Engine
+- Search
+- Metadata system
+
+---
+
+## v1.0
+
+- Documentation Engine
+- Plugin architecture
+- Versioned documents
+- Multi-project support
+
+---
+
+# Philosophy
+
+The Logos Page Engine is part of a broader research initiative developed by the **Instituto Logos**.
+
+Its purpose is not simply to generate pages.
+
+Its purpose is to investigate how knowledge can be represented as living systems capable of continuous evolution.
+
+Every architectural decision follows the same question:
+
+> **Can this make knowledge easier to understand, evolve and share?**
+
+If the answer is no, the architecture should be reconsidered.
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+Before opening a Pull Request, please read:
+
+- CONTRIBUTING.md
+- ARCHITECTURE.md
+- ROADMAP.md
+
+---
+
+# License
+
+Released under the MIT License.
+
+---
+
+> **Think deeply. Decide quickly. Build continuously.**
+
+
+
+> Developed by Instituto Logos
+
+Researching architectures that transform knowledge into living systems.
