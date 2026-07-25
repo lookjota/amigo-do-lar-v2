@@ -1,5 +1,9 @@
 # Logos Page Engine
 
+> Developed by Instituto Logos  
+> Researching architectures that transform knowledge into living systems.
+
+
 > **A Domain-Oriented Engine for Building Living Pages**
 
 The **Logos Page Engine** is an open-source engine for building websites through domain entities instead of UI composition.

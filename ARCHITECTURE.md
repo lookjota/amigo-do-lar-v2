@@ -1,376 +1,424 @@
 # Architecture
 
-> This document describes the architecture of the Logos Page Engine.
+> **The architectural foundation of the Logos Page Engine.**
 >
-> It explains the core concepts, architectural decisions, rendering pipeline and
-> design principles that guide the evolution of the Engine.
+> This document describes the concepts, principles and rendering pipeline that
+> define the Logos Page Engine. Rather than documenting implementation details,
+> it explains the architectural decisions that make the Engine extensible,
+> reusable and domain-oriented.
 
 ---
 
 # Table of Contents
 
 1. Vision
-2. Design Philosophy
-3. Architectural Principles
+2. Architectural Philosophy
+3. Design Principles
 4. High-Level Architecture
-5. Core Domain
+5. Core Domain Model
 6. Rendering Pipeline
-7. Registry
-8. Project Structure
-9. Design Decisions
-10. Future Evolution
+7. Section Registry
+8. Layer Responsibilities
+9. Project Structure
+10. Architectural Decisions
+11. Evolution Strategy
+12. Related Documents
 
 ---
 
 # Vision
 
-The Logos Page Engine is a domain-oriented rendering engine.
+The Logos Page Engine is a **domain-oriented rendering engine**.
 
-Instead of describing pages as trees of React components, pages are represented
-as domain entities that are interpreted by a rendering pipeline.
+Instead of constructing pages directly with UI components, the Engine represents
+pages as domain entities that are interpreted by a rendering pipeline.
 
-The goal is to completely separate:
+This architecture separates **business representation** from **user interface**.
 
-- what a page is
+The Engine answers a simple question:
 
-from
+> **What is this page?**
 
-- how it is rendered.
+Instead of:
 
-This allows the Engine to evolve independently from the user interface.
+> **Which components should React render?**
+
+By treating pages as domain objects, the Engine becomes independent of any
+specific presentation technology.
 
 ---
 
-# Design Philosophy
+# Architectural Philosophy
 
-Traditional applications usually follow this flow:
-
-```
-
-React Component
-↓
-React Component
-↓
-React Component
+Modern frontend applications usually grow around UI components.
 
 ```
-
-The page is manually assembled.
-
-The Logos Page Engine follows another philosophy.
-
-```
-
-Domain
-↓
-
-Page
-
-↓
-
-Renderer
-
-↓
-
 React
-
+   ↓
+Components
+   ↓
+Page
 ```
 
-React becomes only an implementation detail.
+As projects evolve, the user interface gradually becomes responsible for routing,
+layout, business rules and content organization.
 
-The domain remains the source of truth.
+The Logos Page Engine follows the opposite direction.
+
+```
+Domain
+    ↓
+Page
+    ↓
+Rendering Pipeline
+    ↓
+React
+```
+
+React becomes an implementation detail.
+
+The domain becomes the source of truth.
 
 ---
 
-# Architectural Principles
+# Design Principles
 
-The Engine follows a small set of architectural principles.
-
-## 1. Domain First
-
-The domain describes reality.
-
-Infrastructure implements reality.
-
-React should never define the domain.
+The Engine is guided by a small set of architectural principles.
 
 ---
 
-## 2. Declarative Composition
+## Domain First
+
+Pages belong to the domain.
+
+The rendering layer exists only to represent the domain.
+
+The domain never depends on React.
+
+---
+
+## Declarative Composition
 
 Pages declare **what exists**.
 
 The Engine decides **how it is rendered**.
 
----
-
-## 3. Stable Contracts
-
-Pages should evolve without requiring changes in the rendering pipeline.
+This allows content to evolve independently from the rendering pipeline.
 
 ---
 
-## 4. Separation of Concerns
+## Stable Contracts
 
-Each layer has one responsibility.
+Changes inside a page should not require modifications to the rendering engine.
 
+The rendering pipeline must remain stable as new page types are introduced.
+
+---
+
+## Separation of Concerns
+
+Every layer has one responsibility.
+
+```
 Domain
-
-↓
-
-Renderer
-
-↓
-
+    ↓
+Rendering
+    ↓
 Presentation
+```
+
+Responsibilities never overlap.
 
 ---
 
-## 5. Extensibility
+## Extensibility
 
-Adding new sections should require registration instead of modifying the Engine.
+The Engine should grow by **adding new capabilities**, not by modifying existing
+behavior.
+
+New section types should be registered, not hardcoded.
+
+---
+
+## Framework Independence
+
+Business concepts should not depend on framework-specific APIs.
+
+React is currently the rendering technology, but it is not part of the domain.
 
 ---
 
 # High-Level Architecture
 
-```
+The rendering process follows a deterministic pipeline.
 
-                Page Repository
+```
+                  Repository
                        │
                        ▼
-                    Page Entity
+                     Page
                        │
                        ▼
-                 Page Renderer
+                 PageRenderer
                        │
                        ▼
-               Section Renderer
+               SectionRenderer
                        │
                        ▼
-                  Section Registry
+                  SectionRegistry
                        │
                        ▼
                  React Components
                        │
                        ▼
                     Browser
-
 ```
 
-The rendering pipeline is linear and deterministic.
-
-Every page follows exactly the same flow.
+Every page rendered by the Engine follows this exact flow.
 
 ---
 
-# Core Domain
+# Core Domain Model
 
-The Engine is built around two domain entities.
+The Engine is built around two fundamental abstractions.
+
+---
 
 ## Page
 
-Represents an entire page.
+A Page represents an entire document.
 
-Responsibilities:
+It defines:
 
 - identity
 - metadata
 - route
 - sections
 
-Example:
+Conceptually:
 
 ```
-
 Page
 
 id
 slug
 title
+description
 sections[]
-
 ```
+
+A Page contains no rendering logic.
+
+It simply represents information.
 
 ---
 
 ## PageSection
 
-Represents one block of content.
+A PageSection represents one independent block inside a page.
 
-Responsibilities:
-
-- identify the section
-- store its configuration
-- expose its type
-
-Example:
+Conceptually:
 
 ```
-
 PageSection
 
 id
 type
 props
-
 ```
 
-Notice that the PageSection knows nothing about React.
+The section knows:
 
-It is pure domain.
+- its identity
+- its type
+- its data
+
+It does **not** know:
+
+- React
+- JSX
+- HTML
+- CSS
+
+Those concerns belong to the presentation layer.
 
 ---
 
 # Rendering Pipeline
 
-The rendering process always follows the same sequence.
+Rendering always follows the same sequence.
 
 ```
-
 Repository
-
-↓
-
+      ↓
 Page
-
-↓
-
+      ↓
 PageRenderer
-
-↓
-
+      ↓
 SectionRenderer
-
-↓
-
+      ↓
 Registry
-
-↓
-
-React Component
-
-↓
-
+      ↓
+Component
+      ↓
 HTML
-
 ```
+
+Each stage has a single responsibility.
+
+---
 
 ## Repository
 
-Provides a Page.
+Responsible for providing Page objects.
 
-The repository never renders.
+Repositories never render.
+
+They only retrieve domain entities.
 
 ---
 
 ## PageRenderer
 
-Iterates through every section.
+Responsible for orchestrating page rendering.
 
-Its only responsibility is orchestration.
+Responsibilities:
+
+- receive a Page
+- iterate through sections
+- delegate rendering
+
+It never knows how a specific section is rendered.
 
 ---
 
 ## SectionRenderer
 
-Receives a PageSection.
+Responsible for rendering one section.
 
-Requests the appropriate component from the Registry.
+Its responsibility is to:
+
+- inspect the section type
+- resolve the appropriate renderer
+- delegate rendering
+
+Nothing more.
 
 ---
 
 ## Registry
 
-Maps:
+The Registry maps domain concepts to presentation components.
+
+Instead of:
 
 ```
-
-Section Type
-
-↓
-
-React Component
-
-```
-
-This completely decouples the domain from the UI.
-
----
-
-## React Component
-
-Receives only the properties necessary to render the section.
-
-No business rules should exist here.
-
----
-
-# Registry
-
-The Registry is one of the most important abstractions in the Engine.
-
-Instead of using conditional rendering:
-
-```
-
-if (...)
-
-Hero
-
-else
-
-Benefits
-
-else
-
-FAQ
-
+if (section.type === "hero") ...
 ```
 
 The Engine performs a lookup.
 
 ```
-
 Hero
-
-↓
-
+    ↓
 HeroComponent
-
 ```
 
 ```
-
-Benefits
-
-↓
-
-BenefitsComponent
-
-```
-
-```
-
 FAQ
-
-↓
-
+    ↓
 FaqComponent
-
 ```
 
-This allows new section types to be added without modifying the rendering pipeline.
+```
+CTA
+    ↓
+CtaComponent
+```
+
+The rendering pipeline never needs to change when a new section type is added.
+
+---
+
+## Component
+
+The React component receives only the data required to render itself.
+
+Business rules do not belong here.
+
+---
+
+# Section Registry
+
+The Registry is one of the central abstractions of the Engine.
+
+Its responsibilities are:
+
+- map section types
+- isolate presentation
+- eliminate conditional rendering
+- support extensibility
+
+This design makes the rendering pipeline completely generic.
+
+Adding a new section requires:
+
+1. Creating the component.
+2. Registering the component.
+3. Using the new section type.
+
+No changes are required in the rendering pipeline.
+
+---
+
+# Layer Responsibilities
+
+```
+┌─────────────────────────────┐
+│ Domain                      │
+│-----------------------------│
+│ Page                        │
+│ PageSection                 │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Rendering                   │
+│-----------------------------│
+│ PageRenderer                │
+│ SectionRenderer             │
+│ Registry                    │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ Presentation                │
+│-----------------------------│
+│ React Components            │
+│ Styles                      │
+│ UI                          │
+└─────────────────────────────┘
+```
+
+Dependencies always point downward.
+
+Presentation depends on Rendering.
+
+Rendering depends on Domain.
+
+The Domain depends on nothing.
 
 ---
 
 # Project Structure
 
 ```
-
 src/
 
 ├── domain/
+│   ├── entities/
+│   ├── models/
+│   └── repositories/
 │
 ├── pages/
 │
@@ -383,104 +431,127 @@ src/
 ├── components/
 │
 └── infrastructure/
-
 ```
 
 Each directory represents one architectural responsibility.
 
-The directory structure mirrors the architecture.
+The directory organization mirrors the architecture itself.
 
 ---
 
-# Design Decisions
+# Architectural Decisions
 
 ## Why Domain First?
 
-Because the UI changes frequently.
+Because the domain changes less frequently than the UI.
 
-The business model changes much less.
+Business concepts should remain stable.
+
+---
+
+## Why a Rendering Pipeline?
+
+To isolate orchestration from presentation.
+
+Rendering becomes predictable and reusable.
 
 ---
 
 ## Why a Registry?
 
-To eliminate conditional rendering and centralize component resolution.
+To eliminate conditional rendering.
+
+Instead of modifying the renderer every time a new section appears, the Engine
+uses registration.
 
 ---
 
-## Why Renderers?
+## Why Generic Pages?
 
-To isolate orchestration from presentation.
+Because every page follows the same lifecycle.
 
----
+Only its data changes.
 
-## Why Page entities?
-
-Because pages belong to the domain.
-
-They should exist independently from React.
+The rendering process remains identical.
 
 ---
 
-# Future Evolution
+## Why Section Abstractions?
 
-The current Engine is only the foundation.
+Because sections represent reusable capabilities.
 
-The architecture was intentionally designed to support future capabilities.
+The Engine renders sections.
 
-Planned evolution:
+Applications define which sections exist.
+
+---
+
+# Evolution Strategy
+
+The current architecture intentionally represents only the foundation.
+
+Future capabilities should extend the Engine without changing its principles.
 
 ```
-
 Current Engine
-
-↓
-
-Markdown Renderer
-
-↓
-
+        │
+        ▼
+Metadata System
+        │
+        ▼
 Documentation Pages
-
-↓
-
+        │
+        ▼
+Markdown Support
+        │
+        ▼
 Navigation Engine
-
-↓
-
+        │
+        ▼
 Search Engine
-
-↓
-
+        │
+        ▼
 Documentation Engine
-
-↓
-
+        │
+        ▼
 Plugin System
-
-↓
-
-Knowledge Engine
-
 ```
 
-Each new capability should extend the Engine without modifying its architectural principles.
+Every new capability should integrate into the existing architecture instead of
+replacing it.
+
+---
+
+# Design Goals
+
+The Engine should always strive to be:
+
+- Simple
+- Predictable
+- Extensible
+- Reusable
+- Framework-independent
+- Domain-oriented
+
+Whenever a new feature is proposed, it should reinforce these characteristics.
 
 ---
 
 # Guiding Principle
 
-The Engine exists to answer one question:
+The Logos Page Engine exists to transform structured domain knowledge into
+navigable user experiences.
 
-> How can knowledge be represented as a living structure instead of a static interface?
+Its goal is not simply to render pages.
 
-Every architectural decision should reinforce this objective.
+Its goal is to provide a stable architecture capable of representing knowledge
+through reusable rendering capabilities.
 
-If a change makes the Engine more coupled,
-more rigid,
-or less expressive,
+Every architectural decision should answer one question:
 
-it should be reconsidered.
+> **Does this make the Engine simpler, more expressive and easier to evolve?**
+
+If the answer is no, the decision should be reconsidered.
 
 ---
 
@@ -488,13 +559,9 @@ it should be reconsidered.
 
 - README.md
 - ROADMAP.md
-- CHANGELOG.md
 - CONTRIBUTING.md
+- CHANGELOG.md
 
 ---
 
-> Think deeply.
->
-> Decide quickly.
->
-> Build continuously.
+> **Think deeply. Decide quickly. Build continuously.**
