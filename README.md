@@ -1,5 +1,15 @@
 # Logos Page Engine
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+![Version](https://img.shields.io/badge/version-v0.1.0-success)
+
+![Status](https://img.shields.io/badge/status-active-success)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)
+
+![React](https://img.shields.io/badge/React-19-61DAFB)
+
 > Developed by Instituto Logos  
 > Researching architectures that transform knowledge into living systems.
 
@@ -11,6 +21,32 @@ The **Logos Page Engine** is an open-source engine for building websites through
 Rather than creating pages directly with React components, pages are described as structured domain models and rendered dynamically by the Engine.
 
 The first public implementation of this architecture is the **Instituto Logos**, where the Engine renders the institution itself.
+
+---
+
+## Screenshot
+
+(imagem)
+
+---
+
+Introdução
+
+↓
+
+Quick Start
+
+↓
+
+Why
+
+↓
+
+Architecture
+
+↓
+
+Roadmap
 
 ---
 
