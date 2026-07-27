@@ -1,4 +1,4 @@
-import type { Page } from './page'
+import type { Page } from '../domain/pages/Page'
 
 export interface PageRepository {
   getBySlug(slug: string): Page | undefined

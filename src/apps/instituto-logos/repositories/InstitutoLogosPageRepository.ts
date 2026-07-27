@@ -1,5 +1,5 @@
 import type { PageRepository } from '../../../engine/PageRepository'
-import type { Page } from '../../../engine/page'
+import type { Page } from '../../../domain/pages/Page'
 import { homePage } from '../content/homePage'
 
 export class InstitutoLogosPageRepository implements PageRepository {

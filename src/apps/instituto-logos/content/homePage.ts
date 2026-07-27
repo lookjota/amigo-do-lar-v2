@@ -1,12 +1,35 @@
-import type { Page } from '../../../engine/page'
+import type { Page } from '../../../domain/pages/Page'
 
 export const homePage: Page = {
+  id: 'instituto-logos-home',
   slug: '/',
-  title: 'Instituto Logos',
-  seo: {
+
+  metadata: {
     title: 'Instituto Logos — Pesquisa e Engenharia do Conhecimento',
+
     description:
       'Iniciativa aberta de pesquisa, arquitetura de software e organização do conhecimento.',
+
+    keywords: [
+      'Instituto Logos',
+      'Logos Page Engine',
+      'arquitetura de software',
+      'engenharia do conhecimento',
+      'sistemas de conhecimento',
+    ],
+
+    author: 'Instituto Logos',
+
+    locale: 'pt-BR',
+
+    canonicalUrl: 'https://lookjota.github.io/logos-page-engine/',
+
+    robots: {
+      index: true,
+      follow: true,
+    },
+
+    updatedAt: '2026-07-25',
   },
   sections: [
     {

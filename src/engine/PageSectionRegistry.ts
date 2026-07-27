@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
 import type {
   PageSection,
   PageSectionType,
-} from './page'
+} from '../domain/pages/PageSection'
 
 export type SectionByType<Type extends PageSectionType> = Extract<
   PageSection,

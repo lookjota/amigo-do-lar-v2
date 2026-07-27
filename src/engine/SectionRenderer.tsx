@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import type { PageSectionRegistry } from './PageSectionRegistry'
 import { PageSectionRegistryContext } from './PageSectionRegistry'
-import type { PageSection } from './page'
+import type { PageSection } from '../domain/pages/PageSection'
 
 interface SectionRendererProps {
   section: PageSection

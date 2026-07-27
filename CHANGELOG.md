@@ -8,6 +8,31 @@ and adheres to Semantic Versioning whenever applicable.
 
 ---
 
+# [Unreleased]
+
+## Added
+
+### Engine
+
+- Added domain contracts for page metadata and robots directives.
+- Added browser rendering for title, canonical, search, Open Graph and Twitter
+  metadata.
+
+## Changed
+
+### Engine
+
+- Consolidated `Page` and `PageSection` as domain contracts.
+- Updated page rendering to consume `page.metadata` and clear stale optional
+  tags after navigation.
+
+### Documentation
+
+- Added RFC-001 documenting the Metadata System and its architectural
+  boundaries.
+
+---
+
 # [0.1.0] - 2026-07-25
 
 ## Added

@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import type { Page } from './page'
+import type { Page } from '../domain/pages/Page'
+import { BrowserMetadataRenderer } from './BrowserMetadataRenderer'
 import { SectionRenderer } from './SectionRenderer'
 
 interface PageRendererProps {
@@ -7,24 +7,9 @@ interface PageRendererProps {
 }
 
 export function PageRenderer({ page }: PageRendererProps) {
-  useEffect(() => {
-    document.title = page.seo.title
-
-    let description = document.querySelector<HTMLMetaElement>(
-      'meta[name="description"]',
-    )
-
-    if (!description) {
-      description = document.createElement('meta')
-      description.name = 'description'
-      document.head.append(description)
-    }
-
-    description.content = page.seo.description
-  }, [page.seo.description, page.seo.title])
-
   return (
     <>
+      <BrowserMetadataRenderer metadata={page.metadata} />
       {page.sections.map((section) => (
         <SectionRenderer key={section.id} section={section} />
       ))}

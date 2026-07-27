@@ -1,0 +1,596 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 9185946..a140206 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,31 @@ and adheres to Semantic Versioning whenever applicable.
+ 
+ ---
+ 
++# [Unreleased]
++
++## Added
++
++### Engine
++
++- Added domain contracts for page metadata and robots directives.
++- Added browser rendering for title, canonical, search, Open Graph and Twitter
++  metadata.
++
++## Changed
++
++### Engine
++
++- Consolidated `Page` and `PageSection` as domain contracts.
++- Updated page rendering to consume `page.metadata` and clear stale optional
++  tags after navigation.
++
++### Documentation
++
++- Added RFC-001 documenting the Metadata System and its architectural
++  boundaries.
++
++---
++
+ # [0.1.0] - 2026-07-25
+ 
+ ## Added
+@@ -79,4 +104,4 @@ Security-related improvements.
+ 
+ ---
+ 
+-> Every meaningful architectural evolution should be reflected in this document.
+\ No newline at end of file
++> Every meaningful architectural evolution should be reflected in this document.
+diff --git a/docs/rfcs/README.md b/docs/rfcs/README.md
+index e6f07c6..e4cffde 100644
+--- a/docs/rfcs/README.md
++++ b/docs/rfcs/README.md
+@@ -2,7 +2,7 @@
+ 
+ This directory contains architectural proposals for the Logos Page Engine.
+ 
+-RFCs document relevant architectural decisions before their implementation.
++RFCs document relevant architectural decisions and their implementation state.
+ 
+ They exist to explain:
+ 
+@@ -16,4 +16,4 @@ They exist to explain:
+ 
+ | RFC | Title | Status |
+ | --- | --- | --- |
+-| RFC-001 | Metadata System | Accepted |
+\ No newline at end of file
++| RFC-001 | Metadata System | Accepted |
+diff --git a/docs/rfcs/RFC-001-metadata-system.md b/docs/rfcs/RFC-001-metadata-system.md
+index 412ae59..786658b 100644
+--- a/docs/rfcs/RFC-001-metadata-system.md
++++ b/docs/rfcs/RFC-001-metadata-system.md
+@@ -5,56 +5,166 @@
+ - Created: 2026-07-25
+ - Project: Logos Page Engine
+ 
+----
+-
+ ## Context
+ 
+-The Logos Page Engine represents pages through domain entities.
+-
+-Until now, page identity, content and presentation metadata have not been
+-represented through a dedicated domain contract.
+-
+-Metadata is required for:
+-
+-- page titles
+-- descriptions
+-- search indexing
+-- canonical URLs
+-- authorship
+-- publication dates
+-- social sharing
+-- browser metadata
+-- future sitemap generation
+-
+-This information must belong to the page domain without coupling the domain to
+-React, HTML or browser APIs.
+-
+----
++The Logos Page Engine represents pages as domain data and delegates their
++presentation to a React rendering pipeline. Page identity, sections and browser
++metadata need one stable contract that remains independent of the source of the
++content.
+ 
+ ## Problem
+ 
+-Without a metadata abstraction:
++The original `Page` contract stored `title` and an `seo` object in the Engine,
++while `PageRenderer` manipulated browser tags directly. This mixed domain data
++with presentation concerns, covered only title and description, and allowed
++metadata from a previous route to remain in the document.
+ 
+-- metadata may become scattered across components
+-- pages may depend directly on browser APIs
+-- SEO configuration may be duplicated
+-- content adapters may produce inconsistent page structures
+-- future systems such as search and navigation may lack a stable contract
++## Decision
+ 
+-The Engine needs a framework-independent metadata model.
++Metadata is represented by `PageMetadata` and `RobotsMetadata` in the domain.
++The existing `Page` contract owns a required `metadata` property. A dedicated
++React renderer translates that contract into browser head elements.
+ 
+----
++## Goals
+ 
+-## Decision
++- Provide a typed, framework-independent metadata contract.
++- Keep one `Page` and one `PageSection` definition.
++- Render browser, search and basic social metadata consistently.
++- Remove stale optional metadata after navigation.
++- Preserve the existing page and section rendering pipeline.
+ 
+-Introduce a `PageMetadata` domain contract.
++## Non-Goals
+ 
+-A `Page` will contain metadata and sections:
++- Parse Markdown or define a content storage format.
++- Generate sitemaps, feeds or structured data.
++- Perform server-side rendering.
++- Validate URL or timestamp formats at runtime.
++- Add platform-specific social metadata beyond basic Open Graph and Twitter
++  tags.
++
++## Domain Model
+ 
+ ```ts
++interface RobotsMetadata {
++  index?: boolean
++  follow?: boolean
++}
++
++interface PageMetadata {
++  title: string
++  description?: string
++  keywords?: string[]
++  author?: string
++  locale?: string
++  canonicalUrl?: string
++  image?: string
++  robots?: RobotsMetadata
++  publishedAt?: string
++  updatedAt?: string
++}
++
+ interface Page {
+   id: string
+   slug: string
+   metadata: PageMetadata
+   sections: PageSection[]
+-}
+\ No newline at end of file
++}
++```
++
++`publishedAt` and `updatedAt` are retained as domain information. This first
++browser renderer does not emit article metadata because page type semantics have
++not yet been introduced.
++
++## Architectural Boundaries
++
++The contracts live under `src/domain` and import neither React nor browser APIs.
++`BrowserMetadataRenderer` lives beside the existing React renderers in
++`src/engine`. It alone translates `PageMetadata` to `document.head`.
++
++The Engine consumes a complete `Page`; it does not fetch content or infer how
++the page was created.
++
++## Rendering Integration
++
++`PageRenderer` renders `BrowserMetadataRenderer` with `page.metadata` before
++mapping the unchanged `page.sections` through `SectionRenderer`.
++
++The browser renderer:
++
++- sets `document.title`;
++- creates, updates or removes description, keywords, author and robots tags;
++- creates, updates or removes the canonical link;
++- manages basic Open Graph tags, including `og:type=website`, with `property`;
++- manages basic Twitter tags with `name`;
++- removes optional tags when the next metadata value omits them.
++
++Standalone route screens, such as the current not-found page, may use the same
++renderer directly until they are represented as engine `Page` objects.
++
++## Content Source Independence
++
++Any repository, static TypeScript module, API adapter, CMS or future Markdown
++adapter may construct the domain contract. Metadata rendering receives only
++`PageMetadata` and has no knowledge of the originating source.
++
++## Compatibility
++
++Existing section types, payloads, ordering, registry bindings, components,
++styles and visible Home content remain unchanged. `src/engine/page.ts` remains
++as a compatibility facade that re-exports the canonical domain types, avoiding
++a second contract during migration.
++
++Consumers of the old `Page.title` and `Page.seo` shape must migrate to
++`Page.metadata`.
++
++## Alternatives Considered
++
++### Keep metadata inside `PageRenderer`
++
++Rejected because it makes section orchestration responsible for browser head
++details and is difficult to reuse for standalone screens.
++
++### Use a third-party head-management package
++
++Rejected for the initial implementation because the required client-side
++behavior is small and does not justify a new dependency.
++
++### Store HTML tag definitions in the domain
++
++Rejected because tags, attributes and `document` are presentation concerns.
++
++### Couple metadata to Markdown front matter
++
++Rejected because it would make the Engine depend on one content source.
++
++## Risks
++
++- Client-side effects run after the initial HTML is delivered, so crawlers that
++  do not execute JavaScript will see only static `index.html` metadata.
++- Multiple head managers on the same page could compete for the same tags.
++- Canonical URLs must be supplied correctly by each application.
++- Social previews without a real image remain text-only.
++
++## Implementation Plan
++
++1. Establish `PageMetadata`, `RobotsMetadata`, `Page` and `PageSection` as
++   canonical domain contracts.
++2. Migrate page definitions and repositories to those contracts.
++3. Add `BrowserMetadataRenderer`.
++4. Integrate it with `PageRenderer` and standalone route screens.
++5. Document the decision and release change.
++6. Validate with lint and production build.
++
++## Acceptance Criteria
++
++- The domain imports neither React nor browser APIs.
++- Exactly one canonical `Page` and `PageSection` definition exists.
++- Every concrete engine page provides `id`, `slug`, `metadata` and `sections`.
++- Home sections and visible content render unchanged.
++- Title, description, keywords, author, robots, canonical, Open Graph and
++  Twitter metadata are created or updated correctly.
++- Optional tags absent from the next page are removed.
++- Open Graph uses `meta[property]`; Twitter uses `meta[name]`.
++- No unverified Open Graph image is added.
++- The RFC and `Unreleased` changelog describe the implemented behavior.
++- Lint and production build pass.
+diff --git a/src/apps/instituto-logos/content/homePage.ts b/src/apps/instituto-logos/content/homePage.ts
+index 699d7ee..114ec0e 100644
+--- a/src/apps/instituto-logos/content/homePage.ts
++++ b/src/apps/instituto-logos/content/homePage.ts
+@@ -1,12 +1,35 @@
+-import type { Page } from '../../../engine/page'
++import type { Page } from '../../../domain/pages/Page'
+ 
+ export const homePage: Page = {
++  id: 'instituto-logos-home',
+   slug: '/',
+-  title: 'Instituto Logos',
+-  seo: {
++
++  metadata: {
+     title: 'Instituto Logos — Pesquisa e Engenharia do Conhecimento',
++
+     description:
+       'Iniciativa aberta de pesquisa, arquitetura de software e organização do conhecimento.',
++
++    keywords: [
++      'Instituto Logos',
++      'Logos Page Engine',
++      'arquitetura de software',
++      'engenharia do conhecimento',
++      'sistemas de conhecimento',
++    ],
++
++    author: 'Instituto Logos',
++
++    locale: 'pt-BR',
++
++    canonicalUrl: 'https://lookjota.github.io/logos-page-engine/',
++
++    robots: {
++      index: true,
++      follow: true,
++    },
++
++    updatedAt: '2026-07-25',
+   },
+   sections: [
+     {
+diff --git a/src/apps/instituto-logos/pages/NotFoundPage.tsx b/src/apps/instituto-logos/pages/NotFoundPage.tsx
+index f051624..8414083 100644
+--- a/src/apps/instituto-logos/pages/NotFoundPage.tsx
++++ b/src/apps/instituto-logos/pages/NotFoundPage.tsx
+@@ -1,26 +1,38 @@
+ import { ArrowLeft } from 'lucide-react'
+-import { useEffect } from 'react'
++import type { PageMetadata } from '../../../domain/metadata/PageMetadata'
++import { BrowserMetadataRenderer } from '../../../engine/BrowserMetadataRenderer'
+ 
+-export function NotFoundPage() {
+-  useEffect(() => {
+-    document.title = 'Conteúdo não encontrado — Instituto Logos'
+-  }, [])
++const notFoundMetadata: PageMetadata = {
++  title: 'Conteúdo não encontrado — Instituto Logos',
++  description:
++    'O endereço informado não corresponde a um conteúdo publicado pelo Instituto Logos.',
++  author: 'Instituto Logos',
++  locale: 'pt-BR',
++  robots: {
++    index: false,
++    follow: false,
++  },
++}
+ 
++export function NotFoundPage() {
+   return (
+-    <main className="not-found">
+-      <div>
+-        <span className="not-found-code">404</span>
+-        <p className="eyebrow">Instituto Logos</p>
+-        <h1>Conteúdo não encontrado.</h1>
+-        <p>
+-          O endereço informado não corresponde a um conteúdo publicado nesta
+-          etapa do projeto.
+-        </p>
+-        <a className="button button-primary" href="/">
+-          <ArrowLeft size={17} aria-hidden="true" />
+-          Voltar ao início
+-        </a>
+-      </div>
+-    </main>
++    <>
++      <BrowserMetadataRenderer metadata={notFoundMetadata} />
++      <main className="not-found">
++        <div>
++          <span className="not-found-code">404</span>
++          <p className="eyebrow">Instituto Logos</p>
++          <h1>Conteúdo não encontrado.</h1>
++          <p>
++            O endereço informado não corresponde a um conteúdo publicado nesta
++            etapa do projeto.
++          </p>
++          <a className="button button-primary" href="/">
++            <ArrowLeft size={17} aria-hidden="true" />
++            Voltar ao início
++          </a>
++        </div>
++      </main>
++    </>
+   )
+ }
+diff --git a/src/apps/instituto-logos/repositories/InstitutoLogosPageRepository.ts b/src/apps/instituto-logos/repositories/InstitutoLogosPageRepository.ts
+index 2b7b17f..63bf4b5 100644
+--- a/src/apps/instituto-logos/repositories/InstitutoLogosPageRepository.ts
++++ b/src/apps/instituto-logos/repositories/InstitutoLogosPageRepository.ts
+@@ -1,5 +1,5 @@
+ import type { PageRepository } from '../../../engine/PageRepository'
+-import type { Page } from '../../../engine/page'
++import type { Page } from '../../../domain/pages/Page'
+ import { homePage } from '../content/homePage'
+ 
+ export class InstitutoLogosPageRepository implements PageRepository {
+diff --git a/src/engine/PageRenderer.tsx b/src/engine/PageRenderer.tsx
+index 7e2a46e..db223e5 100644
+--- a/src/engine/PageRenderer.tsx
++++ b/src/engine/PageRenderer.tsx
+@@ -1,5 +1,5 @@
+-import { useEffect } from 'react'
+-import type { Page } from './page'
++import type { Page } from '../domain/pages/Page'
++import { BrowserMetadataRenderer } from './BrowserMetadataRenderer'
+ import { SectionRenderer } from './SectionRenderer'
+ 
+ interface PageRendererProps {
+@@ -7,24 +7,9 @@ interface PageRendererProps {
+ }
+ 
+ export function PageRenderer({ page }: PageRendererProps) {
+-  useEffect(() => {
+-    document.title = page.seo.title
+-
+-    let description = document.querySelector<HTMLMetaElement>(
+-      'meta[name="description"]',
+-    )
+-
+-    if (!description) {
+-      description = document.createElement('meta')
+-      description.name = 'description'
+-      document.head.append(description)
+-    }
+-
+-    description.content = page.seo.description
+-  }, [page.seo.description, page.seo.title])
+-
+   return (
+     <>
++      <BrowserMetadataRenderer metadata={page.metadata} />
+       {page.sections.map((section) => (
+         <SectionRenderer key={section.id} section={section} />
+       ))}
+diff --git a/src/engine/PageRepository.ts b/src/engine/PageRepository.ts
+index c7d6463..3e97fcb 100644
+--- a/src/engine/PageRepository.ts
++++ b/src/engine/PageRepository.ts
+@@ -1,4 +1,4 @@
+-import type { Page } from './page'
++import type { Page } from '../domain/pages/Page'
+ 
+ export interface PageRepository {
+   getBySlug(slug: string): Page | undefined
+diff --git a/src/engine/PageSectionRegistry.ts b/src/engine/PageSectionRegistry.ts
+index adea170..12250b3 100644
+--- a/src/engine/PageSectionRegistry.ts
++++ b/src/engine/PageSectionRegistry.ts
+@@ -3,7 +3,7 @@ import type { ComponentType } from 'react'
+ import type {
+   PageSection,
+   PageSectionType,
+-} from './page'
++} from '../domain/pages/PageSection'
+ 
+ export type SectionByType<Type extends PageSectionType> = Extract<
+   PageSection,
+diff --git a/src/engine/SectionRenderer.tsx b/src/engine/SectionRenderer.tsx
+index 0ccc759..00d0c8b 100644
+--- a/src/engine/SectionRenderer.tsx
++++ b/src/engine/SectionRenderer.tsx
+@@ -1,7 +1,7 @@
+ import { useContext } from 'react'
+ import type { PageSectionRegistry } from './PageSectionRegistry'
+ import { PageSectionRegistryContext } from './PageSectionRegistry'
+-import type { PageSection } from './page'
++import type { PageSection } from '../domain/pages/PageSection'
+ 
+ interface SectionRendererProps {
+   section: PageSection
+diff --git a/src/engine/page.ts b/src/engine/page.ts
+index 651b8fe..46ab0f1 100644
+--- a/src/engine/page.ts
++++ b/src/engine/page.ts
+@@ -1,111 +1,19 @@
+-export const pageSectionTypes = [
+-  'navigation',
+-  'hero',
+-  'researchAreas',
+-  'projects',
+-  'documents',
+-  'vision',
+-  'cta',
+-  'footer',
+-] as const
+-
+-export type PageSectionType = (typeof pageSectionTypes)[number]
+-
+-export interface Link {
+-  label: string
+-  href: string
+-  external?: boolean
+-}
+-
+-export interface NavigationPayload {
+-  brand: string
+-  links: Link[]
+-  additionalLink: Link
+-}
+-
+-export interface HeroPayload {
+-  eyebrow: string
+-  title: string
+-  description: string
+-  motto: string
+-  actions: Link[]
+-}
+-
+-export interface ResearchArea {
+-  name: string
+-  description: string
+-}
+-
+-export interface ResearchAreasPayload {
+-  title: string
+-  items: ResearchArea[]
+-}
+-
+-export interface Project {
+-  name: string
+-  status: 'Experimental' | 'Research' | 'Planned'
+-  description: string
+-}
+-
+-export interface ProjectsPayload {
+-  title: string
+-  items: Project[]
+-}
+-
+-export interface DocumentItem {
+-  title: string
+-  code: string
+-  version: string
+-}
+-
+-export interface DocumentsPayload {
+-  title: string
+-  items: DocumentItem[]
+-}
+-
+-export interface VisionPayload {
+-  title: string
+-  text: string
+-  principles: string[]
+-}
+-
+-export interface CtaPayload {
+-  title: string
+-  description: string
+-  action: Link
+-}
+-
+-export interface FooterPayload {
+-  brand: string
+-  motto: string
+-  text: string
+-}
+-
+-export interface PageSectionPayloadMap {
+-  navigation: NavigationPayload
+-  hero: HeroPayload
+-  researchAreas: ResearchAreasPayload
+-  projects: ProjectsPayload
+-  documents: DocumentsPayload
+-  vision: VisionPayload
+-  cta: CtaPayload
+-  footer: FooterPayload
+-}
+-
+-export type PageSection = {
+-  [Type in PageSectionType]: {
+-    id: string
+-    type: Type
+-    data: PageSectionPayloadMap[Type]
+-  }
+-}[PageSectionType]
+-
+-export interface Page {
+-  slug: string
+-  title: string
+-  seo: {
+-    title: string
+-    description: string
+-  }
+-  sections: PageSection[]
+-}
++export type { Page } from '../domain/pages/Page'
++export {
++  pageSectionTypes,
++  type CtaPayload,
++  type DocumentItem,
++  type DocumentsPayload,
++  type FooterPayload,
++  type HeroPayload,
++  type Link,
++  type NavigationPayload,
++  type PageSection,
++  type PageSectionPayloadMap,
++  type PageSectionType,
++  type Project,
++  type ProjectsPayload,
++  type ResearchArea,
++  type ResearchAreasPayload,
++  type VisionPayload,
++} from '../domain/pages/PageSection'

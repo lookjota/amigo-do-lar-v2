@@ -2,7 +2,7 @@
 
 This directory contains architectural proposals for the Logos Page Engine.
 
-RFCs document relevant architectural decisions before their implementation.
+RFCs document relevant architectural decisions and their implementation state.
 
 They exist to explain:
 
