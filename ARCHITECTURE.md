@@ -150,9 +150,18 @@ React is currently the rendering technology, but it is not part of the domain.
 
 # High-Level Architecture
 
-The rendering process follows a deterministic pipeline.
+Route resolution and rendering follow one deterministic pipeline.
 
 ```
+                      URL
+                       │
+                       ▼
+               Route Definition
+                       │
+                       ▼
+                  Page Slug
+                       │
+                       ▼
                   Repository
                        │
                        ▼
@@ -175,6 +184,11 @@ The rendering process follows a deterministic pipeline.
 ```
 
 Every page rendered by the Engine follows this exact flow.
+
+Routes and navigation are related but separate. A route maps a URL path to a
+page slug. Navigation describes links, visibility, order and parent
+relationships for presentation. An application may route a page without
+showing it in a menu.
 
 ---
 
@@ -202,8 +216,7 @@ Page
 
 id
 slug
-title
-description
+metadata
 sections[]
 ```
 
@@ -249,6 +262,12 @@ Those concerns belong to the presentation layer.
 Rendering always follows the same sequence.
 
 ```
+URL
+      ↓
+Route Definition
+      ↓
+Page Slug
+      ↓
 Repository
       ↓
 Page
@@ -268,6 +287,19 @@ Each stage has a single responsibility.
 
 ---
 
+## Route Resolution
+
+The application owns concrete route definitions. React Router matches the
+current URL and supplies the configured page slug to a generic route screen.
+That screen asks `PageRepository` for the page and passes a successful result
+to `PageRenderer`.
+
+The Engine does not import React Router and does not know an application's
+paths. Unknown router paths and repository misses are handled at the
+application boundary.
+
+---
+
 ## Repository
 
 Responsible for providing Page objects.
@@ -275,6 +307,19 @@ Responsible for providing Page objects.
 Repositories never render.
 
 They only retrieve domain entities.
+
+---
+
+## Navigation
+
+Navigation contracts and pure resolution functions belong to the domain. They
+describe link destinations, menu visibility, sibling order and optional parent
+relationships without JSX, icons, callbacks or browser APIs.
+
+The application chooses how to render those results. Breadcrumbs are derived by
+matching the current path and following `parentId` to a root item. Broken or
+cyclic parent chains return no breadcrumbs and configuration diagnostics expose
+the error.
 
 ---
 
@@ -407,6 +452,9 @@ Presentation depends on Rendering.
 Rendering depends on Domain.
 
 The Domain depends on nothing.
+
+Routing integration and concrete configuration belong to the application
+adapter. They depend on the Engine contracts, never the reverse.
 
 ---
 

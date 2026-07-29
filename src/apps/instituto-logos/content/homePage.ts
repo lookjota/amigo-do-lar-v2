@@ -33,25 +33,6 @@ export const homePage: Page = {
   },
   sections: [
     {
-      id: 'inicio',
-      type: 'navigation',
-      data: {
-        brand: 'Instituto Logos',
-        links: [
-          { label: 'Início', href: '#inicio' },
-          { label: 'Áreas', href: '#areas' },
-          { label: 'Projetos', href: '#projetos' },
-          { label: 'Documentos', href: '#documentos' },
-          { label: 'Visão', href: '#visao' },
-        ],
-        additionalLink: {
-          label: 'GitHub',
-          href: 'https://github.com/lookjota',
-          external: true,
-        },
-      },
-    },
-    {
       id: 'hero',
       type: 'hero',
       data: {

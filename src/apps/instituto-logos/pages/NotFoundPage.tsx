@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { PageMetadata } from '../../../domain/metadata/PageMetadata'
 import { BrowserMetadataRenderer } from '../../../engine/BrowserMetadataRenderer'
 
@@ -27,10 +28,10 @@ export function NotFoundPage() {
             O endereço informado não corresponde a um conteúdo publicado nesta
             etapa do projeto.
           </p>
-          <a className="button button-primary" href="/">
+          <Link className="button button-primary" to="/">
             <ArrowLeft size={17} aria-hidden="true" />
             Voltar ao início
-          </a>
+          </Link>
         </div>
       </main>
     </>

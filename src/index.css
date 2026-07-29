@@ -69,6 +69,37 @@ h3 {
   backdrop-filter: blur(18px);
 }
 
+.breadcrumbs {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.breadcrumbs ol {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 0;
+  padding-block: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.breadcrumbs li + li::before {
+  margin-right: 10px;
+  color: var(--gold);
+  content: '/';
+}
+
+.breadcrumbs a:hover {
+  color: var(--gold-light);
+}
+
+.breadcrumbs [aria-current='page'] {
+  color: var(--text);
+}
+
 .navigation {
   min-height: 72px;
   display: flex;

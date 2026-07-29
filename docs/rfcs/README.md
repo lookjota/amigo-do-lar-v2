@@ -17,3 +17,4 @@ They exist to explain:
 | RFC | Title | Status |
 | --- | --- | --- |
 | RFC-001 | Metadata System | Accepted |
+| RFC-002 | Route & Navigation Model | Accepted |

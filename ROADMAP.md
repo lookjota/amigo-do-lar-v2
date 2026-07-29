@@ -72,9 +72,10 @@ documentation.
 
 - Documentation Pages
 - Markdown support
-- Page metadata
+- Page metadata ✅
 - Document hierarchy
-- Automatic navigation
+- Route and navigation model ✅
+- Breadcrumb foundation ✅
 - Improved Registry
 - Better developer experience
 
@@ -94,8 +95,7 @@ Transform isolated pages into connected knowledge.
 
 ### Planned
 
-- Navigation Engine
-- Breadcrumb generation
+- Advanced navigation composition
 - Previous / Next navigation
 - Nested pages
 - Category support

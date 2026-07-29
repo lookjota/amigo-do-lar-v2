@@ -17,6 +17,13 @@ and adheres to Semantic Versioning whenever applicable.
 - Added domain contracts for page metadata and robots directives.
 - Added browser rendering for title, canonical, search, Open Graph and Twitter
   metadata.
+- Added framework-independent route and navigation contracts.
+- Added pure navigation ordering, visibility, hierarchy, breadcrumb and
+  configuration diagnostics.
+- Added startup diagnostics for duplicate navigation paths, invalid route
+  definitions and navigation paths without matching routes.
+- Added a repository-backed `/architecture` page as a multipage proof.
+- Added an application menu and derived breadcrumbs.
 
 ## Changed
 
@@ -25,11 +32,16 @@ and adheres to Semantic Versioning whenever applicable.
 - Consolidated `Page` and `PageSection` as domain contracts.
 - Updated page rendering to consume `page.metadata` and clear stale optional
   tags after navigation.
+- Routed configured URLs through page slugs and `PageRepository`.
+- Added a GitHub Pages SPA fallback for direct access to nested routes.
+- Made internal route links and the favicon respect the configured Vite base.
 
 ### Documentation
 
 - Added RFC-001 documenting the Metadata System and its architectural
   boundaries.
+- Added RFC-002 documenting the Route & Navigation Model.
+- Updated the architecture and roadmap for the implemented routing flow.
 
 ---
 
