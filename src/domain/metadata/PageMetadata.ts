@@ -1,5 +1,17 @@
 import type { RobotsMetadata } from './RobotsMetadata'
 
+export type JsonLdValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonLdObject
+  | JsonLdValue[]
+
+export interface JsonLdObject {
+  [property: string]: JsonLdValue
+}
+
 export interface PageMetadata {
   title: string
   description?: string
@@ -11,4 +23,6 @@ export interface PageMetadata {
   robots?: RobotsMetadata
   publishedAt?: string
   updatedAt?: string
+  siteName?: string
+  structuredData?: JsonLdObject[]
 }

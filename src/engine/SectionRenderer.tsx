@@ -1,7 +1,14 @@
 import { useContext } from 'react'
-import type { PageSectionRegistry } from './PageSectionRegistry'
+import type {
+  PageSectionRegistry,
+  SectionByType,
+  SectionComponent,
+} from './PageSectionRegistry'
 import { PageSectionRegistryContext } from './PageSectionRegistry'
-import type { PageSection } from '../domain/pages/PageSection'
+import type {
+  PageSection,
+  PageSectionType,
+} from '../domain/pages/PageSection'
 
 interface SectionRendererProps {
   section: PageSection
@@ -17,41 +24,24 @@ function usePageSectionRegistry(): PageSectionRegistry {
   return registry
 }
 
+function renderSection<Type extends PageSectionType>(
+  section: SectionByType<Type>,
+  registry: PageSectionRegistry,
+) {
+  const Component: SectionComponent<Type> | undefined =
+    registry[section.type]
+
+  if (!Component) {
+    throw new Error(
+      `No renderer registered for section type "${section.type}"`,
+    )
+  }
+
+  return <Component section={section} />
+}
+
 export function SectionRenderer({ section }: SectionRendererProps) {
   const registry = usePageSectionRegistry()
 
-  switch (section.type) {
-    case 'navigation': {
-      const Component = registry.navigation
-      return <Component section={section} />
-    }
-    case 'hero': {
-      const Component = registry.hero
-      return <Component section={section} />
-    }
-    case 'researchAreas': {
-      const Component = registry.researchAreas
-      return <Component section={section} />
-    }
-    case 'projects': {
-      const Component = registry.projects
-      return <Component section={section} />
-    }
-    case 'documents': {
-      const Component = registry.documents
-      return <Component section={section} />
-    }
-    case 'vision': {
-      const Component = registry.vision
-      return <Component section={section} />
-    }
-    case 'cta': {
-      const Component = registry.cta
-      return <Component section={section} />
-    }
-    case 'footer': {
-      const Component = registry.footer
-      return <Component section={section} />
-    }
-  }
+  return renderSection(section, registry)
 }

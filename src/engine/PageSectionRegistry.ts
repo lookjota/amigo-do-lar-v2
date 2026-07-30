@@ -15,7 +15,7 @@ export type SectionComponent<Type extends PageSectionType> = ComponentType<{
 }>
 
 export type PageSectionRegistry = {
-  [Type in PageSectionType]: SectionComponent<Type>
+  [Type in PageSectionType]?: SectionComponent<Type>
 }
 
 export const PageSectionRegistryContext =

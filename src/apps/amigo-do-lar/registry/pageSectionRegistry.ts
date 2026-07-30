@@ -1,0 +1,36 @@
+import type { PageSectionRegistry } from '../../../engine/PageSectionRegistry'
+import {
+  AboutSection,
+  AreasGridSection,
+  BenefitsSection,
+  CallToActionSection,
+  ContactSection,
+  FaqSection,
+  HeroSection,
+  LegalContentSection,
+  LocalAreaIntroductionSection,
+  NotFoundSection,
+  ProcessStepsSection,
+  RelatedLinksSection,
+  ServiceDetailsSection,
+  ServicesGridSection,
+  TrustFeaturesSection,
+} from '../sections/sections'
+
+export const pageSectionRegistry: PageSectionRegistry = {
+  hero: HeroSection,
+  'trust-features': TrustFeaturesSection,
+  'services-grid': ServicesGridSection,
+  'service-details': ServiceDetailsSection,
+  'process-steps': ProcessStepsSection,
+  'areas-grid': AreasGridSection,
+  'local-area-introduction': LocalAreaIntroductionSection,
+  benefits: BenefitsSection,
+  about: AboutSection,
+  faq: FaqSection,
+  contact: ContactSection,
+  'call-to-action': CallToActionSection,
+  'related-links': RelatedLinksSection,
+  'legal-content': LegalContentSection,
+  'not-found': NotFoundSection,
+}
