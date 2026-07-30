@@ -4,10 +4,10 @@ const configuredSiteUrl = import.meta.env.VITE_PUBLIC_SITE_URL as
 
 export const siteConfig = {
   siteName: 'Amigo do Lar',
-  siteUrl: (configuredSiteUrl ?? 'https://amigodolar.example').replace(
-    /\/$/,
-    '',
-  ),
+    siteUrl: (
+    configuredSiteUrl ?? 'https://amigo-do-lar-v2.vercel.app'
+  ).replace(/\/$/, ''),
+  
   defaultTitle: 'Amigo do Lar — Serviços residenciais em Brasília',
   defaultDescription:
     'Serviços residenciais confiáveis, organizados e executados com cuidado em Brasília e regiões próximas.',
