@@ -16,7 +16,7 @@ export const siteConfig = {
     // Provisório: substituir por VITE_WHATSAPP_NUMBER antes da publicação.
     whatsappNumber:
       (import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined) ??
-      '5561000000000',
+      '5561995646646',
     isProvisional: !import.meta.env.VITE_WHATSAPP_NUMBER,
   },
   social: {},
