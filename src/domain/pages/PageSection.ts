@@ -7,6 +7,20 @@ export const pageSectionTypes = [
   'vision',
   'cta',
   'footer',
+  'trust-features',
+  'services-grid',
+  'service-details',
+  'process-steps',
+  'areas-grid',
+  'local-area-introduction',
+  'benefits',
+  'about',
+  'faq',
+  'contact',
+  'call-to-action',
+  'related-links',
+  'legal-content',
+  'not-found',
 ] as const
 
 export type PageSectionType = (typeof pageSectionTypes)[number]
@@ -81,6 +95,119 @@ export interface FooterPayload {
   text: string
 }
 
+export interface ContentLink extends Link {
+  description?: string
+}
+
+export interface FeatureItem {
+  title: string
+  description: string
+}
+
+export interface TrustFeaturesPayload {
+  eyebrow: string
+  title: string
+  items: FeatureItem[]
+}
+
+export interface ServicesGridPayload {
+  eyebrow: string
+  title: string
+  description?: string
+  items: ContentLink[]
+}
+
+export interface ServiceDetailsPayload {
+  eyebrow: string
+  title: string
+  introduction?: string
+  groups: {
+    title: string
+    items: string[]
+  }[]
+  notice?: string
+}
+
+export interface ProcessStepsPayload {
+  eyebrow: string
+  title: string
+  items: FeatureItem[]
+}
+
+export interface AreasGridPayload {
+  eyebrow: string
+  title: string
+  description?: string
+  items: ContentLink[]
+}
+
+export interface LocalAreaIntroductionPayload {
+  eyebrow: string
+  title: string
+  paragraphs: string[]
+}
+
+export interface BenefitsPayload {
+  eyebrow: string
+  title: string
+  items: FeatureItem[]
+}
+
+export interface AboutPayload {
+  eyebrow: string
+  title: string
+  paragraphs: string[]
+}
+
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
+export interface FaqPayload {
+  eyebrow: string
+  title: string
+  items: FaqItem[]
+}
+
+export interface ContactPayload {
+  eyebrow: string
+  title: string
+  description: string
+  action: Link
+}
+
+export interface CallToActionPayload {
+  eyebrow: string
+  title: string
+  description: string
+  primaryAction: Link
+  secondaryAction?: Link
+}
+
+export interface RelatedLinksPayload {
+  eyebrow: string
+  title: string
+  items: ContentLink[]
+}
+
+export interface LegalContentPayload {
+  eyebrow: string
+  title: string
+  updatedAt: string
+  sections: {
+    title: string
+    paragraphs: string[]
+  }[]
+}
+
+export interface NotFoundPayload {
+  code: string
+  title: string
+  description: string
+  action: Link
+}
+
 export interface PageSectionPayloadMap {
   navigation: NavigationPayload
   hero: HeroPayload
@@ -90,6 +217,20 @@ export interface PageSectionPayloadMap {
   vision: VisionPayload
   cta: CtaPayload
   footer: FooterPayload
+  'trust-features': TrustFeaturesPayload
+  'services-grid': ServicesGridPayload
+  'service-details': ServiceDetailsPayload
+  'process-steps': ProcessStepsPayload
+  'areas-grid': AreasGridPayload
+  'local-area-introduction': LocalAreaIntroductionPayload
+  benefits: BenefitsPayload
+  about: AboutPayload
+  faq: FaqPayload
+  contact: ContactPayload
+  'call-to-action': CallToActionPayload
+  'related-links': RelatedLinksPayload
+  'legal-content': LegalContentPayload
+  'not-found': NotFoundPayload
 }
 
 export type PageSection = {

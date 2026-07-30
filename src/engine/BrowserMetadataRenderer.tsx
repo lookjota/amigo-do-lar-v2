@@ -85,7 +85,7 @@ export function BrowserMetadataRenderer({
     document.title = metadata.title
 
     setMetaByName('description', metadata.description)
-    setMetaByName('keywords', metadata.keywords?.join(', '))
+    setMetaByName('keywords')
     setMetaByName('author', metadata.author)
     setMetaByName('robots', getRobotsContent(metadata))
     setCanonical(metadata.canonicalUrl)
@@ -96,11 +96,25 @@ export function BrowserMetadataRenderer({
     setMetaByProperty('og:url', metadata.canonicalUrl)
     setMetaByProperty('og:image', metadata.image)
     setMetaByProperty('og:locale', metadata.locale)
+    setMetaByProperty('og:site_name', metadata.siteName)
 
     setMetaByName('twitter:card', metadata.image ? 'summary_large_image' : 'summary')
     setMetaByName('twitter:title', metadata.title)
     setMetaByName('twitter:description', metadata.description)
     setMetaByName('twitter:image', metadata.image)
+
+    const selector = 'script[data-page-structured-data]'
+    document.head.querySelectorAll(selector).forEach((element) => {
+      element.remove()
+    })
+
+    metadata.structuredData?.forEach((schema) => {
+      const element = document.createElement('script')
+      element.type = 'application/ld+json'
+      element.dataset.pageStructuredData = ''
+      element.text = JSON.stringify(schema).replace(/</g, '\\u003c')
+      document.head.append(element)
+    })
   }, [metadata])
 
   return null

@@ -1,0 +1,17 @@
+{
+  "name": "Amigo do Lar",
+  "short_name": "Amigo do Lar",
+  "description": "Serviços residenciais confiáveis, organizados e executados com cuidado.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f5ef",
+  "theme_color": "#173f35",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
