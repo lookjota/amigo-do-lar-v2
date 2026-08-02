@@ -685,8 +685,18 @@ export const contactPage = createPage({
         title: 'Vamos entender o que seu lar precisa.',
         description:
           'Envie uma descrição objetiva e, se possível, fotos. Essas informações ajudam a iniciar a avaliação.',
-        motto: 'Sem formulário que não envia: contato direto pelo WhatsApp.',
+        motto: 'Solicite pelo site ou continue pelo WhatsApp quando preferir.',
         actions: [whatsappAction('um atendimento residencial')],
+      },
+    },
+    {
+      id: 'solicitar-orcamento',
+      type: 'quote-request',
+      data: {
+        eyebrow: 'Solicitação de orçamento',
+        title: 'Conte o que seu lar precisa.',
+        description:
+          'Preencha as informações essenciais para iniciarmos a avaliação. O envio não confirma automaticamente a execução do serviço.',
       },
     },
     {
@@ -824,7 +834,8 @@ export const privacyPage = createLegalPage(
     {
       title: 'Informações fornecidas',
       paragraphs: [
-        'O site não possui formulário próprio. Ao iniciar uma conversa pelo WhatsApp, você compartilha informações diretamente pela plataforma escolhida.',
+        'O formulário de solicitação coleta nome, telefone, e-mail opcional, serviço, região, descrição e preferência de contato para registrar e responder ao pedido de orçamento.',
+        'Ao continuar pelo WhatsApp, você compartilha informações diretamente pela plataforma escolhida.',
         'Envie somente os dados necessários para avaliar a solicitação. Evite documentos, senhas, informações financeiras ou outros dados sensíveis.',
       ],
     },

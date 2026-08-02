@@ -253,6 +253,67 @@ Before opening a Pull Request, please read:
 
 ---
 
+# Integração com a Amigo do Lar API
+
+Esta camada estabelece a fundação para integrações HTTP da aplicação Amigo do
+Lar sem acoplar chamadas de rede a componentes React:
+
+```text
+Página → componentes → hooks → módulos de endpoint → HttpClient → API
+```
+
+O frontend usa `VITE_API_URL` como URL-base. Copie `.env.example` para
+`.env.local` e ajuste o valor para o ambiente local:
+
+```env
+VITE_API_URL=http://localhost:3000/api/v1
+```
+
+Quando a variável estiver ausente, o desenvolvimento usa esse mesmo endereço
+como fallback. A configuração é validada na inicialização, remove barras finais
+e define timeout de 10 segundos. Nenhuma credencial deve ser exposta em
+variáveis `VITE_*`.
+
+O cliente central em `src/shared/http` usa `fetch`, aceita respostas JSON, texto
+e vazias, combina timeout e cancelamento externo e lança erros distintos para
+status HTTP, timeout, cancelamento e rede. Exemplo de módulo de endpoint:
+
+```ts
+export function getServices(signal?: AbortSignal) {
+  return apiClient.get<Service[]>('/services', { signal })
+}
+```
+
+Não chame `fetch` diretamente em componentes. Módulos de endpoint ficam na
+feature correspondente e hooks cuidam da lógica de apresentação.
+
+O TanStack Query fornece cache e estado assíncrono de dados do servidor. Queries
+ficam válidas por 60 segundos e não refazem automaticamente ao focar a janela.
+Falhas de rede, timeout e HTTP 5xx recebem no máximo duas novas tentativas;
+erros 4xx, cancelamentos e mutations não recebem retry automático. Cada render
+SSR cria seu próprio `QueryClient`, impedindo vazamento de cache entre páginas.
+
+Erros técnicos são convertidos para mensagens seguras por `toUiError`. O erro
+original continua disponível apenas para logging técnico futuro; corpo de
+resposta e stack trace nunca devem ser exibidos diretamente.
+
+Os contratos em `src/apps/amigo-do-lar/api/contracts.ts` são provisórios. O
+envelope, os erros de campo e a paginação precisam ser alinhados com o backend;
+módulos não devem presumir que todo endpoint usa `ApiResponse<T>`.
+
+Limitações atuais:
+
+- não há catálogo remoto, autenticação, JWT, refresh token ou RBAC;
+- não há queries reais do TanStack Query nesta fundação;
+- não há hidratação/dehydration de cache porque o SSR ainda não busca dados;
+- os próximos módulos previstos são serviços, áreas atendidas, solicitações de
+  orçamento e usuário autenticado, depois que os endpoints forem confirmados;
+- o repositório ainda não possui infraestrutura automatizada de testes. Uma
+  branch futura `test/api-foundation-vitest-msw` deve avaliar Vitest, Testing
+  Library e MSW em conjunto.
+
+---
+
 # License
 
 Released under the MIT License.

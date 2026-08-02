@@ -1,5 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { useState } from 'react'
 import { PageSectionRegistryProvider } from '../../engine/PageSectionRegistry'
+import { ApiProvider } from './api/ApiProvider'
+import { createQueryClient } from './api/queryClient'
 import { Analytics } from './analytics/Analytics'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -10,10 +13,14 @@ import { PageRoute } from './pages/PageRoute'
 import { pageSectionRegistry } from './registry/pageSectionRegistry'
 
 export function AmigoDoLarApp() {
+  const [queryClient] = useState(createQueryClient)
+
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <AmigoDoLarApplication />
-    </BrowserRouter>
+    <ApiProvider queryClient={queryClient}>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <AmigoDoLarApplication />
+      </BrowserRouter>
+    </ApiProvider>
   )
 }
 
