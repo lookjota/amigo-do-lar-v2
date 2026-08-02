@@ -203,6 +203,12 @@
   border-color: var(--amigo-green);
 }
 
+.amigo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
 .amigo-breadcrumbs {
   border-bottom: 1px solid var(--amigo-border);
   background: var(--amigo-surface);
@@ -611,6 +617,105 @@
   color: var(--amigo-muted);
 }
 
+.amigo-quote-request-layout {
+  display: grid;
+  gap: var(--amigo-space-5);
+}
+
+.amigo-quote-request-layout h2 {
+  max-width: 36rem;
+  color: var(--amigo-green);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.amigo-quote-request-introduction {
+  max-width: 38rem;
+  margin-top: var(--amigo-space-2);
+  color: var(--amigo-muted);
+}
+
+.amigo-quote-request-form {
+  display: grid;
+  gap: var(--amigo-space-4);
+  padding: var(--amigo-space-5);
+  border: 1px solid var(--amigo-border);
+  border-radius: var(--amigo-radius-lg);
+  background: var(--amigo-surface);
+  box-shadow: var(--amigo-shadow);
+}
+
+.amigo-form-grid {
+  display: grid;
+  gap: var(--amigo-space-3);
+}
+
+.amigo-quote-request-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: var(--amigo-green);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.amigo-quote-request-form label > span {
+  color: var(--amigo-muted);
+  font-weight: 500;
+}
+
+.amigo-quote-request-form input,
+.amigo-quote-request-form select,
+.amigo-quote-request-form textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--amigo-border);
+  border-radius: var(--amigo-radius-sm);
+  color: var(--amigo-ink);
+  background: white;
+  font: inherit;
+}
+
+.amigo-quote-request-form textarea {
+  resize: vertical;
+}
+
+.amigo-consent-field {
+  grid-template-columns: auto 1fr !important;
+  align-items: start;
+  color: var(--amigo-muted) !important;
+  font-weight: 500 !important;
+}
+
+.amigo-consent-field input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.15rem;
+}
+
+.amigo-consent-field a,
+.amigo-form-message a {
+  color: var(--amigo-green);
+  font-weight: 700;
+}
+
+.amigo-form-message {
+  padding: var(--amigo-space-3);
+  border-radius: var(--amigo-radius-sm);
+  background: var(--amigo-surface-strong);
+}
+
+.amigo-form-message-success {
+  border-left: 4px solid #187a48;
+}
+
+.amigo-form-message-error {
+  display: grid;
+  gap: var(--amigo-space-2);
+  border-left: 4px solid #a33b31;
+}
+
 .amigo-cta {
   color: white;
   background:
@@ -783,7 +888,8 @@
 
   .amigo-feature-grid,
   .amigo-card-grid,
-  .amigo-area-grid {
+  .amigo-area-grid,
+  .amigo-form-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -793,6 +899,10 @@
 }
 
 @media (min-width: 60rem) {
+  .amigo-quote-request-layout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+
   .amigo-header-layout {
     min-height: 5rem;
   }

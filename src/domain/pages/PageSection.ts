@@ -17,6 +17,7 @@ export const pageSectionTypes = [
   'about',
   'faq',
   'contact',
+  'quote-request',
   'call-to-action',
   'related-links',
   'legal-content',
@@ -177,6 +178,12 @@ export interface ContactPayload {
   action: Link
 }
 
+export interface QuoteRequestPayload {
+  eyebrow: string
+  title: string
+  description: string
+}
+
 export interface CallToActionPayload {
   eyebrow: string
   title: string
@@ -227,6 +234,7 @@ export interface PageSectionPayloadMap {
   about: AboutPayload
   faq: FaqPayload
   contact: ContactPayload
+  'quote-request': QuoteRequestPayload
   'call-to-action': CallToActionPayload
   'related-links': RelatedLinksPayload
   'legal-content': LegalContentPayload

@@ -11,6 +11,7 @@ import { Container } from '../components/Container'
 import { ContentLink } from '../components/ContentLink'
 import { SectionHeading } from '../components/SectionHeading'
 import { ServiceCard } from '../components/ServiceCard'
+import { QuoteRequestForm } from '../features/quote-request'
 
 export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
   <main id="conteudo-principal" className="amigo-hero">
@@ -273,6 +274,16 @@ export const ContactSection: SectionComponent<'contact'> = ({ section }) => (
           event="whatsapp_click"
         />
       </div>
+    </Container>
+  </section>
+)
+
+export const QuoteRequestSection: SectionComponent<'quote-request'> = ({
+  section,
+}) => (
+  <section id={section.id} className="amigo-section amigo-section-soft">
+    <Container>
+      <QuoteRequestForm {...section.data} />
     </Container>
   </section>
 )
