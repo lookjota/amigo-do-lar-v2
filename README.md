@@ -308,9 +308,37 @@ Limitações atuais:
 - não há hidratação/dehydration de cache porque o SSR ainda não busca dados;
 - os próximos módulos previstos são serviços, áreas atendidas, solicitações de
   orçamento e usuário autenticado, depois que os endpoints forem confirmados;
-- o repositório ainda não possui infraestrutura automatizada de testes. Uma
-  branch futura `test/api-foundation-vitest-msw` deve avaliar Vitest, Testing
-  Library e MSW em conjunto.
+
+## Testes e integração contínua
+
+A suíte usa Vitest, jsdom e Testing Library. Execute `npm test` ou
+`npm run test:run` para uma única execução determinística; esse é o comando
+usado pelo CI. Use `npm run test:watch` durante o desenvolvimento para manter o
+runner observando alterações. Cobertura ainda não possui comando ou meta: ela
+será adicionada quando houver uma linha de base representativa.
+
+Os testes atuais priorizam contratos estáveis da fundação:
+
+- parsing e erros do cliente HTTP, timeout, cancelamento, headers e body;
+- tradução de erros técnicos para categorias seguras de interface;
+- retry e isolamento de cache do TanStack Query;
+- comportamento e semântica acessível de componentes de navegação críticos.
+
+O renderizador em `src/test/render.tsx` oferece `MemoryRouter` e um
+`QueryClientProvider` com cliente isolado por render. Use-o somente quando o
+componente depender desses providers; testes unitários de funções não precisam
+dele. MSW não foi incluído porque ainda não existem contratos de endpoints de
+negócio estáveis para simular.
+
+Em pushes e pull requests para `main`, o workflow de CI instala dependências
+com `npm ci` e exige sucesso de lint, testes e build completo. O build inclui
+TypeScript, bundle do cliente, SSR, geração de SEO, prerenderização e validação
+SEO; o workflow não publica artefatos nem usa segredos.
+
+Os próximos testes devem cobrir o formulário de solicitação quando seu contrato
+for definido, os fluxos de autenticação quando forem implementados e as regras
+de acesso e operações da futura área administrativa. Esses recursos não fazem
+parte da fundação atual.
 
 ---
 
