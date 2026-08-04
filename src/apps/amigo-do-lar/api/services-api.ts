@@ -23,6 +23,7 @@ const servicesResponseSchema = z.object({
 })
 
 export type PublicService = z.infer<typeof serviceSchema>
+export type ApiService = PublicService
 export type ServicesResponse = z.infer<typeof servicesResponseSchema>
 
 export async function getServices(

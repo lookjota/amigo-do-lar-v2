@@ -11,8 +11,8 @@ import { Container } from '../components/Container'
 import { ContentLink } from '../components/ContentLink'
 import { SectionHeading } from '../components/SectionHeading'
 import { ServiceCard } from '../components/ServiceCard'
-import { QuoteRequestForm } from '../features/quote-request'
 import { useServices } from '../api/useServices'
+import { createWhatsAppUrl } from '../config/site'
 import { mergeServicesCatalog } from '../data/servicesCatalog'
 
 export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
@@ -292,7 +292,26 @@ export const QuoteRequestSection: SectionComponent<'quote-request'> = ({
 }) => (
   <section id={section.id} className="amigo-section amigo-section-soft">
     <Container>
-      <QuoteRequestForm {...section.data} />
+      <SectionHeading
+        eyebrow={section.data.eyebrow}
+        title={section.data.title}
+        description={section.data.description}
+      />
+      <div className="amigo-actions">
+        <ContentLink
+          label="Preencher solicitação"
+          href="/solicitar-atendimento"
+          className="amigo-button amigo-button-primary"
+        />
+        <ContentLink
+          label="Falar pelo WhatsApp"
+          href={createWhatsAppUrl(
+            'Olá! Gostaria de solicitar atendimento residencial.',
+          )}
+          external
+          className="amigo-button amigo-button-secondary"
+        />
+      </div>
     </Container>
   </section>
 )

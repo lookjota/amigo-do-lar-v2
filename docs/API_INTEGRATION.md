@@ -189,3 +189,38 @@ análise própria de ameaças.
 4. disponibilidade e agenda;
 5. autenticação e perfil, somente após definir a estratégia de sessão;
 6. administração e RBAC em uma etapa separada.
+
+## Solicitação pública de atendimento
+
+O contrato foi confirmado no código, nos testes e em `docs/service-requests.md`
+do backend em 4 de agosto de 2026. A rota real é `POST /service-requests`, sem
+autenticação, e retorna `201` com a solicitação pública diretamente no body (sem
+envelope). `/api/v1/service-requests` não existe.
+
+O payload contém `customer` (`name`, `phone` e `email` opcional), `serviceId`,
+`description`, `address` e `city`; `preferredDate` é opcional e não é coletada
+no fluxo atual. A API cria ou reutiliza o cliente pelo telefone dentro da mesma
+transação, portanto o frontend não envia `customerId`. Nome aceita 2–120
+caracteres, descrição 10–2.000, endereço até 300 e cidade até 120. O telefone
+aceita caracteres comuns na digitação e é enviado somente com 10 ou 11 dígitos,
+incluindo DDD. E-mail vazio é omitido.
+
+`/solicitar-atendimento` é prerenderizada com todos os campos, serviços do
+catálogo estático e somente as áreas publicadas. Depois da hidratação,
+`GET /services?limit=100` fornece o UUID do serviço ativo exigido na mutação. O
+slug da query `servico` só é aplicado quando pertence ao catálogo publicado. Em
+4 de agosto de 2026 o catálogo da API de produção retornou vazio; por segurança,
+nenhum UUID estático foi inventado e o formulário oferece WhatsApp quando não
+consegue resolver o serviço remoto.
+
+As respostas são validadas com Zod. Erros locais ficam associados aos campos;
+rede, timeout, indisponibilidade, serviço inativo e duplicidade recente recebem
+mensagens públicas sem body, request ID ou detalhes internos. Não há retry em
+mutação, submissões concorrentes são bloqueadas e a requisição é abortada no
+unmount. Em sucesso, a navegação segue para `/solicitacao-enviada`, que não
+exibe dados pessoais nem IDs, tem `noindex, follow`, é prerenderizada e fica
+fora do sitemap.
+
+Valide com `npm run lint`, `npm run test` e `npm run build`. A mutação de
+produção não deve ser executada enquanto o catálogo não publicar um serviço
+ativo correspondente; testes usam mocks e não criam clientes ou solicitações.
