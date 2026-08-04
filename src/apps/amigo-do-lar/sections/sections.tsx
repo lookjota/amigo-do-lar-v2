@@ -12,6 +12,8 @@ import { ContentLink } from '../components/ContentLink'
 import { SectionHeading } from '../components/SectionHeading'
 import { ServiceCard } from '../components/ServiceCard'
 import { QuoteRequestForm } from '../features/quote-request'
+import { useServices } from '../api/useServices'
+import { mergeServicesCatalog } from '../data/servicesCatalog'
 
 export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
   <main id="conteudo-principal" className="amigo-hero">
@@ -76,27 +78,34 @@ export const TrustFeaturesSection: SectionComponent<'trust-features'> = ({
 
 export const ServicesGridSection: SectionComponent<'services-grid'> = ({
   section,
-}) => (
-  <section id={section.id} className="amigo-section">
-    <Container>
-      <SectionHeading
-        eyebrow={section.data.eyebrow}
-        title={section.data.title}
-        description={section.data.description}
-      />
-      <div className="amigo-card-grid">
-        {section.data.items.map((item) => (
-          <ServiceCard
-            key={item.href}
-            title={item.label}
-            description={item.description}
-            href={item.href}
-          />
-        ))}
-      </div>
-    </Container>
-  </section>
-)
+}) => {
+  const servicesState = useServices()
+  const items = servicesState.status === 'success' && servicesState.data
+    ? mergeServicesCatalog(section.data.items, servicesState.data)
+    : section.data.items
+
+  return (
+    <section id={section.id} className="amigo-section">
+      <Container>
+        <SectionHeading
+          eyebrow={section.data.eyebrow}
+          title={section.data.title}
+          description={section.data.description}
+        />
+        <div className="amigo-card-grid">
+          {items.map((item) => (
+            <ServiceCard
+              key={item.href}
+              title={item.label}
+              description={item.description}
+              href={item.href}
+            />
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
 
 export const ServiceDetailsSection: SectionComponent<'service-details'> = ({
   section,
