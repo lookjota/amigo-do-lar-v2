@@ -15,9 +15,9 @@ Defina `VITE_PUBLIC_SITE_URL` com a origem pública absoluta, sem caminho final:
 VITE_PUBLIC_SITE_URL=https://dominio-da-empresa.example
 ```
 
-O valor técnico padrão `https://amigodolar.example` permite builds locais, mas
-deve ser substituído antes do deploy. Atualize também a origem em
-`public/robots.txt` e `public/sitemap.xml`.
+Sem configuração, o código usa a URL pública atual da Vercel. Em desenvolvimento,
+o valor pode apontar para a origem local. `sitemap.xml` e `robots.txt` são gerados
+automaticamente em `dist/`; não há cópias manuais desses arquivos em `public/`.
 
 Para publicação em subdiretório, defina `VITE_BASE_PATH`. Em domínio próprio,
 use `/`.
@@ -50,7 +50,7 @@ não confirmados.
 
 ## Search Console e Google Business Profile
 
-Depois de definir o domínio:
+Depois de confirmar a origem pública:
 
 1. verifique a propriedade de domínio no Google Search Console;
 2. envie `/sitemap.xml`;

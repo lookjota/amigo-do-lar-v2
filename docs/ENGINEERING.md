@@ -128,11 +128,9 @@ npm run lint
 
 npm run build
 
-Se futuramente houver testes:
+Os testes automatizados também são obrigatórios:
 
-npm test
-
-também será obrigatório.
+npm run test:run
 
 8. Architecture Must Reduce Complexity
 

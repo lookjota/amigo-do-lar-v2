@@ -1,357 +1,231 @@
-# Logos Page Engine
+# Amigo do Lar v2
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+Aplicação frontend comercial para apresentação e captação de contatos de serviços residenciais em Brasília. O projeto usa o **Logos Page Engine** para compor páginas a partir de contratos tipados, com foco em SEO técnico, renderização estática e preparação para integração progressiva com uma API.
 
-![Version](https://img.shields.io/badge/version-v0.1.0-success)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![CI](https://github.com/lookjota/amigo-do-lar-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/lookjota/amigo-do-lar-v2/actions/workflows/ci.yml)
+[![Deploy: Vercel](https://img.shields.io/badge/deploy-Vercel-000000?logo=vercel&logoColor=white)](https://amigo-do-lar-v2.vercel.app)
+[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](LICENSE.md)
 
-![Status](https://img.shields.io/badge/status-active-success)
+## Links principais
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)
+- [Aplicação em produção](https://amigo-do-lar-v2.vercel.app)
+- [Repositório no GitHub](https://github.com/lookjota/amigo-do-lar-v2)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Desenvolvimento](docs/DEVELOPMENT.md)
+- [SEO](docs/SEO.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Deploy](docs/DEPLOYMENT.md)
 
-![React](https://img.shields.io/badge/React-19-61DAFB)
+## Visão geral do produto
 
-> Developed by Instituto Logos  
-> Researching architectures that transform knowledge into living systems.
+O Amigo do Lar apresenta serviços residenciais para pessoas que precisam resolver pequenas demandas de manutenção com uma comunicação clara sobre escopo, região e próximos passos. O catálogo atual cobre elétrica, hidráulica, montagem de móveis, fechaduras e portas, pintura e pequenos reparos.
 
+A experiência pública reúne páginas específicas por serviço, páginas locais para áreas atendidas, conteúdo institucional, perguntas frequentes e informações legais. Seu objetivo comercial é transformar buscas e visitas em contatos qualificados. Hoje, o WhatsApp é o principal canal operacional para triagem e solicitação de atendimento.
 
-> **A Domain-Oriented Engine for Building Living Pages**
+O frontend também possui um formulário e uma mutation preparados para enviar solicitações à API. Como a persistência depende de um backend externo e de um contrato ainda provisório, esse fluxo não é apresentado como uma integração completa; em caso de falha, a interface oferece continuidade pelo WhatsApp.
 
-The **Logos Page Engine** is an open-source engine for building websites through domain entities instead of UI composition.
+## Demonstração
 
-Rather than creating pages directly with React components, pages are described as structured domain models and rendered dynamically by the Engine.
+A versão publicada pode ser acessada em [amigo-do-lar-v2.vercel.app](https://amigo-do-lar-v2.vercel.app). O repositório não mantém uma captura de tela versionada neste momento.
 
-The first public implementation of this architecture is the **Instituto Logos**, where the Engine renders the institution itself.
+## Destaques técnicos
 
----
+### Arquitetura
 
-## Screenshot
+- páginas descritas por modelos de domínio tipados;
+- Logos Page Engine com `PageRenderer`, registry e componentes de seção;
+- rotas e navegação separadas do conteúdo renderizável;
+- catálogo estático centralizado para serviços e áreas;
+- camadas compartilhadas sem dependência de React para contratos de domínio.
 
-(imagem)
+### SEO
 
----
+- SSR durante o build e prerenderização de 23 rotas públicas;
+- title, description, canonical, Open Graph, Twitter Card e robots por rota;
+- JSON-LD coerente com o conteúdo exibido;
+- geração automática de `sitemap.xml` e `robots.txt`;
+- validação automatizada do HTML gerado.
 
-Introdução
+### Qualidade
 
-↓
+- TypeScript e ESLint;
+- Vitest, jsdom e React Testing Library;
+- testes de infraestrutura HTTP, erros, cache e componentes de navegação;
+- CI em pushes e pull requests para `main`.
 
-Quick Start
+### Integração
 
-↓
+- cliente HTTP tipado baseado em `fetch`;
+- timeout, cancelamento e erros técnicos diferenciados;
+- tradução centralizada de falhas para mensagens seguras de interface;
+- TanStack Query configurado para cache, retry e mutations;
+- contratos de API explicitamente provisórios.
 
-Why
+### Deploy
 
-↓
+- build de cliente e SSR com Vite;
+- saída estática em `dist/`;
+- hospedagem na Vercel com fallback para rotas da SPA;
+- deploy de produção conectado à branch `main` pela integração nativa da Vercel.
 
-Architecture
+## Arquitetura
 
-↓
+```mermaid
+flowchart TD
+    Browser[Browser] --> Router[React Router]
+    Router --> Engine[Logos Page Engine]
+    Engine --> Repository[Page Repository]
+    Repository --> Registry[Page Section Registry]
+    Registry --> Components[Componentes React]
+    Components --> Query[TanStack Query]
+    Query --> Http[HTTP Client tipado]
+    Http -. integração futura .-> API[Amigo do Lar API]
 
-Roadmap
-
----
-
-# Why
-
-Modern websites are usually built around components.
-
-As projects grow, components become tightly coupled to layouts, routes and business rules, making evolution increasingly difficult.
-
-The Logos Page Engine follows a different approach.
-
-Instead of asking:
-
-> *"Which components should this page render?"*
-
-it asks:
-
-> *"What is this page?"*
-
-A page becomes a domain object.
-
-Rendering becomes an implementation detail.
-
----
-
-# Core Principles
-
-The project is guided by a small set of architectural principles.
-
-## Domain First
-
-Pages belong to the domain.
-
-React belongs to the infrastructure.
-
----
-
-## Declarative Composition
-
-Pages describe **what exists**, not **how it is rendered**.
-
----
-
-## Stable Contracts
-
-A page should evolve without requiring changes to the rendering pipeline.
-
----
-
-## Separation of Concerns
-
-Domain
-
-↓
-
-Rendering
-
-↓
-
-Presentation
-
-Each layer has a single responsibility.
-
----
-
-## Extensibility
-
-Adding a new section should require configuration rather than modification.
-
----
-
-# Architecture
-
-```
-Page
-      │
-      ▼
-PageRenderer
-      │
-      ▼
-SectionRenderer
-      │
-      ▼
-Registry
-      │
-      ▼
-React Components
+    classDef future stroke-dasharray: 5 5,fill:#f7f7f7,color:#555;
+    class API future;
 ```
 
-The Engine knows **how to render**.
+O fluxo Browser → componentes está em produção. TanStack Query, o cliente HTTP e a mutation de orçamento já formam a fundação de integração. O catálogo principal ainda é local, e a API completa permanece como evolução planejada.
 
-The domain knows **what should exist**.
+Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para responsabilidades de camadas e fluxo de renderização.
 
----
+## Estratégia de SEO
 
-# Features
+O comando de build gera dois bundles: cliente e servidor. A entrada SSR renderiza cada página com `renderToString`; em seguida, o prerender injeta o markup e a metadata específica em arquivos HTML estáticos. O resultado contém conteúdo principal antes da execução do JavaScript e continua navegável como SPA após a hidratação.
 
-Current capabilities include:
+As 23 rotas públicas são a fonte comum para roteamento, prerender e sitemap. A validação final verifica, entre outros pontos, existência e unicidade de metadata, canonical correto, um único H1, diretivas de robots e JSON-LD válido. A página 404 é gerada separadamente com `noindex`.
 
-- Domain-oriented pages
-- Dynamic section rendering
-- Section Registry
-- Generic Page Renderer
-- GitHub Pages deployment
-- Modular architecture
-- TypeScript-first development
+Detalhes e limitações estão em [docs/SEO.md](docs/SEO.md).
 
----
+## Stack
 
-# Project Structure
+| Área | Tecnologias |
+| --- | --- |
+| Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS, Framer Motion, Lucide React |
+| Dados e integração | TanStack Query, `fetch`, Zod, contratos TypeScript |
+| Qualidade | ESLint, Vitest, jsdom, React Testing Library |
+| Infraestrutura | GitHub Actions, SSR de build, prerenderização estática, Vercel |
 
-```
-src/
-
-domain/
-pages/
-renderers/
-registry/
-components/
-sections/
-```
-
-The project is intentionally organized around domain concepts rather than framework conventions.
-
----
-
-# Current Status
-
-Current version:
-
-```
-v0.1
-```
-
-Implemented:
-
-- Initial rendering pipeline
-- Page abstraction
-- Section abstraction
-- Dynamic rendering
-- GitHub Pages deployment
-
-In progress:
-
-- Documentation Engine
-- Architecture documentation
-- Registry improvements
-
----
-
-# Roadmap
-
-## v0.2
-
-- Documentation Pages
-- Markdown support
-- Theme system
-- Generic Registry improvements
-
----
-
-## v0.3
-
-- Navigation Engine
-- Search
-- Metadata system
-
----
-
-## v1.0
-
-- Documentation Engine
-- Plugin architecture
-- Versioned documents
-- Multi-project support
-
----
-
-# Philosophy
-
-The Logos Page Engine is part of a broader research initiative developed by the **Instituto Logos**.
-
-Its purpose is not simply to generate pages.
-
-Its purpose is to investigate how knowledge can be represented as living systems capable of continuous evolution.
-
-Every architectural decision follows the same question:
-
-> **Can this make knowledge easier to understand, evolve and share?**
-
-If the answer is no, the architecture should be reconsidered.
-
----
-
-# Contributing
-
-Contributions are welcome.
-
-Before opening a Pull Request, please read:
-
-- CONTRIBUTING.md
-- ARCHITECTURE.md
-- ROADMAP.md
-
----
-
-# Integração com a Amigo do Lar API
-
-Esta camada estabelece a fundação para integrações HTTP da aplicação Amigo do
-Lar sem acoplar chamadas de rede a componentes React:
+## Estrutura de pastas
 
 ```text
-Página → componentes → hooks → módulos de endpoint → HttpClient → API
+src/
+├── apps/amigo-do-lar/   # composição, conteúdo e interface do produto
+├── domain/              # contratos de páginas, metadata e navegação
+├── engine/              # pipeline genérico do Logos Page Engine
+├── shared/http/         # cliente HTTP e erros de transporte
+└── test/                # infraestrutura compartilhada de testes
+scripts/                 # SEO, prerender e utilitários de build
+docs/                    # arquitetura, desenvolvimento e decisões
+.github/                 # CI e templates de colaboração
+public/                  # arquivos servidos sem transformação
 ```
 
-O frontend usa `VITE_API_URL` como URL-base. Copie `.env.example` para
-`.env.local` e ajuste o valor para o ambiente local:
+## Scripts disponíveis
 
-```env
-VITE_API_URL=http://localhost:3000/api/v1
+| Comando | Responsabilidade |
+| --- | --- |
+| `npm run dev` | inicia o servidor Vite com HMR |
+| `npm run lint` | executa o ESLint no repositório |
+| `npm run test:run` | executa a suíte uma vez |
+| `npm run test:watch` | mantém o Vitest observando alterações |
+| `npm run build` | valida TypeScript, gera cliente e SSR, SEO, prerender e valida o resultado |
+| `npm run preview` | serve o conteúdo de `dist/` localmente |
+| `npm run generate:seo` | gera sitemap e robots no build |
+| `npm run prerender` | gera HTML das rotas públicas e da página 404 |
+| `npm run validate:seo` | valida os artefatos SEO prerenderizados |
+
+Os scripts intermediários de build pressupõem que suas etapas anteriores já tenham produzido os artefatos necessários. Para validação completa, prefira `npm run build`.
+
+## Execução local
+
+### Requisitos
+
+- Node.js 24, versão usada pelo CI;
+- npm compatível com o `package-lock.json`.
+
+```bash
+git clone git@github.com:lookjota/amigo-do-lar-v2.git
+cd amigo-do-lar-v2
+npm ci
+cp .env.example .env.local
+npm run dev
 ```
 
-Quando a variável estiver ausente, o desenvolvimento usa esse mesmo endereço
-como fallback. A configuração é validada na inicialização, remove barras finais
-e define timeout de 10 segundos. Nenhuma credencial deve ser exposta em
-variáveis `VITE_*`.
+Antes de enviar alterações:
 
-O cliente central em `src/shared/http` usa `fetch`, aceita respostas JSON, texto
-e vazias, combina timeout e cancelamento externo e lança erros distintos para
-status HTTP, timeout, cancelamento e rede. Exemplo de módulo de endpoint:
-
-```ts
-export function getServices(signal?: AbortSignal) {
-  return apiClient.get<Service[]>('/services', { signal })
-}
+```bash
+npm run lint
+npm run test:run
+npm run build
 ```
 
-Não chame `fetch` diretamente em componentes. Módulos de endpoint ficam na
-feature correspondente e hooks cuidam da lógica de apresentação.
+## Variáveis de ambiente
 
-O TanStack Query fornece cache e estado assíncrono de dados do servidor. Queries
-ficam válidas por 60 segundos e não refazem automaticamente ao focar a janela.
-Falhas de rede, timeout e HTTP 5xx recebem no máximo duas novas tentativas;
-erros 4xx, cancelamentos e mutations não recebem retry automático. Cada render
-SSR cria seu próprio `QueryClient`, impedindo vazamento de cache entre páginas.
+| Variável | Uso | Comportamento sem configuração |
+| --- | --- | --- |
+| `VITE_API_URL` | URL-base da API | `http://localhost:3000/api/v1` |
+| `VITE_PUBLIC_SITE_URL` | origem absoluta para canonical, sitemap e JSON-LD | URL pública da Vercel |
+| `VITE_WHATSAPP_NUMBER` | número internacional usado nos links `wa.me` | número provisório definido na configuração |
+| `VITE_GA4_ID` | habilita Google Analytics 4 | analytics não carregado |
+| `VITE_CLARITY_ID` | habilita Microsoft Clarity | Clarity não carregado |
+| `VITE_BASE_PATH` | base de publicação processada pelo Vite | `/` |
 
-Erros técnicos são convertidos para mensagens seguras por `toUiError`. O erro
-original continua disponível apenas para logging técnico futuro; corpo de
-resposta e stack trace nunca devem ser exibidos diretamente.
+Variáveis prefixadas com `VITE_` podem ser expostas no bundle do navegador. Não armazene tokens, senhas, chaves privadas ou qualquer outro segredo nelas. Veja exemplos em [.env.example](.env.example) e orientações em [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-Os contratos em `src/apps/amigo-do-lar/api/contracts.ts` são provisórios. O
-envelope, os erros de campo e a paginação precisam ser alinhados com o backend;
-módulos não devem presumir que todo endpoint usa `ApiResponse<T>`.
+## Testes e CI
 
-Limitações atuais:
+A suíte usa Vitest em jsdom e React Testing Library. Atualmente ela cobre o cliente HTTP, o mapeamento de erros para a interface, políticas e isolamento do `QueryClient`, breadcrumbs e navegação do card de serviço. Não há meta de cobertura configurada e o projeto não declara um percentual de cobertura.
 
-- não há catálogo remoto, autenticação, JWT, refresh token ou RBAC;
-- não há queries reais do TanStack Query nesta fundação;
-- não há hidratação/dehydration de cache porque o SSR ainda não busca dados;
-- os próximos módulos previstos são serviços, áreas atendidas, solicitações de
-  orçamento e usuário autenticado, depois que os endpoints forem confirmados;
+O workflow de CI executa `npm ci`, lint, testes e build em pushes e pull requests para `main`. O build inclui a validação automatizada de SEO.
 
-## Testes e integração contínua
+## Deploy
 
-A suíte usa Vitest, jsdom e Testing Library. Execute `npm test` ou
-`npm run test:run` para uma única execução determinística; esse é o comando
-usado pelo CI. Use `npm run test:watch` durante o desenvolvimento para manter o
-runner observando alterações. Cobertura ainda não possui comando ou meta: ela
-será adicionada quando houver uma linha de base representativa.
+O GitHub é usado para versionamento e integração contínua. A Vercel publica a aplicação em produção pela integração nativa com o repositório, conectada à branch `main`; por isso não existe um workflow próprio de deploy da Vercel. O antigo workflow de GitHub Pages foi removido para evitar duas estratégias concorrentes.
 
-Os testes atuais priorizam contratos estáveis da fundação:
+Consulte o processo e o checklist em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-- parsing e erros do cliente HTTP, timeout, cancelamento, headers e body;
-- tradução de erros técnicos para categorias seguras de interface;
-- retry e isolamento de cache do TanStack Query;
-- comportamento e semântica acessível de componentes de navegação críticos.
+## Roadmap
 
-O renderizador em `src/test/render.tsx` oferece `MemoryRouter` e um
-`QueryClientProvider` com cliente isolado por render. Use-o somente quando o
-componente depender desses providers; testes unitários de funções não precisam
-dele. MSW não foi incluído porque ainda não existem contratos de endpoints de
-negócio estáveis para simular.
+O roadmap separa capacidades já preparadas de funcionalidades que ainda exigem backend e decisões de produto:
 
-Em pushes e pull requests para `main`, o workflow de CI instala dependências
-com `npm ci` e exige sucesso de lint, testes e build completo. O build inclui
-TypeScript, bundle do cliente, SSR, geração de SEO, prerenderização e validação
-SEO; o workflow não publica artefatos nem usa segredos.
+1. catálogo de serviços e áreas vindo da API;
+2. persistência confiável de solicitações de orçamento;
+3. autenticação e gestão de sessão;
+4. autorização por papéis (RBAC);
+5. frontend administrativo separado da experiência pública;
+6. testes end-to-end;
+7. observabilidade de frontend e integração;
+8. acompanhamento e melhorias de performance baseadas em métricas reais.
 
-Os próximos testes devem cobrir o formulário de solicitação quando seu contrato
-for definido, os fluxos de autenticação quando forem implementados e as regras
-de acesso e operações da futura área administrativa. Esses recursos não fazem
-parte da fundação atual.
+Nenhum item dessa lista deve ser interpretado como funcionalidade concluída. O detalhamento está em [docs/ROADMAP.md](docs/ROADMAP.md).
 
----
+## Documentação
 
-# License
+- [Arquitetura](docs/ARCHITECTURE.md): Page Engine, camadas e fluxos.
+- [Desenvolvimento](docs/DEVELOPMENT.md): setup, scripts e convenções.
+- [SEO](docs/SEO.md): metadata, dados estruturados e prerenderização.
+- [Roadmap](docs/ROADMAP.md): estado atual e evolução planejada.
+- [Deploy](docs/DEPLOYMENT.md): build, Vercel e validação.
+- [Princípios de engenharia](docs/ENGINEERING.md): princípios históricos do Logos Page Engine.
+- [RFCs](docs/rfcs/README.md): decisões arquiteturais registradas.
+- [Investigações](docs/investigations/): auditorias históricas da evolução do engine.
 
-Released under the MIT License.
+## Contribuição
 
----
+1. crie uma branch focada a partir de `main`;
+2. faça alterações pequenas e use Conventional Commits, como `feat(scope): ...`, `fix(scope): ...` ou `docs(scope): ...`;
+3. execute lint, testes e build;
+4. abra um pull request com contexto e instruções de validação;
+5. inclua evidências visuais quando houver mudança de interface;
+6. após aprovação, use squash merge para manter um histórico objetivo.
 
-> **Think deeply. Decide quickly. Build continuously.**
+Não inclua segredos, artefatos de `dist/` ou configuração local no versionamento.
 
+## Licença
 
-
-> Developed by Instituto Logos
-
-Researching architectures that transform knowledge into living systems.
+Distribuído sob a [licença MIT](LICENSE.md).

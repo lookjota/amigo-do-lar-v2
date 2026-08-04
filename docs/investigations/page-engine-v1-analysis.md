@@ -1,4 +1,4 @@
-# Page Engine v1 — Architectural Analysis
+> Documento histórico: nomes e caminhos de código abaixo registram a estrutura existente na data da análise e não representam links para a árvore atual.\n\n# Page Engine v1 — Architectural Analysis
 
 ## Purpose and scope
 
@@ -67,17 +67,17 @@ The domain contracts are React-independent TypeScript interfaces under `src/doma
 
 #### Renderable page
 
-[`Page`](../../src/domain/entities/Page.ts) represents a generic page with `slug`, `title`, `seo`, and `sections`. Its `sections: PageSection[]` field is the connection between a page definition and the rendering engine.
+``Page`` represents a generic page with `slug`, `title`, `seo`, and `sections`. Its `sections: PageSection[]` field is the connection between a page definition and the rendering engine.
 
 #### Service
 
-[`Service`](../../src/domain/entities/Service.ts) represents a commercial service. It contains `slug`, `title`, `description`, `seo`, and `sections`. Consequently, it carries both business information and the complete visual composition used by `ServicePage`.
+``Service`` represents a commercial service. It contains `slug`, `title`, `description`, `seo`, and `sections`. Consequently, it carries both business information and the complete visual composition used by `ServicePage`.
 
 The shared `slug`, `title`, `seo`, and `sections` fields allow a `Service` to be projected to a `Page`, although the active service flow does not perform that projection.
 
 #### Section abstraction
 
-[`PageSection`](../../src/domain/entities/PageSection.ts) is the engine's central unit:
+``PageSection`` is the engine's central unit:
 
 ```ts
 export interface PageSection {
@@ -91,38 +91,38 @@ export interface PageSection {
 - `type` determines which registered component will render it.
 - `data` carries component-specific content without encoding that content's type in `PageSection`.
 
-[`PageSectionType`](../../src/domain/entities/PageSectionType.ts) exists as both a runtime constant and a literal union type. It declares `HERO`, `BENEFITS`, `FAQ`, and `CTA`, whose values are used in page data and as registry keys.
+``PageSectionType`` exists as both a runtime constant and a literal union type. It declares `HERO`, `BENEFITS`, `FAQ`, and `CTA`, whose values are used in page data and as registry keys.
 
 #### Section content contracts
 
 The content expected by registered components is described by:
 
-- [`Hero`](../../src/domain/entities/Hero.ts): title, subtitle, image, primary button, and optional secondary button.
-- [`Benefit`](../../src/domain/entities/Benefit.ts): title, description, icon, and optional highlight flag.
-- [`Faq`](../../src/domain/entities/Faq.ts): question and answer.
-- [`Cta`](../../src/domain/entities/Cta.ts): title, description, button text, and button link.
-- [`Seo`](../../src/domain/entities/Seo.ts): search, canonical, robots, and Open Graph metadata.
+- ``Hero``: title, subtitle, image, primary button, and optional secondary button.
+- ``Benefit``: title, description, icon, and optional highlight flag.
+- ``Faq``: question and answer.
+- ``Cta``: title, description, button text, and button link.
+- ``Seo``: search, canonical, robots, and Open Graph metadata.
 
 These interfaces do not import React or browser APIs. The association between a section type and one of these content shapes is conventional rather than encoded in the `PageSection` type. Each React component performs its own type assertion.
 
 #### Geographic domain
 
-[`City`](../../src/domain/entities/City.ts) describes an attended city. [`ServiceArea`](../../src/domain/entities/ServiceArea.ts) represents the relationship between a service and a city through `serviceSlug` and `citySlug`. `ServiceArea` participates in route availability checks but is not passed to the renderer.
+``City`` describes an attended city. ``ServiceArea`` represents the relationship between a service and a city through `serviceSlug` and `citySlug`. `ServiceArea` participates in route availability checks but is not passed to the renderer.
 
 ### Application
 
 There is no dedicated application directory. Application orchestration is distributed across route-facing components and pages.
 
-[`App`](../../src/App.tsx) declares two routes:
+``App`` declares two routes:
 
 ```text
 /                         → Home
 /:citySlug/:serviceSlug   → DynamicPageFactory
 ```
 
-[`Home`](../../src/pages/Home.tsx) obtains the Home page through `PageRepository.getHome()` and supplies `page.sections` to `PageRenderer`. It also places `Navbar` and `WhatsAppButton` around the engine output; those elements are not page sections.
+``Home`` obtains the Home page through `PageRepository.getHome()` and supplies `page.sections` to `PageRenderer`. It also places `Navbar` and `WhatsAppButton` around the engine output; those elements are not page sections.
 
-[`DynamicPageFactory`](../../src/components/DynamicPageFactory.tsx) orchestrates the dynamic service route. It:
+``DynamicPageFactory`` orchestrates the dynamic service route. It:
 
 1. reads `citySlug` and `serviceSlug` with React Router's `useParams`;
 2. resolves the service through `ServiceRepository.getBySlug`;
@@ -131,15 +131,15 @@ There is no dedicated application directory. Application orchestration is distri
 
 Despite its name, this symbol does not create a domain `Page` and does not call `PageFactory`.
 
-[`ServicePage`](../../src/pages/ServicePage/index.tsx) adapts a resolved `Service` to the renderer by passing `service.sections` to `PageRenderer`. Its [`ServicePageProps`](../../src/pages/ServicePage/type.ts) also requires `citySlug`, but `ServicePage` does not use that value.
+``ServicePage`` adapts a resolved `Service` to the renderer by passing `service.sections` to `PageRenderer`. Its ``ServicePageProps`` also requires `citySlug`, but `ServicePage` does not use that value.
 
 ### Infrastructure
 
 The project has no external API, database, CMS, HTTP client, or persistent state. Its current infrastructure consists of the browser runtime, React Router, static TypeScript data, and the build toolchain.
 
-[`main.tsx`](../../src/main.tsx) is the browser bootstrap. It locates `#root`, creates the React root, enables `StrictMode`, and mounts `App`.
+``main.tsx`` is the browser bootstrap. It locates `#root`, creates the React root, enables `StrictMode`, and mounts `App`.
 
-[`App`](../../src/App.tsx) uses `BrowserRouter`, `Routes`, and `Route`. [`DynamicPageFactory`](../../src/components/DynamicPageFactory.tsx) depends on that routing infrastructure through `useParams`.
+``App`` uses `BrowserRouter`, `Routes`, and `Route`. ``DynamicPageFactory`` depends on that routing infrastructure through `useParams`.
 
 The repository classes under `src/domain/repositories` act as concrete data-access implementations. They import local arrays directly rather than depending on repository interfaces or injected data sources.
 
@@ -149,11 +149,11 @@ Presentation comprises pages, renderers, the visual registry, and React section 
 
 #### Page renderer
 
-[`PageRenderer`](../../src/components/PageRenderer/index.tsx) accepts `sections: PageSection[]`. It preserves array order, maps every section to `SectionRenderer`, and uses `section.id` as the React key. It does not know `Page`, `Service`, repositories, route parameters, or concrete section types.
+``PageRenderer`` accepts `sections: PageSection[]`. It preserves array order, maps every section to `SectionRenderer`, and uses `section.id` as the React key. It does not know `Page`, `Service`, repositories, route parameters, or concrete section types.
 
 #### Section renderer
 
-[`SectionRenderer`](../../src/components/SectionRenderer/index.tsx) accepts one `PageSection`, reads `section.type`, and looks up a component in `pageSectionRegistry`. It renders the selected component with the complete section:
+``SectionRenderer`` accepts one `PageSection`, reads `section.type`, and looks up a component in `pageSectionRegistry`. It renders the selected component with the complete section:
 
 ```tsx
 const Component = pageSectionRegistry[section.type];
@@ -169,7 +169,7 @@ An unresolved type produces no visual output or diagnostic because the renderer 
 
 #### Registry
 
-[`pageSectionRegistry`](../../src/core/registry/pageSectionRegistry.ts) is the composition point between domain identifiers and React implementations:
+``pageSectionRegistry`` is the composition point between domain identifiers and React implementations:
 
 ```text
 PageSectionType.HERO     → HeroSection
@@ -182,21 +182,21 @@ The registry does not render, query data, or create sections. It imports both `P
 
 #### Registered section components
 
-[`HeroSection`](../../src/components/service/HeroSection/index.tsx) treats `section.data` as `Hero` and renders its title, subtitle, and primary button text. It does not currently render `Hero.image` or `Hero.secondaryButton`, and the primary button has no action.
+``HeroSection`` treats `section.data` as `Hero` and renders its title, subtitle, and primary button text. It does not currently render `Hero.image` or `Hero.secondaryButton`, and the primary button has no action.
 
-[`BenefitsSection`](../../src/components/service/BenefitsSection/index.tsx) treats `section.data` as `Benefit[]` and renders cards containing titles and descriptions. It does not consume `Benefit.icon` or `Benefit.highlight`.
+``BenefitsSection`` treats `section.data` as `Benefit[]` and renders cards containing titles and descriptions. It does not consume `Benefit.icon` or `Benefit.highlight`.
 
-[`FaqSection`](../../src/components/service/FaqSection/index.tsx) treats `section.data` as `Faq[]` and renders static question-and-answer articles.
+``FaqSection`` treats `section.data` as `Faq[]` and renders static question-and-answer articles.
 
-[`CtaSection`](../../src/components/service/CtaSection/index.tsx) treats `section.data` as `Cta` and renders a title, description, and external link.
+``CtaSection`` treats `section.data` as `Cta` and renders a title, description, and external link.
 
 All four components receive the generic `PageSection`, then assert the expected content type locally. None queries a repository or reads route parameters.
 
 #### Related but unregistered components
 
-[`ServicesSection`](../../src/components/service/ServicesSection/index.tsx), [`ServiceGrid`](../../src/components/service/ServiceGrid/index.tsx), and [`ServiceCard`](../../src/components/service/ServiceCard/index.tsx) form a service-list presentation path. `ServicesSection` calls `ServiceRepository.getAll()` directly. No `SERVICES` value exists in `PageSectionType`, and these components are absent from `pageSectionRegistry`; therefore they are not part of declarative page rendering.
+``ServicesSection``, ``ServiceGrid``, and ``ServiceCard`` form a service-list presentation path. `ServicesSection` calls `ServiceRepository.getAll()` directly. No `SERVICES` value exists in `PageSectionType`, and these components are absent from `pageSectionRegistry`; therefore they are not part of declarative page rendering.
 
-The older [`Hero`](../../src/components/Hero.tsx), [`Feature`](../../src/components/Feature.tsx), [`ServicosPremium`](../../src/components/ServicosPremium.tsx), [`About`](../../src/components/About.tsx), and [`Contact`](../../src/components/Contact.tsx) components are not used by the active Home. Their former composition remains commented in `Home.tsx`.
+The older ``Hero``, ``Feature``, ``ServicosPremium``, ``About``, and ``Contact`` components are not used by the active Home. Their former composition remains commented in `Home.tsx`.
 
 The components under `src/pages/servicos` are text-only placeholders and are not referenced by the routes in `App.tsx`.
 
@@ -204,11 +204,11 @@ The components under `src/pages/servicos` are text-only placeholders and are not
 
 #### Home definition
 
-[`homePage`](../../src/domain/data/pages/homePage.ts) is a `Page` with slug, title, SEO, and sections. Its Hero, Benefits, and CTA examples are commented out, leaving `sections` empty. Consequently, the Home reaches `PageRenderer` but produces no registered section components.
+``homePage`` is a `Page` with slug, title, SEO, and sections. Its Hero, Benefits, and CTA examples are commented out, leaving `sections` empty. Consequently, the Home reaches `PageRenderer` but produces no registered section components.
 
 #### Service definitions
 
-[`servicesData`](../../src/domain/data/servicesData.ts) is the service catalog. It contains one `Service`, `eletricista`, with Hero, Benefits, FAQ, and CTA sections in that order. The array position is the order ultimately preserved by `PageRenderer`.
+``servicesData`` is the service catalog. It contains one `Service`, `eletricista`, with Hero, Benefits, FAQ, and CTA sections in that order. The array position is the order ultimately preserved by `PageRenderer`.
 
 The same module exports `getServiceBySlug`, but the active route uses `ServiceRepository.getBySlug` instead.
 
@@ -216,9 +216,9 @@ The configured Hero image path is `/images/services/eletricista/hero.webp`, whil
 
 #### Geographic definitions
 
-[`citiesData`](../../src/domain/data/citiesData.ts) declares Brasília, Águas Claras, Taguatinga, Guará, and Ceilândia. No active symbol imports this array, and [`CityRepository.ts`](../../src/domain/repositories/CityRepository.ts) is empty.
+``citiesData`` declares Brasília, Águas Claras, Taguatinga, Guará, and Ceilândia. No active symbol imports this array, and ``CityRepository.ts`` is empty.
 
-[`serviceAreasData`](../../src/domain/data/serviceAreasData.ts) declares these relationships:
+``serviceAreasData`` declares these relationships:
 
 ```text
 eletricista / brasilia
@@ -239,7 +239,7 @@ These files provide the execution and validation environment but are not part of
 
 ### PageRepository
 
-[`PageRepository`](../../src/domain/repositories/PageRepository.ts) stores a local `pages` array containing only `homePage` and exposes:
+``PageRepository`` stores a local `pages` array containing only `homePage` and exposes:
 
 - `getAll(): Page[]`;
 - `getBySlug(slug): Page | undefined`;
@@ -249,19 +249,19 @@ The active Home calls `getHome`. The repository imports its concrete source, `ho
 
 ### ServiceRepository
 
-[`ServiceRepository`](../../src/domain/repositories/ServiceRepository.ts) imports `servicesData` and exposes `getAll()` and `getBySlug(slug)`. `DynamicPageFactory` uses `getBySlug`; `ServicesSection`, outside the registered engine flow, uses `getAll`.
+``ServiceRepository`` imports `servicesData` and exposes `getAll()` and `getBySlug(slug)`. `DynamicPageFactory` uses `getBySlug`; `ServicesSection`, outside the registered engine flow, uses `getAll`.
 
 ### ServiceAreaRepository
 
-[`ServiceAreaRepository`](../../src/domain/repositories/ServiceAreaRepository.ts) imports `serviceAreasData` and exposes `getAll()` and `exists(serviceSlug, citySlug)`. `DynamicPageFactory` uses `exists` to permit or reject the URL combination.
+``ServiceAreaRepository`` imports `serviceAreasData` and exposes `getAll()` and `exists(serviceSlug, citySlug)`. `DynamicPageFactory` uses `exists` to permit or reject the URL combination.
 
 The relationship is checked by exact string comparison and is not validated against `citiesData` or `servicesData` by the repository.
 
 ## Factory and page model
 
-[`PageFactory.fromService`](../../src/domain/factories/PageFactory.ts) accepts a `Service` and returns a `Page` by copying `slug`, `title`, `seo`, and `sections`. No current module imports or calls `PageFactory`; the service route sends `Service.sections` directly to the renderer.
+``PageFactory.fromService`` accepts a `Service` and returns a `Page` by copying `slug`, `title`, `seo`, and `sections`. No current module imports or calls `PageFactory`; the service route sends `Service.sections` directly to the renderer.
 
-[`ServicePageModel`](../../src/domain/models/ServicePageModel.ts) declares the expected sequence and required status of a service page:
+``ServicePageModel`` declares the expected sequence and required status of a service page:
 
 | Section | Required | Order |
 |---|---:|---:|
