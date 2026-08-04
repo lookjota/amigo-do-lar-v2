@@ -1,5 +1,6 @@
 import type { Page } from '../../../domain/pages/Page'
 import { pages } from '../content/pageFactory'
+import { serviceRequestPage, serviceRequestSuccessPage } from '../content/serviceRequestPages'
 
 export interface PublicPageRoute {
   pathname: string
@@ -9,10 +10,10 @@ export interface PublicPageRoute {
   prerender: boolean
 }
 
-export const publicRoutes: PublicPageRoute[] = pages.map((page) => ({
+export const publicRoutes: PublicPageRoute[] = [...pages, serviceRequestPage, serviceRequestSuccessPage].map((page) => ({
   pathname: page.slug,
   pageSlug: page.slug,
   page,
-  includeInSitemap: true,
+  includeInSitemap: page.slug !== '/solicitacao-enviada',
   prerender: true,
 }))

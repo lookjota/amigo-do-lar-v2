@@ -83,7 +83,7 @@ function whatsappAction(context: string) {
   }
 }
 
-function ctaSection(context: string): PageSection {
+function ctaSection(context: string, serviceSlug?: string): PageSection {
   return {
     id: 'solicitar-atendimento',
     type: 'call-to-action',
@@ -92,10 +92,9 @@ function ctaSection(context: string): PageSection {
       title: 'Conte o que precisa de atenção no seu lar.',
       description:
         'Envie uma descrição e fotos pelo WhatsApp para iniciarmos a avaliação do atendimento.',
-      primaryAction: whatsappAction(context),
+      primaryAction: { label: 'Solicitar atendimento', href: `/solicitar-atendimento${serviceSlug ? `?servico=${serviceSlug}` : ''}` },
       secondaryAction: {
-        label: 'Consultar áreas atendidas',
-        href: '/areas-atendidas',
+        ...whatsappAction(context),
       },
     },
   }
@@ -223,8 +222,8 @@ export const homePage = createPage({
           'Pequenos reparos e serviços residenciais conduzidos com clareza, organização e cuidado em cada etapa.',
         motto: 'Atendimento conforme a necessidade apresentada.',
         actions: [
+          { label: 'Solicitar atendimento', href: '/solicitar-atendimento' },
           whatsappAction('um serviço residencial'),
-          { label: 'Ver serviços', href: '/servicos' },
         ],
       },
     },
@@ -393,7 +392,7 @@ function createServicePage(service: ServiceDefinition): Page {
           description: service.introduction,
           motto: 'Atendimento sujeito à avaliação do caso.',
           actions: [
-            whatsappAction(`serviço de ${service.name.toLowerCase()}`),
+            { label: 'Solicitar atendimento', href: `/solicitar-atendimento?servico=${service.slug}` },
             { label: 'Como funciona', href: '#como-funciona' },
           ],
         },
@@ -443,7 +442,7 @@ function createServicePage(service: ServiceDefinition): Page {
           items: related,
         },
       },
-      ctaSection(`serviço de ${service.name.toLowerCase()}`),
+      ctaSection(`serviço de ${service.name.toLowerCase()}`, service.slug),
     ],
   })
 }

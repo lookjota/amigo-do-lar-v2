@@ -1,6 +1,5 @@
-import { Menu, MessageCircle } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
-import { createWhatsAppUrl } from '../config/site'
 import { trackEvent } from '../analytics/analytics'
 
 const links = [
@@ -24,10 +23,6 @@ function NavigationLinks() {
 }
 
 export function Header() {
-  const whatsappUrl = createWhatsAppUrl(
-    'Olá! Gostaria de solicitar atendimento residencial.',
-  )
-
   return (
     <header className="amigo-header">
       <div className="amigo-container amigo-header-layout">
@@ -38,30 +33,25 @@ export function Header() {
         <nav className="amigo-desktop-nav" aria-label="Navegação principal">
           <NavigationLinks />
         </nav>
-        <a
+        <Link
           className="amigo-button amigo-button-primary amigo-header-cta"
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+          to="/solicitar-atendimento"
           onClick={() => trackEvent('request_service_click')}
         >
-          <MessageCircle size={17} aria-hidden="true" />
           Solicitar atendimento
-        </a>
+        </Link>
         <details className="amigo-mobile-menu">
           <summary aria-label="Abrir menu de navegação">
             <Menu aria-hidden="true" />
           </summary>
           <nav aria-label="Navegação móvel">
             <NavigationLinks />
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/solicitar-atendimento"
               onClick={() => trackEvent('request_service_click')}
             >
               Solicitar atendimento
-            </a>
+            </Link>
           </nav>
         </details>
       </div>

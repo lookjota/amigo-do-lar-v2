@@ -108,6 +108,19 @@ if (!/name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(notFoundHtml)) {
 if ((notFoundHtml.match(/<h1(?:\s|>)/gi) ?? []).length !== 1) {
   failures.push('/404.html: expected exactly 1 H1')
 }
+const successHtml = await readFile(
+  resolve(distDirectory, 'solicitacao-enviada', 'index.html'),
+  'utf8',
+)
+if (!/name=["']robots["'][^>]*content=["'][^"']*noindex[^"']*follow/i.test(successHtml)) {
+  failures.push('/solicitacao-enviada: expected noindex, follow')
+}
+if ((successHtml.match(/<h1(?:\s|>)/gi) ?? []).length !== 1) {
+  failures.push('/solicitacao-enviada: expected exactly 1 H1')
+}
+if (sitemap.includes('/solicitacao-enviada')) {
+  failures.push('/solicitacao-enviada: must not be present in sitemap')
+}
 if (titles.size <= 1) failures.push('Public route titles are all equal')
 if (descriptions.size <= 1) {
   failures.push('Public route descriptions are all equal')
