@@ -19,6 +19,7 @@ Aplicação frontend comercial para apresentação e captação de contatos de s
 - [SEO](docs/SEO.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Deploy](docs/DEPLOYMENT.md)
+- [Integração com a API](docs/API_INTEGRATION.md)
 
 ## Visão geral do produto
 
@@ -168,7 +169,7 @@ npm run build
 
 | Variável | Uso | Comportamento sem configuração |
 | --- | --- | --- |
-| `VITE_API_URL` | URL-base da API | `http://localhost:3000/api/v1` |
+| `VITE_API_URL` | URL-base da API | API pública no Railway |
 | `VITE_PUBLIC_SITE_URL` | origem absoluta para canonical, sitemap e JSON-LD | URL pública da Vercel |
 | `VITE_WHATSAPP_NUMBER` | número internacional usado nos links `wa.me` | número provisório definido na configuração |
 | `VITE_GA4_ID` | habilita Google Analytics 4 | analytics não carregado |
@@ -211,6 +212,7 @@ Nenhum item dessa lista deve ser interpretado como funcionalidade concluída. O 
 - [SEO](docs/SEO.md): metadata, dados estruturados e prerenderização.
 - [Roadmap](docs/ROADMAP.md): estado atual e evolução planejada.
 - [Deploy](docs/DEPLOYMENT.md): build, Vercel e validação.
+- [Integração com a API](docs/API_INTEGRATION.md): configuração, cliente HTTP, erros, health checks e CORS.
 - [Princípios de engenharia](docs/ENGINEERING.md): princípios históricos do Logos Page Engine.
 - [RFCs](docs/rfcs/README.md): decisões arquiteturais registradas.
 - [Investigações](docs/investigations/): auditorias históricas da evolução do engine.

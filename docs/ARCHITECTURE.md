@@ -117,6 +117,7 @@ O catálogo público ainda é definido em TypeScript. A infraestrutura de integr
 - conversão centralizada para mensagens de interface;
 - `QueryClient` com políticas explícitas de cache e retry;
 - mutation para criar uma solicitação de orçamento.
+- health/readiness services e diagnóstico de conectividade exclusivo de desenvolvimento.
 
 Os contratos da API são provisórios. Autenticação, RBAC, catálogo remoto e persistência garantida do orçamento não fazem parte do estado concluído. A migração para dados remotos deverá preservar os contratos de domínio ou introduzir adapters explícitos entre payloads da API e páginas.
 

@@ -5,6 +5,7 @@ import {
   NetworkError,
   RequestCancelledError,
   RequestTimeoutError,
+  buildRequestUrl,
 } from './httpClient'
 
 const client = (timeoutMs = 1_000) =>
@@ -20,6 +21,11 @@ afterEach(() => {
 })
 
 describe('HttpClient', () => {
+  it('monta URLs sem barras duplicadas', () => {
+    expect(buildRequestUrl('https://api.example.com///', '//api//v1/health'))
+      .toBe('https://api.example.com/api/v1/health')
+  })
+
   it('retorna respostas JSON', async () => {
     vi.stubGlobal(
       'fetch',
@@ -62,9 +68,35 @@ describe('HttpClient', () => {
       status: 422,
       statusText: 'Unprocessable Content',
       responseBody: { message: 'inválido' },
+      apiMessage: 'inválido',
       url: 'https://api.example.com/quotes',
       method: 'POST',
     } satisfies Partial<HttpError>)
+  })
+
+  it('normaliza código, mensagem e detalhes de um envelope de erro', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: {
+              code: 'RESOURCE_NOT_FOUND',
+              message: 'Resource not found',
+              details: [],
+            },
+          }),
+          { status: 404 },
+        ),
+      ),
+    )
+
+    await expect(client().get('/missing')).rejects.toMatchObject({
+      status: 404,
+      code: 'RESOURCE_NOT_FOUND',
+      apiMessage: 'Resource not found',
+      details: [],
+    })
   })
 
   it('distingue timeout de outras interrupções', async () => {
@@ -140,6 +172,7 @@ describe('HttpClient', () => {
     expect(init.method).toBe('POST')
     expect(init.body).toBe(JSON.stringify({ name: 'Ana' }))
     expect(headers.get('content-type')).toBe('application/json')
+    expect(headers.get('accept')).toBe('application/json')
     expect(headers.get('authorization')).toBe('Custom token')
     expect(headers.get('x-request-id')).toBe('request-1')
   })

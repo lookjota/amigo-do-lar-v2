@@ -31,6 +31,32 @@
   line-height: 1.6;
 }
 
+.amigo-api-status {
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 100;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: rgb(255 255 255 / 92%);
+  color: #374151;
+  font-size: 0.75rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+}
+
+.amigo-api-status button {
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .amigo-app *,
 .amigo-app *::before,
 .amigo-app *::after {

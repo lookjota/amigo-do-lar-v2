@@ -20,12 +20,39 @@ interface HttpErrorDetails {
   method: HttpMethod
 }
 
+interface NormalizedApiError {
+  code?: string
+  message?: string
+  details?: unknown
+}
+
+function normalizeApiError(value: unknown): NormalizedApiError {
+  if (!value || typeof value !== 'object') {
+    return {}
+  }
+
+  const response = value as Record<string, unknown>
+  const candidate =
+    response.error && typeof response.error === 'object'
+      ? (response.error as Record<string, unknown>)
+      : response
+  return {
+    code: typeof candidate.code === 'string' ? candidate.code : undefined,
+    message:
+      typeof candidate.message === 'string' ? candidate.message : undefined,
+    details: candidate.details,
+  }
+}
+
 export class HttpError extends Error {
   readonly status: number
   readonly statusText: string
   readonly responseBody: unknown
   readonly url: string
   readonly method: HttpMethod
+  readonly code?: string
+  readonly apiMessage?: string
+  readonly details?: unknown
 
   constructor(details: HttpErrorDetails) {
     super(`A requisição ${details.method} falhou com status ${details.status}.`)
@@ -35,6 +62,10 @@ export class HttpError extends Error {
     this.responseBody = details.responseBody
     this.url = details.url
     this.method = details.method
+    const normalized = normalizeApiError(details.responseBody)
+    this.code = normalized.code
+    this.apiMessage = normalized.message
+    this.details = normalized.details
   }
 }
 
@@ -72,12 +103,17 @@ async function readResponseBody(response: Response): Promise<unknown> {
     return undefined
   }
 
-  const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
-  if (!contentType.includes('json')) {
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
     return text
   }
+}
 
-  return JSON.parse(text) as unknown
+export function buildRequestUrl(baseUrl: string, path: string): string {
+  const normalizedBaseUrl = baseUrl.replace(/\/+$/, '')
+  const normalizedPath = path.replace(/^\/+/, '').replace(/\/{2,}/g, '/')
+  return `${normalizedBaseUrl}/${normalizedPath}`
 }
 
 export class HttpClient {
@@ -134,7 +170,7 @@ export class HttpClient {
     path: string,
     options: RequestOptions = {},
   ): Promise<Response> {
-    const url = `${this.baseUrl}/${path.replace(/^\/+/, '')}`
+    const url = buildRequestUrl(this.baseUrl, path)
     const controller = new AbortController()
     let timedOut = false
 
@@ -155,6 +191,10 @@ export class HttpClient {
     try {
       const headers = new Headers(options.headers)
       const hasBody = options.body !== undefined
+
+      if (!headers.has('Accept')) {
+        headers.set('Accept', 'application/json')
+      }
 
       if (hasBody && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json')

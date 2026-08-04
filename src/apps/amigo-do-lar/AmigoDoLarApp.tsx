@@ -7,6 +7,7 @@ import { Analytics } from './analytics/Analytics'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { WhatsAppButton } from './components/WhatsAppButton'
+import { ApiStatus } from './components/ApiStatus'
 import { routes } from './config/routes'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PageRoute } from './pages/PageRoute'
@@ -45,6 +46,7 @@ export function AmigoDoLarApplication() {
         </Routes>
         <Footer />
         <WhatsAppButton />
+        {import.meta.env.DEV && <ApiStatus />}
       </div>
     </PageSectionRegistryProvider>
   )
