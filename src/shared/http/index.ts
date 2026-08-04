@@ -1,5 +1,6 @@
 export {
   HttpClient,
+  buildRequestUrl,
   HttpError,
   NetworkError,
   RequestCancelledError,
