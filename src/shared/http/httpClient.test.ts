@@ -176,4 +176,29 @@ describe('HttpClient', () => {
     expect(headers.get('authorization')).toBe('Custom token')
     expect(headers.get('x-request-id')).toBe('request-1')
   })
+
+  it('envia Bearer e notifica 401 somente em requisição autenticada', async () => {
+    const onUnauthorized = vi.fn()
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ error: { code: 'UNAUTHORIZED' } }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+    const authenticatedClient = new HttpClient({
+      baseUrl: 'https://api.example.com',
+      timeoutMs: 1_000,
+      getAccessToken: () => 'private-token',
+      onUnauthorized,
+    })
+
+    await expect(authenticatedClient.get('/auth/me')).rejects.toBeInstanceOf(
+      HttpError,
+    )
+
+    const headers = new Headers(fetchMock.mock.calls[0][1].headers)
+    expect(headers.get('authorization')).toBe('Bearer private-token')
+    expect(onUnauthorized).toHaveBeenCalledOnce()
+  })
 })

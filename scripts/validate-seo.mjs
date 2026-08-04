@@ -20,6 +20,7 @@ const publicRoutes = [
 const titles = new Set()
 const descriptions = new Set()
 const failures = []
+const adminPathnames = ['/admin', '/admin/login']
 
 function routeFile(pathname) {
   return pathname === '/'
@@ -96,6 +97,19 @@ async function validateRoute(route) {
 
 for (const route of publicRoutes) {
   await validateRoute(route)
+}
+
+for (const pathname of adminPathnames) {
+  const html = await readFile(routeFile(pathname), 'utf8')
+  if (!/name=["']robots["'][^>]*content=["'][^"']*noindex/i.test(html)) {
+    failures.push(`${pathname}: missing noindex`)
+  }
+  if (
+    sitemap.includes(`<loc>${pathname}</loc>`) ||
+    sitemap.includes(`${pathname}</loc>`)
+  ) {
+    failures.push(`${pathname}: administrative route appears in sitemap`)
+  }
 }
 
 const notFoundHtml = await readFile(

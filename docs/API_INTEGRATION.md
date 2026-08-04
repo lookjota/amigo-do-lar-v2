@@ -136,6 +136,10 @@ Na verificação de 4 de agosto de 2026, as respostas com `Origin` não incluír
 comunicação direta por servidor/cURL funciona, mas chamadas do browser ficarão
 bloqueadas até a política ser habilitada no backend.
 
+O mesmo bloqueio foi confirmado para a autenticação: o preflight
+`OPTIONS /auth/login` com a origem de produção, método `POST` e headers
+`Content-Type`/`Authorization` retornou `404`, sem os headers CORS necessários.
+
 ## Adicionando outro recurso
 
 Defina contratos no módulo da feature e concentre o acesso à rede em uma função
@@ -178,8 +182,21 @@ DTOs para os modelos de domínio existentes.
 Variáveis `VITE_*` são públicas no bundle. Não coloque nelas segredos, JWTs,
 credenciais ou chaves privadas. Não registre payloads sensíveis, não persista
 tokens em `localStorage` nesta etapa e não injete respostas com `innerHTML`.
-Autenticação futura deve definir armazenamento e renovação de sessão com uma
-análise própria de ameaças.
+### Autenticação administrativa
+
+O contrato confirmado no backend e na API publicada em 4 de agosto de 2026 é
+`POST /auth/login`, com `{ email, password }`. A resposta `200` contém
+`accessToken`, `tokenType: "Bearer"`, `expiresIn` em segundos e o usuário
+público com papel `ADMIN` ou `OPERATOR`. Não existe refresh token nesta versão.
+Credenciais inválidas ou conta inativa retornam `401` com
+`INVALID_CREDENTIALS`; payload inválido retorna `400` com `VALIDATION_ERROR`.
+
+O frontend mantém somente access token, usuário público e instante de expiração
+em `sessionStorage`, isolando a sessão à aba. A senha nunca é persistida. O
+storage é lido apenas no browser depois da hidratação; SSR começa em estado de
+inicialização. Expiração local ou `401` em requisição autenticada apaga a sessão
+e as rotas protegidas redirecionam para `/admin/login`. Como não há refresh
+token no contrato, uma sessão expirada exige novo login.
 
 ## Próximos módulos
 

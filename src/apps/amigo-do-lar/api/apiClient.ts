@@ -1,5 +1,20 @@
 import { HttpClient } from '../../../shared/http'
 import { apiConfig } from '../config/api'
+import {
+  clearStoredSession,
+  getStoredAccessToken,
+  notifySessionExpired,
+} from '../auth/sessionStorage'
 
-// O provedor opcional de token será conectado aqui quando a autenticação existir.
-export const apiClient = new HttpClient(apiConfig)
+export const apiClient = new HttpClient({
+  ...apiConfig,
+})
+
+export const authenticatedApiClient = new HttpClient({
+  ...apiConfig,
+  getAccessToken: getStoredAccessToken,
+  onUnauthorized: () => {
+    clearStoredSession()
+    notifySessionExpired()
+  },
+})

@@ -4,6 +4,7 @@ export interface HttpClientOptions {
   baseUrl: string
   timeoutMs: number
   getAccessToken?: () => string | undefined | Promise<string | undefined>
+  onUnauthorized?: () => void | Promise<void>
 }
 
 export interface RequestOptions {
@@ -120,11 +121,18 @@ export class HttpClient {
   private readonly baseUrl: string
   private readonly timeoutMs: number
   private readonly getAccessToken?: HttpClientOptions['getAccessToken']
+  private readonly onUnauthorized?: HttpClientOptions['onUnauthorized']
 
-  constructor({ baseUrl, timeoutMs, getAccessToken }: HttpClientOptions) {
+  constructor({
+    baseUrl,
+    timeoutMs,
+    getAccessToken,
+    onUnauthorized,
+  }: HttpClientOptions) {
     this.baseUrl = baseUrl.replace(/\/+$/, '')
     this.timeoutMs = timeoutMs
     this.getAccessToken = getAccessToken
+    this.onUnauthorized = onUnauthorized
   }
 
   get<Response>(
@@ -214,6 +222,10 @@ export class HttpClient {
       const responseBody = await readResponseBody(response)
 
       if (!response.ok) {
+        if (response.status === 401 && accessToken) {
+          await this.onUnauthorized?.()
+        }
+
         throw new HttpError({
           status: response.status,
           statusText: response.statusText,
