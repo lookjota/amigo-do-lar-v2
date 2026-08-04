@@ -6,8 +6,9 @@ import { ApiProvider } from './apps/amigo-do-lar/api/ApiProvider'
 import { createQueryClient } from './apps/amigo-do-lar/api/queryClient'
 import { notFoundPage } from './apps/amigo-do-lar/content/pageFactory'
 import { publicRoutes } from './apps/amigo-do-lar/config/publicRoutes'
+import { adminRoutes } from './apps/amigo-do-lar/config/adminRoutes'
 
-export { notFoundPage, publicRoutes }
+export { adminRoutes, notFoundPage, publicRoutes }
 
 export function render(pathname: string): string {
   const queryClient = createQueryClient()

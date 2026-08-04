@@ -9,7 +9,8 @@ import {
 
 const templatePath = resolve(distDirectory, 'index.html')
 const template = await readFile(templatePath, 'utf8')
-const { notFoundPage, publicRoutes, render } = await loadServerEntry()
+const { adminRoutes, notFoundPage, publicRoutes, render } =
+  await loadServerEntry()
 
 function metaName(name, content) {
   return content
@@ -122,6 +123,24 @@ for (const route of publicRoutes) {
   prerenderedCount += 1
 }
 
+for (const route of adminRoutes) {
+  if (!route.prerender) continue
+
+  const markup = render(route.pathname)
+  if (!markup) {
+    throw new Error(`SSR returned empty markup for "${route.pathname}".`)
+  }
+
+  const page = { slug: route.pathname, metadata: route }
+  const filePath = outputPath(route.pathname)
+  const html = createDocument(page, markup)
+  await mkdir(dirname(filePath), { recursive: true })
+  await writeFile(filePath, html)
+
+  const extensionlessPath = extensionlessOutputPath(route.pathname)
+  if (extensionlessPath) await writeFile(extensionlessPath, html)
+}
+
 const notFoundMarkup = render('/__not-found__')
 if (!notFoundMarkup) {
   throw new Error('SSR returned empty markup for the 404 page.')
@@ -133,5 +152,5 @@ await writeFile(
 )
 
 console.log(
-  `Prerendered ${prerenderedCount} public routes and the 404 page.`,
+  `Prerendered ${prerenderedCount} public routes, ${adminRoutes.length} noindex admin routes and the 404 page.`,
 )
