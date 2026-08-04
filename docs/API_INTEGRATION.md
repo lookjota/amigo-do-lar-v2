@@ -4,8 +4,8 @@
 
 O frontend usa a API REST publicada em
 `https://amigo-do-lar-api-production.up.railway.app`. A integração é
-progressiva: o catálogo público continua estático e prerenderizável, enquanto
-novos módulos podem consumir a camada HTTP central sem acoplar `fetch` aos
+static-first: o catálogo público continua estático e prerenderizável e, depois
+da hidratação, a API pode enriquecer os cards sem acoplar `fetch` aos
 componentes.
 
 Os health checks confirmados em 4 de agosto de 2026 não usam o prefixo de
@@ -13,6 +13,61 @@ negócio `/api/v1`:
 
 - `GET /health` retorna `{ "status": "ok" }`;
 - `GET /ready` retorna `{ "status": "ready" }`.
+
+## Catálogo público de serviços
+
+O endpoint confirmado pela documentação do backend e por chamada HTTP em 4 de
+agosto de 2026 é `GET /services`. Ele é público, não recebe token e retorna
+somente serviços ativos por padrão. `GET /api/v1/services` não existe e retorna
+`404`. Não envie `isActive=true`: esse filtro explícito exige autenticação,
+embora a listagem anônima já aplique o mesmo valor como padrão.
+
+```ts
+interface PublicService {
+  id: string
+  name: string
+  slug: string
+  description: string
+  category: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface ServicesResponse {
+  data: PublicService[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+}
+```
+
+`getServices(signal?)` valida o envelope, preserva os erros do cliente HTTP,
+encaminha o `AbortSignal` e remove defensivamente itens inativos. Na verificação
+acima, produção respondeu `200` com `data: []` e paginação padrão.
+
+### Estratégia static-first e fallback
+
+As seções recebem o catálogo de `data/services.ts` durante SSR,
+prerenderização e a primeira renderização no navegador. `useServices()` começa
+em `idle` e consulta a API apenas depois da hidratação. Em `loading`, em erro ou
+com uma coleção remota vazia, os cards estáticos permanecem visíveis.
+
+Uma resposta válida mantém a ordem editorial e todos os cards locais, atualiza
+somente nome e descrição de slugs com página publicada, ignora slugs
+desconhecidos e não cria rotas. Duplicatas não criam cards adicionais. Texto
+remoto é renderizado pelo React, nunca como HTML.
+
+### Publicando um novo serviço
+
+Cadastrar e ativar um serviço na API não publica uma página SEO. Para publicar
+no site, adicione o conteúdo editorial completo a `data/services.ts`; isso gera
+rota estática, metadata, JSON-LD, links e conteúdo prerenderizado. Só quando o
+slug da API coincidir exatamente com esse slug local o registro remoto poderá
+enriquecer o card.
 
 ## Configuração de ambiente
 
@@ -81,27 +136,27 @@ Na verificação de 4 de agosto de 2026, as respostas com `Origin` não incluír
 comunicação direta por servidor/cURL funciona, mas chamadas do browser ficarão
 bloqueadas até a política ser habilitada no backend.
 
-## Adicionando um recurso
+## Adicionando outro recurso
 
 Defina contratos no módulo da feature e concentre o acesso à rede em uma função
 de API:
 
 ```ts
-interface ServiceResponse {
+interface ExampleResponse {
   id: string
   name: string
 }
 
-export function getService(slug: string, signal?: AbortSignal) {
-  return apiClient.get<ServiceResponse>(`/api/v1/services/${slug}`, { signal })
+export function getExample(signal?: AbortSignal) {
+  return apiClient.get<ExampleResponse>('/examples', { signal })
 }
 ```
 
 O componente deve consumir uma função ou hook, nunca chamar `fetch` diretamente:
 
 ```tsx
-function ServiceName({ service }: { service: ServiceResponse }) {
-  return <h1>{service.name}</h1>
+function ExampleName({ example }: { example: ExampleResponse }) {
+  return <h1>{example.name}</h1>
 }
 ```
 
