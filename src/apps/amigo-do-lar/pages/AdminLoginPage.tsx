@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { HttpError } from '../../../shared/http'
 import { useAuth } from '../auth/useAuth'
@@ -17,13 +17,16 @@ interface LoginFormErrors {
 }
 
 interface LoginLocationState {
-  from?: { pathname?: string }
+  from?: { pathname?: string; search?: string; hash?: string }
   reason?: 'expired'
 }
 
 function safeDestination(state: LoginLocationState | null): string {
-  const destination = state?.from?.pathname
-  return destination?.startsWith('/admin') && destination !== '/admin/login'
+  const pathname = state?.from?.pathname
+  const destination = pathname
+    ? `${pathname}${state?.from?.search ?? ''}${state?.from?.hash ?? ''}`
+    : undefined
+  return destination && /^\/admin(?:\/|$)/.test(destination) && pathname !== '/admin/login'
     ? destination
     : '/admin'
 }
@@ -76,6 +79,9 @@ export function AdminLoginPage() {
     <main id="conteudo-principal" className="amigo-admin-auth">
       <AdminPageMetadata title="Acesso administrativo — Amigo do Lar" />
       <section className="amigo-admin-card" aria-labelledby="admin-login-title">
+        <Link className="amigo-admin-login-brand" to="/" aria-label="Amigo do Lar, voltar ao site">
+          <span aria-hidden="true">A</span><strong>Amigo do Lar</strong>
+        </Link>
         <p className="amigo-eyebrow">Portal administrativo</p>
         <h1 id="admin-login-title">Acesse sua conta</h1>
         <p>Use suas credenciais administrativas para continuar.</p>
@@ -126,6 +132,7 @@ export function AdminLoginPage() {
             {submitting ? 'Entrando…' : 'Entrar'}
           </button>
         </form>
+        <Link className="amigo-admin-back-link" to="/">← Voltar ao site público</Link>
       </section>
     </main>
   )
