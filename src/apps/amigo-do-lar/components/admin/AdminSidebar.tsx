@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  WalletCards,
   Users,
   UserRound,
 } from 'lucide-react'
@@ -19,6 +20,7 @@ const navigation = [
   { label: 'Calendário', to: '/admin/calendario', icon: CalendarRange, end: false },
   { label: 'Clientes', to: '/admin/clientes', icon: UserRound, end: false },
   { label: 'Serviços', to: '/admin/servicos', icon: Settings, end: false },
+  { label: 'Financeiro', to: '/admin/financeiro', icon: WalletCards, end: false },
 ] as const
 
 interface AdminSidebarProps {
