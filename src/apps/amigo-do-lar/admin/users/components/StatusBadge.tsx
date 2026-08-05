@@ -1,0 +1,1 @@
+export function StatusBadge({ isActive }: { isActive: boolean }) { return <span className={`amigo-admin-status amigo-admin-status-${isActive ? 'completed' : 'cancelled'}`}>{isActive ? 'Ativo' : 'Inativo'}</span> }

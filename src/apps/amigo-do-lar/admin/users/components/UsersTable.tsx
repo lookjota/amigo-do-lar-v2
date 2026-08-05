@@ -1,0 +1,5 @@
+import type { AdminUser } from '../types/contracts'
+import { RoleBadge } from './RoleBadge'
+import { StatusBadge } from './StatusBadge'
+const date = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
+export function UsersTable({ users, onDetails }: { users: AdminUser[]; onDetails: (id: string) => void }) { return <div className="amigo-admin-table-wrap"><table className="amigo-admin-table"><caption className="sr-only">Usuários encontrados</caption><thead><tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Status</th><th>Criado em</th><th>Ação</th></tr></thead><tbody>{users.map((user) => <tr key={user.id}><td data-label="Nome">{user.name}</td><td data-label="E-mail">{user.email}</td><td data-label="Papel"><RoleBadge role={user.role} /></td><td data-label="Status"><StatusBadge isActive={user.isActive} /></td><td data-label="Criado em">{date.format(new Date(user.createdAt))}</td><td><button type="button" onClick={() => onDetails(user.id)} aria-label={`Ver detalhes de ${user.name}`}>Detalhes</button></td></tr>)}</tbody></table></div> }

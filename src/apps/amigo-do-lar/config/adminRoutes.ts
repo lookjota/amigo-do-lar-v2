@@ -43,6 +43,13 @@ export const adminRoutes: AdminRouteMetadata[] = [
     prerender: true,
   },
   {
+    pathname: '/admin/usuarios',
+    title: 'Usuários — Amigo do Lar',
+    description: 'Gestão administrativa de usuários do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
+  {
     pathname: '/admin/clientes',
     title: 'Clientes — Amigo do Lar',
     description: 'Gestão administrativa de clientes do Amigo do Lar.',
