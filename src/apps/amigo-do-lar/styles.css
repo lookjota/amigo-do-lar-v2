@@ -497,6 +497,38 @@
   border: 0;
 }
 
+.amigo-calendar-page { width: min(100%, calc(var(--amigo-max-width) + 2 * var(--amigo-space-4))); margin-inline: auto; }
+.amigo-calendar-card { padding: var(--amigo-space-4); border: 1px solid var(--amigo-border); border-radius: var(--amigo-radius); background: var(--amigo-surface); box-shadow: var(--amigo-shadow); }
+.amigo-calendar-toolbar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--amigo-space-3); }
+.amigo-calendar-toolbar h2 { color: var(--amigo-green); font-size: 1.15rem; text-align: center; }
+.amigo-calendar-navigation, .amigo-calendar-views { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.amigo-calendar-views { justify-content: flex-end; }
+.amigo-calendar-toolbar button, .amigo-calendar-pagination button { min-height: 2.75rem; padding: 0.55rem 0.75rem; border: 1px solid var(--amigo-border); border-radius: var(--amigo-radius-sm); color: var(--amigo-green); background: white; font: inherit; font-weight: 700; cursor: pointer; }
+.amigo-calendar-toolbar button[aria-pressed='true'] { color: white; background: var(--amigo-green); }
+.amigo-calendar-legend { display: flex; flex-wrap: wrap; gap: var(--amigo-space-3); margin: var(--amigo-space-3) 0; padding: 0; list-style: none; color: var(--amigo-muted); font-size: 0.8rem; }
+.amigo-calendar-legend li { display: flex; align-items: center; gap: 0.35rem; }
+.amigo-calendar-legend-mark { width: 0.75rem; height: 0.75rem; border-left: 4px solid var(--amigo-gold); border-radius: 0.2rem; background: var(--amigo-surface-strong); }
+.amigo-calendar-grid { display: grid; gap: 1px; overflow: hidden; border: 1px solid var(--amigo-border); border-radius: var(--amigo-radius-sm); background: var(--amigo-border); }
+.amigo-calendar-grid-week { grid-template-columns: repeat(7, minmax(8rem, 1fr)); overflow-x: auto; }
+.amigo-calendar-grid-month { grid-template-columns: repeat(7, minmax(7rem, 1fr)); }
+.amigo-calendar-day { min-width: 0; min-height: 12rem; padding: 0.55rem; background: white; }
+.amigo-calendar-grid-month .amigo-calendar-day { min-height: 9rem; }
+.amigo-calendar-day[data-outside-month='true'] { background: #f4f1e9; }
+.amigo-calendar-day[aria-current='date'] > h3 { text-decoration: underline; text-decoration-color: var(--amigo-gold); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.amigo-calendar-day h3 { color: var(--amigo-green); font-size: 0.8rem; text-transform: capitalize; }
+.amigo-calendar-day-events { display: grid; gap: 0.4rem; margin-top: 0.55rem; }
+.amigo-calendar-day-empty { color: var(--amigo-muted); font-size: 0.75rem; }
+.amigo-calendar-event { width: 100%; display: grid; gap: 0.1rem; padding: 0.5rem; overflow: hidden; border: 0; border-left: 4px solid var(--amigo-gold); border-radius: 0.35rem; color: var(--amigo-ink); background: var(--amigo-surface-strong); font: inherit; font-size: 0.75rem; text-align: left; cursor: pointer; }
+.amigo-calendar-event strong, .amigo-calendar-event span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.amigo-calendar-event-time { color: var(--amigo-muted); font-weight: 750; }
+.amigo-calendar-event-confirmed { border-left-color: #356ba6; }
+.amigo-calendar-event-in_progress { border-left-color: #b17b16; }
+.amigo-calendar-event-completed { border-left-color: #28784a; }
+.amigo-calendar-event-cancelled { border-left-color: #a4463d; opacity: 0.78; }
+.amigo-calendar-pagination { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: var(--amigo-space-3); margin-top: var(--amigo-space-4); padding: var(--amigo-space-3); border-radius: var(--amigo-radius-sm); background: var(--amigo-surface-strong); }
+.amigo-calendar-total { margin-top: var(--amigo-space-3); color: var(--amigo-muted); font-size: 0.8rem; text-align: center; }
+.amigo-calendar-empty { text-align: center; }
+
 @media (max-width: 760px) {
   .amigo-admin-shell { display: block; }
   .amigo-admin-shell-header { min-height: 4rem; padding: 0.55rem 1rem; }
@@ -525,6 +557,15 @@
   .amigo-admin-table td { display: grid; grid-template-columns: 6rem 1fr; gap: var(--amigo-space-2); padding: 0.35rem 0; border: 0; }
   .amigo-admin-table td::before { color: var(--amigo-muted); content: attr(data-label); font-size: 0.78rem; font-weight: 700; }
   .amigo-admin-table td:last-child { display: block; }
+  .amigo-calendar-page .amigo-admin-header { flex-direction: column; }
+  .amigo-calendar-card { padding: var(--amigo-space-3); }
+  .amigo-calendar-toolbar { grid-template-columns: 1fr; }
+  .amigo-calendar-toolbar h2 { grid-row: 1; text-align: left; }
+  .amigo-calendar-views { justify-content: flex-start; }
+  .amigo-calendar-grid-week, .amigo-calendar-grid-month { grid-template-columns: 1fr; overflow: visible; }
+  .amigo-calendar-day, .amigo-calendar-grid-month .amigo-calendar-day { min-height: 0; }
+  .amigo-calendar-day[data-outside-month='true'] { display: none; }
+  .amigo-calendar-day-empty { display: none; }
 }
 
 .amigo-app *,

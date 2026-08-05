@@ -7,6 +7,12 @@ describe('rota administrativa de agenda', () => {
   })
 })
 
+describe('rota administrativa de calendário', () => {
+  it('é prerenderizada somente como estrutura noindex e nofollow', () => {
+    expect(adminRoutes.find((route) => route.pathname === '/admin/calendario')).toMatchObject({ prerender: true, robots: { index: false, follow: false } })
+  })
+})
+
 describe('rota administrativa de clientes', () => {
   it('é prerenderizada somente como estrutura noindex e nofollow', () => {
     expect(adminRoutes.find((route) => route.pathname === '/admin/clientes')).toMatchObject({ prerender: true, robots: { index: false, follow: false } })

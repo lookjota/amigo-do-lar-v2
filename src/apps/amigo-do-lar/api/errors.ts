@@ -95,7 +95,9 @@ function fromHttpError(error: HttpError): UiError {
       return {
         ...base,
         category: 'conflict',
-        userMessage: 'Os dados foram alterados. Atualize e tente novamente.',
+        userMessage: error.code === 'APPOINTMENT_TIME_CONFLICT'
+          ? 'Este horário conflita com outro agendamento. Escolha outro horário.'
+          : 'Os dados foram alterados. Atualize e tente novamente.',
       }
     default:
       return {

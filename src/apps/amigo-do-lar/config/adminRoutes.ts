@@ -36,6 +36,13 @@ export const adminRoutes: AdminRouteMetadata[] = [
     prerender: true,
   },
   {
+    pathname: '/admin/calendario',
+    title: 'Calendário — Amigo do Lar',
+    description: 'Visualização temporal dos agendamentos do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
+  {
     pathname: '/admin/servicos',
     title: 'Serviços — Amigo do Lar',
     description: 'Gestão administrativa de serviços do Amigo do Lar.',
