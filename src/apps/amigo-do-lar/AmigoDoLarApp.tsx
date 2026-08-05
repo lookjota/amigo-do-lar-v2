@@ -22,6 +22,7 @@ import { AdminServiceRequestsPage } from './admin/service-requests/pages/AdminSe
 import { AdminAppointmentsPage } from './admin/appointments/pages/AdminAppointmentsPage'
 import { AdminCustomersPage } from './admin/customers/pages/AdminCustomersPage'
 import { AdminServicesPage } from './admin/services/pages/AdminServicesPage'
+import { AdminUsersPage } from './admin/users/pages/AdminUsersPage'
 
 export function AmigoDoLarApp() {
   const [queryClient] = useState(createQueryClient)
@@ -72,6 +73,9 @@ export function AmigoDoLarApplication() {
               <Route path="/admin/agenda" element={<AdminAppointmentsPage />} />
               <Route path="/admin/clientes" element={<AdminCustomersPage />} />
               <Route path="/admin/servicos" element={<AdminServicesPage />} />
+              <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+              </Route>
             </Route>
           </Routes>
           {import.meta.env.DEV && <ApiStatus />}

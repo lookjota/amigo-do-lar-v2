@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { AdminPageMetadata } from '../components/AdminPageMetadata'
+import { hasRole } from '../auth/authorization'
 
 export function AdminHomePage() {
   const auth = useAuth()
@@ -38,6 +39,9 @@ export function AdminHomePage() {
         <Link className="amigo-button amigo-button-secondary" to="/admin/servicos">
           Gerenciar serviços
         </Link>
+        {hasRole(auth.user, ['ADMIN']) && <Link className="amigo-button amigo-button-secondary" to="/admin/usuarios">
+          Gerenciar usuários
+        </Link>}
       </section>
     </main>
   )

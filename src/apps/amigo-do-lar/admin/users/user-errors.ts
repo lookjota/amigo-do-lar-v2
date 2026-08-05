@@ -1,0 +1,3 @@
+import { HttpError } from '../../../../shared/http'
+import { toUiError } from '../../api/errors'
+export function toUserUiError(error: unknown) { if (error instanceof HttpError) { if (error.status === 404) return 'Usuário não encontrado.'; if (error.status === 409) { if (error.code === 'USER_EMAIL_ALREADY_EXISTS') return 'Este e-mail já está em uso.'; if (error.code === 'SELF_DEACTIVATION_FORBIDDEN') return 'Você não pode desativar a própria conta.'; if (error.code === 'LAST_ACTIVE_ADMIN') return 'É necessário manter ao menos um administrador ativo.'; return 'Não foi possível alterar este usuário devido a uma regra de segurança.' } } return toUiError(error).userMessage }

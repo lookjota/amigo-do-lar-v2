@@ -207,6 +207,49 @@ token no contrato, uma sessão expirada exige novo login.
 5. autenticação e perfil, somente após definir a estratégia de sessão;
 6. administração e RBAC em uma etapa separada.
 
+## Gestão administrativa de usuários
+
+A rota `/admin/usuarios` e todos os endpoints abaixo exigem sessão autenticada
+com papel `ADMIN`. Usuários `OPERATOR` não veem o link no dashboard, recebem um
+estado seguro de acesso negado na rota e continuam sujeitos ao `403` da API. A
+checagem de papel é centralizada em `auth/authorization.ts` e aplicada por
+`ProtectedRoute`. A página não consulta a API durante SSR, é prerenderizada com
+`noindex, nofollow` e não participa do sitemap.
+
+Endpoints confirmados:
+
+- `GET /users` e `GET /users/:id`;
+- `POST /users`;
+- `PATCH /users/:id`;
+- `PATCH /users/:id/status`;
+- `PATCH /users/:id/password`, com resposta `204` sem body.
+
+O usuário público contém exclusivamente `id`, `name`, `email`, `role`
+(`ADMIN | OPERATOR`), `isActive`, `createdAt` e `updatedAt`. Senha, hash e token
+não pertencem aos schemas de resposta, componentes ou cache. Todos os envelopes
+externos são validados por schemas Zod estritos.
+
+`GET /users` aceita paginação `page`/`limit`, `search`, `role`, `isActive`,
+`orderBy` (`name`, `email`, `role`, `isActive`, `createdAt` ou `updatedAt`) e
+`sortOrder` (`asc` ou `desc`). A interface envia os filtros ao servidor, mantém
+o estado na query string, ignora valores inválidos e retorna à primeira página
+quando um filtro muda. Não há filtro nem paginação local.
+
+A criação envia nome normalizado, e-mail em lowercase, senha, papel e status
+opcional. A edição aceita somente nome, e-mail e papel e rejeita payload vazio.
+Status e senha usam endpoints próprios. A senha permanece apenas nos campos do
+formulário e na duração da chamada, é limpa no sucesso, erro ou fechamento e a
+mutation é resetada imediatamente; mutações não têm retry ou atualização
+otimista.
+
+Erros são convertidos em mensagens seguras: `400` validação, `401` sessão
+inválida, `403` acesso negado, `404` usuário ausente e `409` para e-mail já
+existente, autodesativação e proteção do último administrador ativo. O frontend
+impede autodesativação na interface, mas o backend permanece a fonte de verdade:
+o último `ADMIN` ativo não pode ser desativado nem rebaixado. Uma sessão antiga
+também pode perder acesso quando o usuário for inativado ou tiver o papel
+alterado. Não há refresh token nem alteração da estratégia de sessão.
+
 ## Gestão administrativa de solicitações
 
 A rota protegida `/admin/solicitacoes` usa exclusivamente o
