@@ -97,7 +97,13 @@ function fromHttpError(error: HttpError): UiError {
         category: 'conflict',
         userMessage: error.code === 'APPOINTMENT_TIME_CONFLICT'
           ? 'Este horário conflita com outro agendamento. Escolha outro horário.'
-          : 'Os dados foram alterados. Atualize e tente novamente.',
+          : error.code === 'APPOINTMENT_ALREADY_EXISTS'
+            ? 'Esta solicitação já possui um agendamento ativo.'
+            : error.code === 'SERVICE_REQUEST_NOT_APPROVED'
+              ? 'A solicitação precisa estar aprovada para ser agendada.'
+              : error.code === 'SERVICE_REQUEST_ALREADY_COMPLETED' || error.code === 'SERVICE_REQUEST_CANCELLED'
+                ? 'Esta solicitação não pode mais ser agendada.'
+                : 'A operação conflita com o estado atual. Atualize e tente novamente.',
       }
     default:
       return {

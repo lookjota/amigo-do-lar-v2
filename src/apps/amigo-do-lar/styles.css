@@ -278,6 +278,17 @@
   font-size: clamp(1.8rem, 5vw, 2.7rem);
   line-height: 1.1;
 }
+.amigo-admin-header-actions,
+.amigo-admin-dialog-actions,
+.amigo-admin-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--amigo-space-2); }
+.amigo-admin-row-actions button { white-space: nowrap; }
+.amigo-admin-dialog-actions { margin-block: var(--amigo-space-3); }
+.amigo-eligible-requests { display: grid; gap: var(--amigo-space-2); margin-block: var(--amigo-space-4); padding: 0; border: 0; }
+.amigo-eligible-requests legend { margin-bottom: var(--amigo-space-2); color: var(--amigo-green); font-weight: 700; }
+.amigo-eligible-request { display: grid !important; grid-template-columns: auto 1fr; align-items: start; gap: var(--amigo-space-2) !important; padding: var(--amigo-space-2); border: 1px solid var(--amigo-border); border-radius: var(--amigo-radius-sm); cursor: pointer; }
+.amigo-eligible-request input { width: auto !important; margin-top: 0.25rem; }
+.amigo-eligible-request span { display: grid; gap: 0.2rem; }
+.amigo-eligible-request small { color: var(--amigo-muted); overflow-wrap: anywhere; }
 
 .amigo-dashboard-page {
   width: min(100%, calc(var(--amigo-max-width) + 2 * var(--amigo-space-4)));
