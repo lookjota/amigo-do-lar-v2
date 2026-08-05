@@ -38,7 +38,7 @@ describe('layout administrativo', () => {
     expect(screen.getByText('Ada Admin')).toBeInTheDocument()
     expect(screen.getByText('ada@example.com')).toBeInTheDocument()
     expect(screen.getByText('ADMIN')).toBeInTheDocument()
-    for (const label of ['Dashboard', 'Solicitações', 'Agenda', 'Clientes', 'Serviços', 'Usuários']) {
+    for (const label of ['Dashboard', 'Solicitações', 'Agenda', 'Calendário', 'Clientes', 'Serviços', 'Usuários']) {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument()
     }
   })

@@ -20,6 +20,7 @@ import { AdminLoginPage } from './pages/AdminLoginPage'
 import { AdminHomePage } from './pages/AdminHomePage'
 import { AdminServiceRequestsPage } from './admin/service-requests/pages/AdminServiceRequestsPage'
 import { AdminAppointmentsPage } from './admin/appointments/pages/AdminAppointmentsPage'
+import { AdminCalendarPage } from './admin/calendar/pages/AdminCalendarPage'
 import { AdminCustomersPage } from './admin/customers/pages/AdminCustomersPage'
 import { AdminServicesPage } from './admin/services/pages/AdminServicesPage'
 import { AdminUsersPage } from './admin/users/pages/AdminUsersPage'
@@ -70,6 +71,7 @@ export function AmigoDoLarApplication() {
                 <Route path="/admin" element={<AdminHomePage />} />
                 <Route path="/admin/solicitacoes" element={<AdminServiceRequestsPage />} />
                 <Route path="/admin/agenda" element={<AdminAppointmentsPage />} />
+                <Route path="/admin/calendario" element={<AdminCalendarPage />} />
                 <Route path="/admin/clientes" element={<AdminCustomersPage />} />
                 <Route path="/admin/servicos" element={<AdminServicesPage />} />
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>

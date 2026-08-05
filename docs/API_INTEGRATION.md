@@ -402,6 +402,52 @@ retornar `401 UNAUTHORIZED`. Testes autenticados reais dependem de credencial de
 teste fornecida fora do repositório. Não execute o PATCH contra produção sem
 autorização explícita.
 
+### Calendário operacional
+
+A rota protegida `/admin/calendario` complementa `/admin/agenda`: a primeira é
+a visualização temporal e a segunda permanece como tabela paginada e filtrável.
+Ambas aceitam `ADMIN` e `OPERATOR`, reutilizam os mesmos contratos, funções de
+API, hooks de detalhe e mutações, são prerenderizadas apenas como estrutura
+protegida, publicam `noindex, nofollow` e ficam fora do sitemap.
+
+O calendário inicia na semana e sincroniza `view=day|week|month` e
+`date=YYYY-MM-DD` na query string. Valores inválidos são ignorados. Dia usa o
+início e fim do dia local; semana vai de segunda a domingo; mês consulta do
+primeiro ao último dia visível do grid, incluindo dias dos meses adjacentes.
+Todos os limites são convertidos para ISO 8601 antes de enviar
+`scheduledFrom` e `scheduledTo`; agrupamento e apresentação voltam ao timezone
+local do navegador. A API continua persistindo e comparando instantes em UTC.
+
+Cada consulta usa `GET /appointments`, `sortBy=scheduledAt`, `sortOrder=asc` e
+páginas de 100, o máximo documentado pela API. Apenas a primeira página é
+carregada inicialmente. Quando o total excede essa página, a interface informa
+quantos registros estão visíveis e oferece carregamento incremental das páginas
+seguintes; portanto não baixa lista ilimitada nem esconde truncamento. Cada
+evento usa horário, duração, cliente, serviço, cidade quando presente e badge
+textual de status. O clique abre o `AppointmentDetails` existente, que faz
+`GET /appointments/:id` e oferece somente as transições reais.
+
+O reagendamento é suportado pelo `PATCH /appointments/:id` existente e usa o
+formulário e o hook da agenda. Sucesso invalida a chave compartilhada
+`['admin', 'appointments']`, atualizando tabela e calendário. Sobreposição
+retorna `409 APPOINTMENT_TIME_CONFLICT` e é apresentada como conflito de
+horário; estados finais não oferecem reagendamento. Não há drag-and-drop nesta
+versão: a primeira interação permanece formulário + confirmação, sem simular
+persistência ou adicionar dependência pesada.
+
+No desktop, semana usa colunas, mês usa grid e dia usa uma coluna vertical. Em
+telas pequenas, semana e mês tornam-se sequências verticais de dias, evitando
+colunas ilegíveis e overflow da página. Eventos são botões acessíveis por
+teclado, o dia atual usa `aria-current`, o período é anunciado com `aria-live`,
+o foco visível é preservado e nenhum status depende apenas de cor.
+
+O endpoint atual é suficiente funcionalmente, mas meses com volume alto exigem
+várias viagens e transferem ao frontend a paginação incremental. Se esse volume
+se tornar comum, recomenda-se um futuro `GET /appointments/calendar` que receba
+o mesmo intervalo e devolva um payload agregado e limitado ao grid, preservando
+RBAC, timezone e semântica de conflitos. Esse endpoint não é chamado nem
+simulado pelo frontend atual.
+
 ## Gestão administrativa de clientes
 
 A rota protegida `/admin/clientes` usa exclusivamente o

@@ -1,5 +1,6 @@
 import {
   CalendarDays,
+  CalendarRange,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -15,6 +16,7 @@ const navigation = [
   { label: 'Dashboard', to: '/admin', icon: LayoutDashboard, end: true },
   { label: 'Solicitações', to: '/admin/solicitacoes', icon: ClipboardList, end: false },
   { label: 'Agenda', to: '/admin/agenda', icon: CalendarDays, end: false },
+  { label: 'Calendário', to: '/admin/calendario', icon: CalendarRange, end: false },
   { label: 'Clientes', to: '/admin/clientes', icon: UserRound, end: false },
   { label: 'Serviços', to: '/admin/servicos', icon: Settings, end: false },
 ] as const
