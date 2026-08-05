@@ -1,0 +1,15 @@
+import { useEffect, useRef, useState } from 'react'
+import { toUiError } from '../../../api/errors'
+import { useServiceRequests } from '../../service-requests/api/useServiceRequests'
+import { useCreateQuote } from '../api/finance-hooks'
+import { QuoteForm } from './QuoteForm'
+
+export function QuoteCreateDialog({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
+  const [serviceRequestId, setServiceRequestId] = useState(''); const [page, setPage] = useState(1); const closeRef = useRef<HTMLButtonElement>(null)
+  const requests = useServiceRequests({ page, limit: 10, status: 'CONTACTED', sortBy: 'createdAt', sortOrder: 'asc' }); const create = useCreateQuote()
+  useEffect(() => { const origin = document.activeElement as HTMLElement | null; closeRef.current?.focus(); const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && !create.isPending) onClose() }; document.addEventListener('keydown', key); return () => { document.removeEventListener('keydown', key); origin?.focus() } }, [create.isPending, onClose])
+  return <aside className="amigo-admin-drawer" role="dialog" aria-modal="true" aria-labelledby="new-quote-title"><div className="amigo-admin-drawer-header"><h2 id="new-quote-title">Novo orçamento</h2><button ref={closeRef} onClick={onClose} disabled={create.isPending}>Fechar</button></div>
+    <fieldset className="amigo-eligible-requests" disabled={create.isPending}><legend>Solicitação contatada elegível</legend>{requests.isPending && <p role="status">Carregando solicitações…</p>}{requests.isError && <div role="alert"><p>{toUiError(requests.error).userMessage}</p><button onClick={() => void requests.refetch()}>Tentar novamente</button></div>}{requests.data?.data.length === 0 && <p>Nenhuma solicitação contatada nesta página.</p>}{requests.data?.data.map((request) => <label className="amigo-eligible-request" key={request.id}><input type="radio" name="serviceRequest" checked={serviceRequestId === request.id} onChange={() => setServiceRequestId(request.id)} /><span><strong>{request.customer.name} — {request.service.name}</strong><small>{request.description} · {request.status}</small></span></label>)}{requests.data && requests.data.pagination.totalPages > 1 && <div className="amigo-admin-pagination"><button disabled={page === 1} onClick={() => setPage((value) => value - 1)}>Anteriores</button><span>Página {page} de {requests.data.pagination.totalPages}</span><button disabled={page >= requests.data.pagination.totalPages} onClick={() => setPage((value) => value + 1)}>Próximas</button></div>}</fieldset>
+    {serviceRequestId ? <QuoteForm serviceRequestId={serviceRequestId} isPending={create.isPending} error={create.error} onSubmit={async (input) => { const created = await create.mutateAsync({ serviceRequestId, subtotalCents: input.subtotalCents, discountCents: input.discountCents, ...(input.description ? { description: input.description } : {}), ...(input.notes ? { notes: input.notes } : {}), validUntil: input.validUntil }); onCreated(created.id) }} /> : <p>Selecione uma solicitação para preencher o orçamento.</p>}
+  </aside>
+}

@@ -239,6 +239,12 @@
 .amigo-admin-drawer form { display: grid; gap: var(--amigo-space-2); }
 .amigo-admin-drawer form label { display: grid; gap: 0.35rem; }
 .amigo-admin-drawer form input { padding: 0.65rem; font: inherit; }
+.amigo-admin-drawer form select,
+.amigo-admin-drawer form textarea { padding: 0.65rem; font: inherit; }
+.amigo-finance-drawer { width: min(46rem, 100%); }
+.amigo-finance-preview { display: grid; gap: 0.25rem; padding: 0.75rem; border-radius: 0.5rem; background: var(--amigo-surface-muted, #f4f6f5); }
+.amigo-payment-card { margin-block: 0.75rem; padding: 0.9rem; border: 1px solid var(--amigo-border); border-radius: 0.6rem; }
+.amigo-payment-card h4 { margin-block: 0 0.4rem; }
 
 .amigo-admin-card form span {
   color: #8b2e25;

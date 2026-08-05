@@ -615,3 +615,18 @@ editoriais locais. Criar, renomear, ativar ou desativar um serviço não cria ou
 remove rota, sitemap, metadata, JSON-LD nem conteúdo editorial. Se um serviço
 publicado for desativado na API, sua página editorial continua existindo; o
 catálogo dinâmico deixa de enriquecê-la e preserva o fallback estático.
+# Módulo financeiro administrativo
+
+O frontend usa exclusivamente o `authenticatedApiClient` nos endpoints `GET /quotes`, `GET /quotes/:id`, `POST /quotes`, `PATCH /quotes/:id`, `PATCH /quotes/:id/status`, `GET /quotes/:quoteId/payments`, `GET /payments/:id`, `POST /quotes/:quoteId/payments` e `PATCH /payments/:id/status`. Não existe operação `DELETE` financeira.
+
+Todos os valores da API são inteiros em centavos. A interface converte texto brasileiro (`1.234,56`) para centavos apenas no envio, rejeita negativos, mais de duas casas e valores acima de `Number.MAX_SAFE_INTEGER`. `totalCents`, `paidTotalCents` e `remainingCents` são sempre aceitos da resposta da API; o frontend nunca envia ou substitui esses totais.
+
+Orçamentos usam `DRAFT`, `SENT`, `APPROVED`, `REJECTED` e `CANCELLED`. As transições expostas são DRAFT → SENT/CANCELLED, SENT → APPROVED/REJECTED/CANCELLED e APPROVED → CANCELLED (ainda sujeita à validação do backend). Pagamentos usam `PENDING`, `PAID`, `CANCELLED` e `REFUNDED`, com PENDING → PAID/CANCELLED e PAID → REFUNDED.
+
+ADMIN pode alterar estados, registrar pagamentos e alterar seus estados. ADMIN e OPERATOR podem listar, consultar, criar e editar orçamento DRAFT. OPERATOR não recebe controles de status ou formulário de pagamento, e as hooks bloqueiam essas mutações antes da chamada HTTP; o backend permanece como autoridade e respostas 403 continuam sendo tratadas. Após alterações de orçamento são invalidados lista e detalhe de orçamentos, solicitações e dashboard. Após alterações de pagamento são invalidados lista e detalhe de pagamentos, lista e detalhe do orçamento e dashboard. Não há atualização otimista.
+
+A seleção de solicitações para novo orçamento consulta páginas de 10 registros `CONTACTED`. A auditoria de `finance.repository.ts`, `finance.service.ts` e `service-request-status.ts` confirmou que esse é o único estado que pode criar orçamento e transicionar atomicamente para `QUOTED`; a transação usa isolamento serializável e atualização condicional para detectar concorrência. Não há download ilimitado nem filtragem local. Embora a API aceite `serviceRequestId` e `customerId` na listagem, esses filtros não são exibidos até existirem seletores paginados reais; UUID manual não é solicitado. A API pública não oferece documentação OpenAPI e não há endpoint agregado financeiro; portanto não foram adicionadas métricas ou gráficos artificiais ao dashboard. Recomenda-se futuramente `GET /finance/summary` para contagens e totais agregados eficientes.
+
+`description` aceita até 2.000 caracteres, `notes` até 4.000 e referência de pagamento até 300. `GET /quotes/:quoteId/payments` retorna diretamente um array estrito de pagamentos, sem envelope de paginação. Datas de pagamento são preenchidas em `datetime-local` no timezone local do navegador e convertidas para ISO 8601 somente no envio. Pagamento `PENDING` não envia `paidAt`; pagamento `PAID` envia o instante ISO correspondente. O formulário existe somente para ADMIN, exige orçamento `APPROVED` e impede valor acima do `remainingCents` conhecido, mantendo a validação concorrente definitiva no backend.
+
+Não há PDF, gateway, PIX automático, armazenamento de dados de cartão, integração bancária, exportação ou estorno externo. Erros financeiros conhecidos são traduzidos para mensagens públicas, sem expor stack, requestId ou detalhes internos.

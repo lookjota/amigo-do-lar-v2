@@ -89,9 +89,29 @@ function fromHttpError(error: HttpError): UiError {
       return {
         ...base,
         category: 'notFound',
-        userMessage: 'O conteúdo solicitado não foi encontrado.',
+        userMessage: error.code === 'QUOTE_NOT_FOUND'
+          ? 'O orçamento não foi encontrado.'
+          : error.code === 'PAYMENT_NOT_FOUND'
+            ? 'O pagamento não foi encontrado.'
+            : 'O conteúdo solicitado não foi encontrado.',
       }
     case 409:
+      {
+        const financeMessages: Record<string, string> = {
+          QUOTE_ALREADY_EXISTS: 'Esta solicitação já possui um orçamento.',
+          QUOTE_INVALID_STATUS_TRANSITION: 'Esta alteração de status do orçamento não é permitida.',
+          QUOTE_NOT_EDITABLE: 'Somente orçamentos em rascunho podem ser editados.',
+          QUOTE_DISCOUNT_EXCEEDS_SUBTOTAL: 'O desconto não pode superar o subtotal.',
+          QUOTE_HAS_PAID_PAYMENTS: 'O orçamento possui pagamentos confirmados e não pode ser cancelado.',
+          PAYMENT_INVALID_STATUS_TRANSITION: 'Esta alteração de status do pagamento não é permitida.',
+          PAYMENT_EXCEEDS_REMAINING_AMOUNT: 'O pagamento supera o saldo restante do orçamento.',
+          PAYMENT_REQUIRES_APPROVED_QUOTE: 'O orçamento precisa estar aprovado para receber pagamentos.',
+          PAYMENT_ALREADY_FINAL: 'Este pagamento já está em um estado final.',
+          FINANCE_CONCURRENT_UPDATE: 'Os dados financeiros foram alterados por outra operação. Atualize e tente novamente.',
+          SERVICE_REQUEST_INVALID_STATUS_FOR_QUOTE: 'A solicitação não está em um estado válido para orçamento.',
+          SERVICE_REQUEST_STATUS_CHANGED: 'O status da solicitação mudou. Atualize e tente novamente.',
+        }
+        if (error.code && financeMessages[error.code]) return { ...base, category: 'conflict', userMessage: financeMessages[error.code] }
       return {
         ...base,
         category: 'conflict',
@@ -104,6 +124,7 @@ function fromHttpError(error: HttpError): UiError {
               : error.code === 'SERVICE_REQUEST_ALREADY_COMPLETED' || error.code === 'SERVICE_REQUEST_CANCELLED'
                 ? 'Esta solicitação não pode mais ser agendada.'
                 : 'A operação conflita com o estado atual. Atualize e tente novamente.',
+      }
       }
     default:
       return {
