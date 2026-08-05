@@ -250,6 +250,55 @@ o último `ADMIN` ativo não pode ser desativado nem rebaixado. Uma sessão anti
 também pode perder acesso quando o usuário for inativado ou tiver o papel
 alterado. Não há refresh token nem alteração da estratégia de sessão.
 
+## Dashboard administrativo operacional
+
+A rota protegida `/admin` usa apenas os endpoints administrativos existentes e
+o `authenticatedApiClient`. As consultas são habilitadas somente no browser;
+SSR e prerender produzem a estrutura protegida sem acesso à API. A rota mantém
+`noindex, nofollow` e não participa do sitemap.
+
+Não existe endpoint agregado de dashboard. O frontend executa consultas
+independentes e pequenas em paralelo, sempre com paginação server-side:
+
+- solicitações pendentes e em andamento: `GET /service-requests?page=1&limit=1&status=...`;
+- solicitações criadas hoje: `limit=1`, `createdFrom` e `createdTo` em ISO;
+- solicitações recentes: `limit=5`, `sortBy=createdAt&sortOrder=desc`;
+- total e clientes ativos: duas consultas com `limit=1`, sendo a segunda com
+  `isActive=true`;
+- serviços ativos: `GET /services?page=1&limit=1&isActive=true`;
+- agendamentos de hoje: `limit=5`, `scheduledFrom`, `scheduledTo` e ordenação
+  crescente por `scheduledAt`; `pagination.total` fornece o indicador;
+- próximos agendamentos: `limit=5`, `scheduledFrom` igual ao instante atual e
+  ordenação crescente por `scheduledAt`;
+- usuários ativos: `GET /users?page=1&limit=1&isActive=true`, exclusivamente
+  para `ADMIN`.
+
+As contagens vêm somente de `pagination.total`; nenhum conjunto completo é
+baixado para contagem local. Os limites de “hoje” são calculados no timezone
+local do operador e convertidos para ISO. Os previews preservam os
+relacionamentos reais retornados por solicitações e agendamentos (cliente,
+serviço, status e datas).
+
+Cada indicador possui estado explícito de disponível, indisponível por
+permissão, indisponível por contrato ou erro. Falhas não viram zero. Consultas
+independentes mantêm as demais seções funcionais e permitem retry da parte que
+falhou, com mensagens públicas seguras. Um `401` continua encerrando a sessão
+pela infraestrutura compartilhada. Para `OPERATOR`, a consulta `/users` fica
+desabilitada e atalhos de usuários e criação de serviços não são renderizados.
+
+Todas as métricas operacionais desejadas atualmente têm suporte nos contratos
+de lista. O contrato não possui histórico agregado, séries temporais, dados
+financeiros nem múltiplos status em um único filtro; por isso o dashboard não
+exibe gráficos, conversão, receita, faturamento ou ticket médio. Os próximos
+agendamentos mostram o status retornado pela API, inclusive estados finais que
+eventualmente permaneçam no período, pois o endpoint aceita apenas um status
+por consulta e o frontend não baixa uma lista maior para filtrá-los.
+
+Se o volume ou a quantidade de consumidores aumentar, recomenda-se um futuro
+`GET /dashboard/summary` no backend, com RBAC e estados operacionais definidos,
+para reduzir round-trips e produzir um snapshot consistente. Esse endpoint não
+foi inventado nem chamado nesta implementação.
+
 ## Gestão administrativa de solicitações
 
 A rota protegida `/admin/solicitacoes` usa exclusivamente o
