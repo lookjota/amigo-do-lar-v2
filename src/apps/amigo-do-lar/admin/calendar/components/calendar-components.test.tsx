@@ -25,5 +25,5 @@ describe('componentes do calendário', () => {
     const date = new Date(2099, 7, 10); render(<CalendarView view="day" focusDate={date} start={date} end={date} appointments={[appointment]} onOpen={vi.fn()} />)
     expect(screen.getByRole('grid', { name: /visão de dia/ })).toBeInTheDocument(); expect(screen.getByRole('gridcell')).toHaveAccessibleName(/agosto/)
   })
-  it('mostra o estado vazio explicitamente', () => { render(<CalendarEmptyState />); expect(screen.getByRole('heading', { name: 'Período sem agendamentos' })).toBeInTheDocument() })
+  it('mostra o estado vazio e permite criar', () => { const create = vi.fn(); render(<CalendarEmptyState onCreate={create} />); expect(screen.getByRole('heading', { name: 'Período sem agendamentos' })).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Criar primeiro agendamento' })); expect(create).toHaveBeenCalledOnce() })
 })

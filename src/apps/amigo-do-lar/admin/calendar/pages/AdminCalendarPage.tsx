@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { toUiError } from '../../../api/errors'
 import { AdminPageMetadata } from '../../../components/AdminPageMetadata'
 import { AppointmentDetails } from '../../appointments/components/AppointmentDetails'
+import { AppointmentCreateDialog } from '../../appointments/components/AppointmentCreateDialog'
 import { useCalendarAppointments } from '../api/useCalendarAppointments'
 import { CalendarEmptyState } from '../components/CalendarEmptyState'
 import { CalendarLegend } from '../components/CalendarLegend'
@@ -20,6 +21,7 @@ export function AdminCalendarPage() {
   const view = views.find((item) => item === params.get('view')) ?? 'week'
   const date = parseLocalDate(params.get('date'))
   const selectedId = uuid.test(params.get('appointment') ?? '') ? params.get('appointment') ?? undefined : undefined
+  const showCreate = params.get('create') === '1'
   const range = getCalendarRange(date, view)
   const query = useCalendarAppointments(range)
   const appointments = query.data?.pages.flatMap((page) => page.data) ?? []
@@ -35,17 +37,18 @@ export function AdminCalendarPage() {
   function setDate(next: Date) { updateParams({ date: formatLocalDate(next), appointment: undefined }) }
   return <main id="conteudo-principal" className="amigo-admin-page amigo-calendar-page">
     <AdminPageMetadata title="Calendário — Amigo do Lar" />
-    <header className="amigo-admin-header"><div><p className="amigo-eyebrow">Portal administrativo</p><h1>Calendário operacional</h1></div><Link className="amigo-button amigo-button-secondary" to="/admin/agenda">Ver agenda em lista</Link></header>
+    <header className="amigo-admin-header"><div><p className="amigo-eyebrow">Portal administrativo</p><h1>Calendário operacional</h1></div><div className="amigo-admin-header-actions"><button className="amigo-button" type="button" onClick={() => updateParams({ create: '1', appointment: undefined })}>Novo agendamento</button><Link className="amigo-button amigo-button-secondary" to="/admin/agenda">Ver agenda em lista</Link></div></header>
     <section className="amigo-calendar-card" aria-label="Calendário de agendamentos">
       <CalendarToolbar view={view} title={title} onToday={() => setDate(new Date())} onNavigate={(direction) => setDate(navigateCalendar(date, view, direction))} onView={(nextView) => updateParams({ view: nextView === 'week' ? undefined : nextView, appointment: undefined })} />
       <CalendarLegend />
       {query.isPending && <div className="amigo-admin-state" role="status">Carregando calendário…</div>}
       {query.isError && <div className="amigo-admin-state" role="alert"><p>{toUiError(query.error).userMessage}</p><button type="button" onClick={() => void query.refetch()}>Tentar novamente</button></div>}
-      {!query.isError && !query.isPending && total === 0 && <CalendarEmptyState />}
+      {!query.isError && !query.isPending && total === 0 && <CalendarEmptyState onCreate={() => updateParams({ create: '1' })} />}
       {appointments.length > 0 && <CalendarView view={view} focusDate={date} start={range.start} end={range.end} appointments={appointments} onOpen={(id) => updateParams({ appointment: id })} />}
       {query.hasNextPage && <div className="amigo-calendar-pagination" role="status"><p>Exibindo {appointments.length} de {total} agendamentos deste período.</p><button type="button" disabled={query.isFetchingNextPage} onClick={() => void query.fetchNextPage()}>{query.isFetchingNextPage ? 'Carregando…' : 'Carregar mais agendamentos'}</button></div>}
       {!query.hasNextPage && total > 0 && <p className="amigo-calendar-total" role="status">Todos os {total} agendamentos do período estão exibidos.</p>}
     </section>
     {selectedId && <AppointmentDetails id={selectedId} onClose={() => updateParams({ appointment: undefined })} />}
+    {showCreate && <AppointmentCreateDialog initialDate={formatLocalDate(date)} onClose={() => updateParams({ create: undefined })} onCreated={(id) => updateParams({ create: undefined, appointment: id })} />}
   </main>
 }

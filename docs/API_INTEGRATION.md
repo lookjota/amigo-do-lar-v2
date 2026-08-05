@@ -402,6 +402,40 @@ retornar `401 UNAUTHORIZED`. Testes autenticados reais dependem de credencial de
 teste fornecida fora do repositório. Não execute o PATCH contra produção sem
 autorização explícita.
 
+### Ações operacionais de agendamento
+
+Agenda e calendário oferecem o mesmo drawer de criação. Ele consulta
+`GET /service-requests?page=N&limit=10&status=APPROVED&sortBy=preferredDate&sortOrder=asc`
+e mostra cliente, serviço, cidade, descrição e data preferencial. Seleção e
+paginação são server-side; o operador nunca digita UUID e nenhuma lista
+ilimitada é baixada. Como a criação muda a solicitação para `SCHEDULED` na mesma
+transação, solicitações com agendamento ativo deixam de ser elegíveis. O
+calendário preenche inicialmente a data em foco.
+
+O envio usa exclusivamente `POST /appointments` com `serviceRequestId`,
+`scheduledAt`, `durationMinutes` e `notes` opcional. Editar e reagendar usam o
+`AppointmentForm`, schema e conversor de data compartilhados. O
+`PATCH /appointments/:id` envia somente `scheduledAt`, `durationMinutes` e
+`notes`; cliente, serviço, solicitação, status e timestamps não entram no
+payload. `COMPLETED` e `CANCELLED` não oferecem edição.
+
+Não existe `DELETE /appointments/:id`. “Cancelar agendamento” informa que o
+histórico será preservado e envia `{ "status": "CANCELLED" }` para
+`PATCH /appointments/:id/status`. A ação existe apenas em `SCHEDULED`,
+`CONFIRMED` e `IN_PROGRESS`, exatamente os estados cuja transição é aceita. O
+backend continua sendo a fonte de verdade e erros concorrentes continuam sendo
+tratados.
+
+Após criação, edição ou cancelamento, são invalidados agendamentos (lista,
+calendário e detalhe), dashboard e solicitações, incluindo o detalhe relacionado
+quando conhecido. Não há atualização otimista; mutations não têm retry e
+bloqueiam submissão dupla. Conflitos seguros distinguem horário ocupado,
+solicitação já agendada e solicitação inelegível, sem expor resposta interna.
+
+`ADMIN` e `OPERATOR` têm a mesma permissão real. Drawers possuem nome acessível,
+Escape quando não há mutação pendente, controles textuais, foco e anúncios de
+estado. SSR sem chamadas, `noindex, nofollow` e exclusão do sitemap permanecem.
+
 ### Calendário operacional
 
 A rota protegida `/admin/calendario` complementa `/admin/agenda`: a primeira é

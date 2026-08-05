@@ -6,12 +6,13 @@ import { appointmentFormSchema, isoToLocalFormParts, localDateTimeToIso } from '
 interface Props {
   appointment?: AdminAppointment
   serviceRequestId?: string
+  initialDate?: string
   isPending: boolean
   error?: unknown
   onSubmit: (input: { scheduledAt: string; durationMinutes: number; notes: string | null }) => Promise<void>
 }
-export function AppointmentForm({ appointment, serviceRequestId, isPending, error, onSubmit }: Props) {
-  const initial = appointment ? isoToLocalFormParts(appointment.scheduledAt) : { date: '', time: '' }
+export function AppointmentForm({ appointment, serviceRequestId, initialDate, isPending, error, onSubmit }: Props) {
+  const initial = appointment ? isoToLocalFormParts(appointment.scheduledAt) : { date: initialDate ?? '', time: '' }
   const [message, setMessage] = useState('')
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
