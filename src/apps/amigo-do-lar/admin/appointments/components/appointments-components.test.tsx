@@ -1,0 +1,14 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import type { AdminAppointment } from '../types/contracts'
+import { AppointmentFilters } from './AppointmentFilters'
+import { AppointmentsTable } from './AppointmentsTable'
+import { Pagination } from './Pagination'
+
+const appointment: AdminAppointment = { id: '1ad575e6-0225-45ce-bb18-296407bc558b', serviceRequestId: '2ad575e6-0225-45ce-bb18-296407bc558b', scheduledAt: '2099-08-10T14:00:00.000Z', durationMinutes: 60, status: 'SCHEDULED', notes: null, startedAt: null, completedAt: null, cancelledAt: null, createdAt: '2026-08-05T10:00:00.000Z', updatedAt: '2026-08-05T10:00:00.000Z', serviceRequest: { id: '2ad575e6-0225-45ce-bb18-296407bc558b', customerId: '3ad575e6-0225-45ce-bb18-296407bc558b', serviceId: '4ad575e6-0225-45ce-bb18-296407bc558b', description: 'Reparo', status: 'SCHEDULED', preferredDate: null, address: null, city: 'Brasília', customer: { id: '3ad575e6-0225-45ce-bb18-296407bc558b', name: 'Cliente Teste', phone: '61999999999', email: null }, service: { id: '4ad575e6-0225-45ce-bb18-296407bc558b', name: 'Elétrica', slug: 'eletrica', category: 'ELECTRICAL' } } }
+
+describe('componentes administrativos de agendamentos', () => {
+  it('renderiza campos reais e abre detalhes', () => { const onDetails = vi.fn(); render(<AppointmentsTable appointments={[appointment]} onDetails={onDetails} />); expect(screen.getByText('Cliente Teste')).toBeInTheDocument(); expect(screen.getByText('Elétrica')).toBeInTheDocument(); expect(screen.getByText('Brasília')).toBeInTheDocument(); expect(screen.getByText('Agendado')).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Ver detalhes' })); expect(onDetails).toHaveBeenCalledWith(appointment.id) })
+  it('aplica somente filtros suportados e limpa', () => { const onApply = vi.fn(); const onClear = vi.fn(); render(<AppointmentFilters values={{}} onApply={onApply} onClear={onClear} />); fireEvent.change(screen.getByLabelText('Status'), { target: { value: 'CONFIRMED' } }); fireEvent.change(screen.getByLabelText('De'), { target: { value: '2026-08-01' } }); fireEvent.click(screen.getByRole('button', { name: 'Aplicar filtros' })); expect(onApply).toHaveBeenCalledWith({ status: 'CONFIRMED', scheduledFrom: '2026-08-01', scheduledTo: undefined }); fireEvent.click(screen.getByRole('button', { name: 'Limpar' })); expect(onClear).toHaveBeenCalledOnce() })
+  it('mantém paginação server-side', () => { const onChange = vi.fn(); render(<Pagination page={2} totalPages={3} onChange={onChange} />); fireEvent.click(screen.getByRole('button', { name: 'Próxima' })); expect(onChange).toHaveBeenCalledWith(3) })
+})
