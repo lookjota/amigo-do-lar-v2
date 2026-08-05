@@ -207,6 +207,58 @@ token no contrato, uma sessão expirada exige novo login.
 5. autenticação e perfil, somente após definir a estratégia de sessão;
 6. administração e RBAC em uma etapa separada.
 
+## Gestão administrativa de solicitações
+
+A rota protegida `/admin/solicitacoes` usa exclusivamente o
+`authenticatedApiClient`. Ela é prerenderizada apenas como estrutura inicial,
+com `noindex, nofollow`, não consulta a API durante SSR e não integra o sitemap.
+Tanto `ADMIN` quanto `OPERATOR` têm acesso aos endpoints abaixo; respostas `401`
+encerram a sessão local e `403` é apresentado como falta de permissão.
+
+Contratos confirmados no código, testes e documentação do backend e, para a
+rota de lista sem credencial, na API de produção em 5 de agosto de 2026:
+
+- `GET /service-requests`: lista administrativa, resposta `200` no envelope
+  `{ data, pagination: { page, limit, total, totalPages } }`;
+- `GET /service-requests/:id`: detalhe administrativo, resposta `200`;
+- `PATCH /service-requests/:id/status`: body estrito `{ status }`, resposta
+  `200` com o detalhe atualizado;
+- `PATCH /service-requests/:id`: atualização de campos operacionais existente
+  na API, mas não usada nesta interface.
+
+A listagem usa `page=1`, `limit=20`, `sortBy=createdAt` e `sortOrder=desc` por
+padrão. A API aceita `search`, `status`, `customerId`, `serviceId`,
+`createdFrom`, `createdTo`, `preferredDateFrom`, `preferredDateTo`, `sortBy` e
+`sortOrder`. Nesta interface estão disponíveis busca, status e período de
+criação; filtros por IDs não são expostos até haver seletores administrativos
+apropriados. Busca, filtros, página e detalhe selecionado ficam na query string.
+
+O detalhe contém os campos persistidos da solicitação, resumos reais de cliente
+(`name`, `phone`, `email`, `isActive`) e serviço (`name`, `slug`, `category`,
+`isActive`). IDs relacionais existem no contrato validado, mas não são exibidos.
+Todos os textos são interpolados pelo React, sem HTML remoto.
+
+Os status, em ordem operacional, são `PENDING`, `CONTACTED`, `QUOTED`,
+`APPROVED`, `SCHEDULED`, `IN_PROGRESS`, `COMPLETED` e `CANCELLED`. As transições
+permitidas são as documentadas pelo backend: pendente pode ir a contatado ou
+cancelado; contatado a orçamento ou cancelado; orçamento a aprovado, contatado
+ou cancelado; aprovado a agendado ou cancelado; agendado a em andamento,
+aprovado ou cancelado; em andamento a concluído, agendado ou cancelado. Estados
+concluído e cancelado são finais. A API rejeita transições inválidas com `422` e
+`INVALID_SERVICE_REQUEST_STATUS_TRANSITION`; o frontend não tenta contornar a
+regra.
+
+Respostas externas são validadas com Zod. Consultas suportam cancelamento e o
+retry central apenas para falhas transitórias; mutações nunca têm retry, exigem
+confirmação, bloqueiam envio concorrente e só atualizam lista e detalhe após
+sucesso confirmado. A interface não mostra body, JSON, stack nem request ID.
+
+Para validar localmente, execute `npm run lint`, `npm run test` e
+`npm run build`. Uma chamada anônima segura a `GET /service-requests` deve
+retornar `401 UNAUTHORIZED`. Testes autenticados reais dependem de credencial de
+teste fornecida fora do repositório. Não execute o PATCH contra produção sem
+autorização explícita.
+
 ## Solicitação pública de atendimento
 
 O contrato foi confirmado no código, nos testes e em `docs/service-requests.md`

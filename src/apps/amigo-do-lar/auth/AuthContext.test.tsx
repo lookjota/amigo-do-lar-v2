@@ -59,7 +59,7 @@ describe('autenticação administrativa', () => {
     await browser.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(
-      await screen.findByText('Dashboard em construção'),
+      await screen.findByText('Dashboard administrativo'),
     ).toBeInTheDocument()
     expect(post).toHaveBeenCalledWith('/auth/login', {
       email: user.email,
@@ -131,7 +131,7 @@ describe('autenticação administrativa', () => {
     })
     render(<TestRoutes initialEntry="/admin" />)
     await act(async () => vi.advanceTimersByTime(0))
-    expect(screen.getByText('Dashboard em construção')).toBeInTheDocument()
+    expect(screen.getByText('Dashboard administrativo')).toBeInTheDocument()
 
     await act(async () => vi.advanceTimersByTime(1_000))
 

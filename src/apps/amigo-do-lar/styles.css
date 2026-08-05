@@ -138,6 +138,185 @@
   margin-inline: auto;
 }
 
+.amigo-admin-requests-page > .amigo-admin-card {
+  width: min(100%, var(--amigo-max-width));
+}
+
+.amigo-admin-header h1 {
+  color: var(--amigo-green);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.8rem, 5vw, 2.7rem);
+  line-height: 1.1;
+}
+
+.amigo-admin-filters {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  margin-top: 0 !important;
+}
+
+.amigo-admin-filters label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.amigo-admin-filters select,
+.amigo-admin-status-update select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--amigo-border);
+  border-radius: var(--amigo-radius-sm);
+  color: var(--amigo-ink);
+  background: white;
+  font: inherit;
+}
+
+.amigo-admin-filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--amigo-space-2);
+}
+
+.amigo-admin-filter-actions button {
+  margin-top: 0 !important;
+}
+
+.amigo-admin-refresh,
+.amigo-admin-state {
+  margin-top: var(--amigo-space-4);
+}
+
+.amigo-admin-state {
+  padding: var(--amigo-space-4);
+  border-radius: var(--amigo-radius);
+  background: var(--amigo-surface-strong);
+}
+
+.amigo-admin-table-wrap {
+  margin-top: var(--amigo-space-4);
+  overflow-x: auto;
+}
+
+.amigo-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.amigo-admin-table th,
+.amigo-admin-table td {
+  padding: 0.85rem 0.65rem;
+  border-bottom: 1px solid var(--amigo-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.amigo-admin-table th {
+  color: var(--amigo-green);
+  font-size: 0.82rem;
+}
+
+.amigo-admin-status {
+  display: inline-block;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: var(--amigo-green);
+  background: var(--amigo-surface-strong);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.amigo-admin-status-completed { color: #185c37; background: #dcefe3; }
+.amigo-admin-status-cancelled { color: #7b2b24; background: #f5dfdc; }
+.amigo-admin-status-in_progress { color: #704d0d; background: #f5e9c9; }
+
+.amigo-admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--amigo-space-3);
+  margin-top: var(--amigo-space-4);
+}
+
+.amigo-admin-pagination button,
+.amigo-admin-drawer button,
+.amigo-admin-state button {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--amigo-border);
+  border-radius: var(--amigo-radius-sm);
+  color: var(--amigo-green);
+  background: white;
+  cursor: pointer;
+}
+
+.amigo-admin-drawer {
+  z-index: 60;
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(100%, 34rem);
+  padding: var(--amigo-space-4);
+  overflow-y: auto;
+  border-left: 1px solid var(--amigo-border);
+  background: var(--amigo-surface);
+  box-shadow: -18px 0 50px rgba(23, 63, 53, 0.18);
+}
+
+.amigo-admin-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--amigo-space-3);
+}
+
+.amigo-admin-details-list {
+  display: grid;
+  gap: var(--amigo-space-2);
+  margin-block: var(--amigo-space-4);
+}
+
+.amigo-admin-details-list div {
+  padding-bottom: var(--amigo-space-2);
+  border-bottom: 1px solid var(--amigo-border);
+}
+
+.amigo-admin-details-list dt {
+  color: var(--amigo-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.amigo-admin-details-list dd { margin: 0.2rem 0 0; overflow-wrap: anywhere; }
+.amigo-admin-status-update { display: grid; gap: var(--amigo-space-2); }
+.amigo-admin-status-update label { display: grid; gap: 0.35rem; }
+
+.amigo-visually-hidden {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 760px) {
+  .amigo-admin-header { align-items: flex-start; }
+  .amigo-admin-filters { grid-template-columns: 1fr; }
+  .amigo-admin-table thead { display: none; }
+  .amigo-admin-table,
+  .amigo-admin-table tbody,
+  .amigo-admin-table tr,
+  .amigo-admin-table td { display: block; width: 100%; }
+  .amigo-admin-table tr { padding-block: var(--amigo-space-2); border-bottom: 1px solid var(--amigo-border); }
+  .amigo-admin-table td { display: grid; grid-template-columns: 6rem 1fr; gap: var(--amigo-space-2); padding: 0.35rem 0; border: 0; }
+  .amigo-admin-table td::before { color: var(--amigo-muted); content: attr(data-label); font-size: 0.78rem; font-weight: 700; }
+  .amigo-admin-table td:last-child { display: block; }
+}
+
 .amigo-app *,
 .amigo-app *::before,
 .amigo-app *::after {

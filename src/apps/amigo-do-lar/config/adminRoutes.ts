@@ -21,4 +21,11 @@ export const adminRoutes: AdminRouteMetadata[] = [
     robots: { index: false, follow: false },
     prerender: true,
   },
+  {
+    pathname: '/admin/solicitacoes',
+    title: 'Solicitações — Amigo do Lar',
+    description: 'Gestão administrativa de solicitações do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
 ]
