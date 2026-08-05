@@ -63,7 +63,17 @@
   display: grid;
   place-items: center;
   padding: var(--amigo-space-4);
-  background: linear-gradient(145deg, var(--amigo-bg), var(--amigo-surface-strong));
+  background:
+    radial-gradient(circle at 15% 15%, rgba(181, 138, 66, 0.2), transparent 24rem),
+    linear-gradient(145deg, var(--amigo-bg), var(--amigo-surface-strong));
+}
+
+.amigo-admin-auth::before {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 55%, rgba(23, 63, 53, 0.06));
+  content: '';
 }
 
 .amigo-admin-card {
@@ -74,6 +84,111 @@
   background: var(--amigo-surface);
   box-shadow: var(--amigo-shadow);
 }
+
+.amigo-admin-auth .amigo-admin-card { z-index: 1; }
+
+.amigo-admin-login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: var(--amigo-space-5);
+  color: var(--amigo-green) !important;
+  text-decoration: none;
+}
+
+.amigo-admin-login-brand span,
+.amigo-admin-header-brand > span {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: var(--amigo-green);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+}
+
+.amigo-admin-back-link {
+  display: inline-block;
+  margin-top: var(--amigo-space-4);
+  color: var(--amigo-muted) !important;
+  font-size: 0.86rem;
+}
+
+.amigo-admin-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template: auto 1fr / 16.5rem minmax(0, 1fr);
+  overflow-x: clip;
+  background: #f3f1ea;
+}
+
+.amigo-admin-shell-header {
+  z-index: 50;
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--amigo-space-3);
+  min-height: 4.75rem;
+  padding: 0.7rem var(--amigo-space-4);
+  border-bottom: 1px solid var(--amigo-border);
+  background: rgba(255, 253, 248, 0.96);
+}
+
+.amigo-admin-header-brand,
+.amigo-admin-user,
+.amigo-admin-user > div {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.amigo-admin-header-brand div,
+.amigo-admin-user > div { display: grid; gap: 0; }
+.amigo-admin-header-brand small,
+.amigo-admin-user span { color: var(--amigo-muted); font-size: 0.75rem; }
+.amigo-admin-user svg { color: var(--amigo-gold); }
+.amigo-admin-user small { padding: 0.2rem 0.55rem; border-radius: 999px; color: var(--amigo-green); background: var(--amigo-surface-strong); font-weight: 800; }
+
+.amigo-admin-sidebar {
+  min-width: 0;
+  grid-row: 2;
+  padding: var(--amigo-space-4) var(--amigo-space-3);
+  color: rgba(255, 255, 255, 0.82);
+  background: var(--amigo-green);
+}
+
+.amigo-admin-sidebar-nav { display: grid; gap: 0.35rem; }
+.amigo-admin-sidebar-nav a,
+.amigo-admin-sidebar-nav button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 0;
+  border-radius: var(--amigo-radius-sm);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.amigo-admin-sidebar-nav a:hover,
+.amigo-admin-sidebar-nav button:hover,
+.amigo-admin-sidebar-nav a[aria-current='page'] { color: white; background: rgba(255, 255, 255, 0.12); }
+.amigo-admin-sidebar-nav button { margin-top: var(--amigo-space-3); border-top: 1px solid rgba(255, 255, 255, 0.18); border-radius: 0; }
+
+.amigo-admin-content { min-width: 0; grid-column: 2; }
+.amigo-admin-menu-button,
+.amigo-admin-menu-backdrop { display: none; }
 
 .amigo-admin-card h1 {
   margin-top: var(--amigo-space-2);
@@ -137,6 +252,7 @@
 .amigo-admin-page {
   min-height: 100vh;
   padding: var(--amigo-space-4);
+  overflow-x: clip;
 }
 
 .amigo-admin-header {
@@ -318,6 +434,18 @@
 }
 
 @media (max-width: 760px) {
+  .amigo-admin-shell { display: block; }
+  .amigo-admin-shell-header { min-height: 4rem; padding: 0.55rem 1rem; }
+  .amigo-admin-menu-button { width: 2.75rem; height: 2.75rem; display: grid; flex: 0 0 auto; place-items: center; border: 1px solid var(--amigo-border); border-radius: var(--amigo-radius-sm); color: var(--amigo-green); background: white; }
+  .amigo-admin-header-brand { margin-right: auto; }
+  .amigo-admin-header-brand > span { display: none; }
+  .amigo-admin-header-brand small,
+  .amigo-admin-user > div,
+  .amigo-admin-user svg { display: none; }
+  .amigo-admin-sidebar { z-index: 70; width: min(18rem, 86vw); position: fixed; inset: 0 auto 0 0; padding-top: 5rem; transform: translateX(-105%); transition: transform var(--amigo-transition); }
+  .amigo-admin-sidebar[data-open='true'] { transform: translateX(0); }
+  .amigo-admin-menu-backdrop { z-index: 60; position: fixed; inset: 0; display: block; border: 0; background: rgba(12, 29, 25, 0.55); }
+  .amigo-admin-page { padding: var(--amigo-space-3); }
   .amigo-admin-header { align-items: flex-start; }
   .amigo-admin-filters { grid-template-columns: 1fr; }
   .amigo-admin-table thead { display: none; }
@@ -1170,6 +1298,12 @@
 
 .amigo-footer nav a:hover {
   color: var(--amigo-gold-light);
+}
+
+.amigo-footer .amigo-footer-admin-link {
+  margin-top: var(--amigo-space-2);
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.78rem;
 }
 
 .amigo-copyright {

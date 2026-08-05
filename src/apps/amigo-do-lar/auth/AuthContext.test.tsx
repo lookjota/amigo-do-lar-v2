@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiClient } from '../api/apiClient'
 import { AdminHomePage } from '../pages/AdminHomePage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
+import { AdminLayout } from '../components/admin'
 import { AuthProvider } from './AuthContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { storeSession } from './sessionStorage'
@@ -19,7 +20,7 @@ const user = {
 
 function LocationStatus() {
   const location = useLocation()
-  return <output aria-label="Rota atual">{location.pathname}</output>
+  return <output aria-label="Rota atual">{location.pathname}{location.search}{location.hash}</output>
 }
 
 function TestRoutes({ initialEntry = '/admin/login' }) {
@@ -29,7 +30,10 @@ function TestRoutes({ initialEntry = '/admin/login' }) {
         <Routes>
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/admin" element={<AdminHomePage />} />
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminHomePage />} />
+              <Route path="/admin/clientes" element={<h1>Clientes solicitados</h1>} />
+            </Route>
           </Route>
         </Routes>
         <LocationStatus />
@@ -108,6 +112,20 @@ describe('autenticação administrativa', () => {
       .toBeInTheDocument()
     expect(screen.getByRole('status', { name: 'Rota atual' }))
       .toHaveTextContent('/admin/login')
+  })
+
+  it('retorna à rota administrativa completa solicitada após o login', async () => {
+    const browser = userEvent.setup()
+    vi.spyOn(apiClient, 'post').mockResolvedValue({ accessToken: 'jwt-value', tokenType: 'Bearer', expiresIn: 900, user })
+    render(<TestRoutes initialEntry="/admin/clientes?search=Ana#resultado" />)
+
+    await screen.findByRole('heading', { name: 'Acesse sua conta' })
+    await browser.type(screen.getByLabelText('E-mail'), user.email)
+    await browser.type(screen.getByLabelText('Senha'), 'secure-password')
+    await browser.click(screen.getByRole('button', { name: 'Entrar' }))
+
+    expect(await screen.findByRole('heading', { name: 'Clientes solicitados' })).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'Rota atual' })).toHaveTextContent('/admin/clientes?search=Ana#resultado')
   })
 
   it('descarta uma sessão já expirada no bootstrap', async () => {

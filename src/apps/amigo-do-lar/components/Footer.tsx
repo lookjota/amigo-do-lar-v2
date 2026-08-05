@@ -25,6 +25,9 @@ export function Footer() {
             <Link to="/politica-de-privacidade">Política de privacidade</Link>
             <Link to="/termos-de-uso">Termos de uso</Link>
             <Link to="/contato">Contato</Link>
+            <Link className="amigo-footer-admin-link" to="/admin/login">
+              Área administrativa
+            </Link>
           </nav>
         </div>
         <p className="amigo-copyright">
