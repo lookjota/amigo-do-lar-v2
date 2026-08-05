@@ -389,3 +389,57 @@ fora do sitemap.
 Valide com `npm run lint`, `npm run test` e `npm run build`. A mutação de
 produção não deve ser executada enquanto o catálogo não publicar um serviço
 ativo correspondente; testes usam mocks e não criam clientes ou solicitações.
+
+## Gestão administrativa de serviços
+
+A rota protegida `/admin/servicos` usa exclusivamente o
+`authenticatedApiClient`, é prerenderizada apenas como estrutura inicial,
+possui `noindex, nofollow` e fica fora do sitemap. As consultas são habilitadas
+somente no navegador. `ADMIN` e `OPERATOR` podem listar e consultar detalhes;
+criação, edição e alteração de status exigem `ADMIN` e seus controles não são
+oferecidos ao operador.
+
+Contrato confirmado no código, testes e `docs/services.md` do backend em 5 de
+agosto de 2026:
+
+- `GET /services`: envelope paginado `{ data, pagination }`;
+- `GET /services/:slug`: detalhe por slug, não por UUID;
+- `POST /services`: cria e retorna `201`, somente `ADMIN`;
+- `PATCH /services/:id`: atualiza campos e retorna `200`, somente `ADMIN`;
+- `DELETE /services/:id`: existe, mas faz somente desativação lógica. A tela
+  não o usa porque o `PATCH` real permite tanto ativar quanto desativar;
+- não existe `PATCH /services/:id/status`.
+
+Cada serviço contém exatamente `id`, `name`, `slug`, `description`, `category`,
+`isActive`, `createdAt` e `updatedAt`. Criação aceita somente `name`, `slug`,
+`description` e `category`. Atualização aceita um subconjunto não vazio desses
+campos e `isActive`; a UI separa a mutação de status e nunca envia `id` ou datas.
+Nome possui 3–120 caracteres após trim, descrição é obrigatória e possui até
+1.000, categoria é uma string não vazia de até 100 caracteres. A API não define
+enum de categorias: `PLUMBING`, `ELECTRICAL`, `FURNITURE_ASSEMBLY`,
+`LOCKS_AND_DOORS`, `PAINTING` e `MINOR_REPAIRS` são sugestões conhecidas do
+seed, não uma lista fechada.
+
+A lista aceita `page` (mínimo 1), `limit` (1–100), busca case-insensitive apenas
+por nome em `search`, correspondência exata em `category`, `isActive`,
+`orderBy` (`name` ou `createdAt`) e `sortOrder` (`asc` ou `desc`). Paginação e
+filtros são server-side e sincronizados com a query string. Consultas anônimas
+não podem enviar `isActive`; a interface autenticada pode listar ambos os
+status.
+
+O slug é lowercase kebab-case, segundo
+`^[a-z0-9]+(?:-[a-z0-9]+)*$`, e é confirmado manualmente: o frontend não o
+gera automaticamente. A unicidade é global; conflito retorna `409` com
+`SERVICE_SLUG_CONFLICT`. Payload ou regra de conteúdo inválida retorna `400`,
+credencial ausente/inválida retorna `401`, papel insuficiente `403` e recurso
+ausente `404` com `SERVICE_NOT_FOUND`. O cliente autenticado encerra a sessão
+em `401`; demais erros recebem mensagens públicas seguras.
+
+**Criar um serviço na API não publica automaticamente uma página no site.** O
+cadastro da API pertence ao catálogo operacional. A publicação SEO continua
+dependendo de conteúdo editorial completo e versionado em `data/services.ts`.
+A coluna de publicação e o link público são calculados somente pelos slugs
+editoriais locais. Criar, renomear, ativar ou desativar um serviço não cria ou
+remove rota, sitemap, metadata, JSON-LD nem conteúdo editorial. Se um serviço
+publicado for desativado na API, sua página editorial continua existindo; o
+catálogo dinâmico deixa de enriquecê-la e preserva o fallback estático.
