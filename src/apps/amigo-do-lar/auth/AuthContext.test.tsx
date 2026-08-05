@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiClient } from '../api/apiClient'
+import { ApiProvider } from '../api/ApiProvider'
+import { createQueryClient } from '../api/queryClient'
 import { AdminHomePage } from '../pages/AdminHomePage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
 import { AdminLayout } from '../components/admin'
@@ -10,6 +12,19 @@ import { AuthProvider } from './AuthContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { storeSession } from './sessionStorage'
 import { useAuth } from './useAuth'
+
+const dashboardResponse = vi.hoisted(() => ({ data: [], pagination: { page: 1, limit: 1, total: 0, totalPages: 0 } }))
+vi.mock('../admin/dashboard/api/dashboard-api', () => ({
+  getPendingServiceRequests: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getInProgressServiceRequests: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getServiceRequestsCreatedInRange: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getRecentServiceRequests: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getCustomerCount: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getActiveServiceCount: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getAppointmentsInRange: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getUpcomingAppointments: vi.fn(() => Promise.resolve(dashboardResponse)),
+  getActiveUserCount: vi.fn(() => Promise.resolve(dashboardResponse)),
+}))
 
 const user = {
   id: 'b32efc7d-bb72-4d0b-a64b-b34f4fc83bad',
@@ -25,8 +40,9 @@ function LocationStatus() {
 
 function TestRoutes({ initialEntry = '/admin/login' }) {
   return (
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <AuthProvider>
+    <ApiProvider queryClient={createQueryClient()}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <AuthProvider>
         <Routes>
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route element={<ProtectedRoute />}>
@@ -37,8 +53,9 @@ function TestRoutes({ initialEntry = '/admin/login' }) {
           </Route>
         </Routes>
         <LocationStatus />
-      </AuthProvider>
-    </MemoryRouter>
+        </AuthProvider>
+      </MemoryRouter>
+    </ApiProvider>
   )
 }
 
@@ -63,7 +80,7 @@ describe('autenticação administrativa', () => {
     await browser.click(screen.getByRole('button', { name: 'Entrar' }))
 
     expect(
-      await screen.findByText('Dashboard administrativo'),
+      await screen.findByRole('heading', { name: 'Olá, Admin' }),
     ).toBeInTheDocument()
     expect(post).toHaveBeenCalledWith('/auth/login', {
       email: user.email,
@@ -149,7 +166,7 @@ describe('autenticação administrativa', () => {
     })
     render(<TestRoutes initialEntry="/admin" />)
     await act(async () => vi.advanceTimersByTime(0))
-    expect(screen.getByText('Dashboard administrativo')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Olá, Admin' })).toBeInTheDocument()
 
     await act(async () => vi.advanceTimersByTime(1_000))
 
