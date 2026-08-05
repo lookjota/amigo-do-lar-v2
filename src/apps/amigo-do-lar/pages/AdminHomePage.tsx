@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { AdminPageMetadata } from '../components/AdminPageMetadata'
 
@@ -24,8 +24,11 @@ export function AdminHomePage() {
         </button>
       </header>
       <section className="amigo-admin-card">
-        <h1>Dashboard em construção</h1>
-        <p>A infraestrutura de acesso administrativo está pronta.</p>
+        <h1>Dashboard administrativo</h1>
+        <p>Acompanhe e atualize as solicitações recebidas.</p>
+        <Link className="amigo-button" to="/admin/solicitacoes">
+          Gerenciar solicitações
+        </Link>
       </section>
     </main>
   )
