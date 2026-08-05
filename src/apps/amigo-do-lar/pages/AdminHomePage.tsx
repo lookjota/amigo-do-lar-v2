@@ -29,6 +29,9 @@ export function AdminHomePage() {
         <Link className="amigo-button" to="/admin/solicitacoes">
           Gerenciar solicitações
         </Link>
+        <Link className="amigo-button amigo-button-secondary" to="/admin/agenda">
+          Gerenciar agenda
+        </Link>
       </section>
     </main>
   )

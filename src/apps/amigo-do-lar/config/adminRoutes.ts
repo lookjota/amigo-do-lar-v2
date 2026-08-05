@@ -28,4 +28,11 @@ export const adminRoutes: AdminRouteMetadata[] = [
     robots: { index: false, follow: false },
     prerender: true,
   },
+  {
+    pathname: '/admin/agenda',
+    title: 'Agenda — Amigo do Lar',
+    description: 'Gestão administrativa de agendamentos do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
 ]

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { toUiError } from '../../../api/errors'
 import { useServiceRequest } from '../api/useServiceRequest'
 import { useUpdateServiceRequestStatus } from '../api/useUpdateServiceRequestStatus'
@@ -112,6 +113,7 @@ export function ServiceRequestDetails({ id, onClose }: Props) {
             {successMessage && <p role="status" className="amigo-form-message amigo-form-message-success">{successMessage}</p>}
             {mutation.isError && <p role="alert" className="amigo-form-message amigo-form-message-error">{toUiError(mutation.error).userMessage}</p>}
           </section>
+          {request.status === 'APPROVED' && <Link className="amigo-button" to={`/admin/agenda?serviceRequestId=${encodeURIComponent(request.id)}&create=1`}>Criar agendamento</Link>}
         </>
       )}
     </aside>

@@ -253,6 +253,57 @@ retry central apenas para falhas transitórias; mutações nunca têm retry, exi
 confirmação, bloqueiam envio concorrente e só atualizam lista e detalhe após
 sucesso confirmado. A interface não mostra body, JSON, stack nem request ID.
 
+## Gestão administrativa de agendamentos
+
+A rota protegida `/admin/agenda` usa exclusivamente o
+`authenticatedApiClient`, aceita as sessões `ADMIN` e `OPERATOR`, publica
+`noindex, nofollow`, fica fora do sitemap e não consulta a API no SSR. Os
+contratos foram confirmados no código, testes e `docs/appointments.md` do
+backend e a existência de `GET /appointments` foi confirmada por uma resposta
+anônima `401 UNAUTHORIZED` da API publicada em 5 de agosto de 2026.
+
+Os endpoints reais são `GET /appointments`, `GET /appointments/:id`,
+`POST /appointments`, `PATCH /appointments/:id` e
+`PATCH /appointments/:id/status`. Não existe `DELETE`: cancelamento preserva o
+histórico e é feito pela transição explícita para `CANCELLED`.
+
+A lista retorna `{ data, pagination: { page, limit, total, totalPages } }`. Usa
+`page=1`, `limit=20`, `sortBy=scheduledAt`, `sortOrder=asc` e aceita apenas
+`status`, `serviceRequestId`, `customerId`, `serviceId`, `scheduledFrom` e
+`scheduledTo`; as ordenações válidas são `scheduledAt`, `createdAt`,
+`updatedAt` e `status`. A interface expõe status e período. Cliente e serviço
+não são simulados por busca local; filtros por seus UUIDs ficam reservados para
+seletores administrativos futuros.
+
+A criação exige `serviceRequestId`, `scheduledAt` e `durationMinutes`; `notes`
+é opcional e aceita string ou `null`. A solicitação deve estar em `APPROVED`, o
+horário deve ser futuro e livre, e só pode existir um agendamento ativo por
+solicitação. Duração é um inteiro entre 15 e 480 minutos e notas têm no máximo
+4.000 caracteres. O PATCH comum aceita somente `scheduledAt`,
+`durationMinutes` e `notes`, com ao menos um campo, e não permite reagendar
+estados finais.
+
+Os estados reais são `SCHEDULED`, `CONFIRMED`, `IN_PROGRESS`, `COMPLETED` e
+`CANCELLED`. As transições são: agendado para confirmado ou cancelado;
+confirmado para em andamento, agendado ou cancelado; em andamento para
+concluído, confirmado ou cancelado. Concluído e cancelado são finais. Não há
+`NO_SHOW`, responsável/técnico ou motivo estruturado de cancelamento no contrato
+atual.
+
+Datas entram e saem como ISO 8601. A API persiste UTC e compara timestamps
+absolutos; o formulário interpreta data e horário no timezone local do browser,
+converte explicitamente com `Date#toISOString()` e apresenta em `pt-BR`. Assim,
+um horário escolhido em Brasília é enviado com o offset correto e volta ao
+mesmo horário local. Os limites diários dos filtros seguem o mesmo timezone do
+operador.
+
+Erros relevantes são `INVALID_APPOINTMENT_DATE` (400), `UNAUTHORIZED` (401),
+`FORBIDDEN` (403), recursos ausentes (404), conflitos de solicitação ou horário
+(409) e `INVALID_APPOINTMENT_STATUS_TRANSITION` (422). A UI apresenta somente
+mensagens públicas normalizadas. `401` encerra a sessão pela infraestrutura
+compartilhada; mutações não têm retry nem atualização otimista e invalidam lista
+e detalhe apenas após sucesso.
+
 Para validar localmente, execute `npm run lint`, `npm run test` e
 `npm run build`. Uma chamada anônima segura a `GET /service-requests` deve
 retornar `401 UNAUTHORIZED`. Testes autenticados reais dependem de credencial de
