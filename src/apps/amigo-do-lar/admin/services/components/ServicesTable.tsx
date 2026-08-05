@@ -1,0 +1,6 @@
+import type { AdminService } from '../types/contracts'
+import { getServiceCategoryLabel } from '../types/contracts'
+import { ServicePublicationBadge } from './ServicePublicationBadge'
+import { ServiceStatusBadge } from './ServiceStatusBadge'
+const date = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
+export function ServicesTable({ services, onDetails }: { services: AdminService[]; onDetails: (slug: string) => void }) { return <div className="amigo-admin-table-wrap"><table className="amigo-admin-table"><caption className="sr-only">Serviços encontrados</caption><thead><tr><th>Nome</th><th>Slug</th><th>Categoria</th><th>Status</th><th>Publicação</th><th>Criado em</th><th>Ação</th></tr></thead><tbody>{services.map((service) => <tr key={service.id}><td data-label="Nome">{service.name}</td><td data-label="Slug">{service.slug}</td><td data-label="Categoria">{getServiceCategoryLabel(service.category)}</td><td data-label="Status"><ServiceStatusBadge isActive={service.isActive} /></td><td data-label="Publicação"><ServicePublicationBadge slug={service.slug} /></td><td data-label="Criado em">{date.format(new Date(service.createdAt))}</td><td><button type="button" onClick={() => onDetails(service.slug)} aria-label={`Ver detalhes de ${service.name}`}>Detalhes</button></td></tr>)}</tbody></table></div> }

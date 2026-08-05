@@ -20,7 +20,7 @@ const publicRoutes = [
 const titles = new Set()
 const descriptions = new Set()
 const failures = []
-const adminPathnames = ['/admin', '/admin/login', '/admin/solicitacoes', '/admin/agenda', '/admin/clientes']
+const adminPathnames = ['/admin', '/admin/login', '/admin/solicitacoes', '/admin/agenda', '/admin/clientes', '/admin/servicos']
 
 function routeFile(pathname) {
   return pathname === '/'
