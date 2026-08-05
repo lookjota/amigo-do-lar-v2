@@ -100,6 +100,7 @@ export interface AdminServiceRequestFilters {
   limit: number
   search?: string
   status?: ServiceRequestStatus
+  customerId?: string
   serviceId?: string
   createdFrom?: string
   createdTo?: string

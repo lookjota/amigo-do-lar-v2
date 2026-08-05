@@ -27,8 +27,9 @@ export function AdminAppointmentsPage() {
   const validPeriod = !scheduledFrom || !scheduledTo || scheduledFrom <= scheduledTo
   const selectedId = uuid.test(params.get('appointment') ?? '') ? params.get('appointment') ?? undefined : undefined
   const serviceRequestId = uuid.test(params.get('serviceRequestId') ?? '') ? params.get('serviceRequestId') ?? undefined : undefined
+  const customerId = uuid.test(params.get('customerId') ?? '') ? params.get('customerId') ?? undefined : undefined
   const showCreate = params.get('create') === '1' && Boolean(serviceRequestId)
-  const filters = useMemo<AdminAppointmentFilters>(() => ({ page, limit: PAGE_SIZE, status, scheduledFrom: validPeriod ? scheduledFrom : undefined, scheduledTo: validPeriod ? scheduledTo : undefined, sortBy: 'scheduledAt', sortOrder: 'asc' }), [page, scheduledFrom, scheduledTo, status, validPeriod])
+  const filters = useMemo<AdminAppointmentFilters>(() => ({ page, limit: PAGE_SIZE, status, customerId, scheduledFrom: validPeriod ? scheduledFrom : undefined, scheduledTo: validPeriod ? scheduledTo : undefined, sortBy: 'scheduledAt', sortOrder: 'asc' }), [customerId, page, scheduledFrom, scheduledTo, status, validPeriod])
   const query = useAppointments(filters)
   const create = useCreateAppointment()
   const [success, setSuccess] = useState('')

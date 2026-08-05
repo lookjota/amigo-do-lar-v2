@@ -310,6 +310,51 @@ retornar `401 UNAUTHORIZED`. Testes autenticados reais dependem de credencial de
 teste fornecida fora do repositório. Não execute o PATCH contra produção sem
 autorização explícita.
 
+## Gestão administrativa de clientes
+
+A rota protegida `/admin/clientes` usa exclusivamente o
+`authenticatedApiClient`, é prerenderizada apenas como estrutura inicial,
+publica `noindex, nofollow` e fica fora do sitemap. Nenhuma consulta é habilitada
+durante SSR. A existência de `GET /customers` foi confirmada por resposta
+anônima `401 UNAUTHORIZED` da API publicada em 5 de agosto de 2026; contratos,
+validações e permissões foram confirmados no módulo Customers do backend.
+
+Os endpoints reais são `GET /customers`, `GET /customers/:id`,
+`POST /customers`, `PATCH /customers/:id` e `DELETE /customers/:id`. Não existe
+`PATCH /customers/:id/status`. O `DELETE` é uma desativação lógica que mantém o
+registro, mas a interface usa o `PATCH` com `{ isActive }` para desativar e
+reativar de forma simétrica. Essa alteração de status é exclusiva de `ADMIN`;
+`ADMIN` e `OPERATOR` podem listar, consultar, criar e atualizar nome, telefone e
+e-mail.
+
+Lista e detalhe retornam somente `id`, `name`, `phone`, `email`, `isActive`,
+`createdAt` e `updatedAt`. A lista usa o envelope
+`{ data, pagination: { page, limit, total, totalPages } }`, com `page=1` e
+`limit=20`. Os únicos filtros reais são `search` (nome, telefone ou e-mail) e
+`isActive`; ordenação aceita `name`, `createdAt` ou `updatedAt`, com `asc` ou
+`desc`. A API não aceita período de cadastro. Filtros, ordenação, página e
+cliente aberto são preservados na query string e processados no servidor.
+
+Criação exige `name` e `phone`; `email` é opcional. Atualização aceita um
+subconjunto não vazio de `name`, `phone`, `email` e, para administrador,
+`isActive`. A interface separa edição de contato da alteração de status e nunca
+envia campos imutáveis. Nome é normalizado para espaços simples e deve ter de 2
+a 120 caracteres. Telefone aceita apenas dígitos e formatação comum, sendo
+normalizado para 10 ou 11 dígitos com DDD. E-mail vazio vira `null`; os demais
+valores são normalizados para lowercase.
+
+Erros relevantes são dados inválidos (400), sessão inválida (401), permissão
+insuficiente (403), cliente ausente (404) e telefone ou e-mail duplicado (409).
+O cliente HTTP encerra a sessão em 401 e a interface converte todos os erros em
+mensagens públicas seguras. Mutações não têm retry ou atualização otimista,
+bloqueiam submissão duplicada e invalidam lista e detalhe apenas após sucesso.
+
+Não há endereço no Customer nem endpoint de histórico agregado. Como
+`GET /service-requests` e `GET /appointments` aceitam o filtro real
+`customerId`, o detalhe oferece links para essas telas, que executam suas
+próprias consultas paginadas. A API não retorna contagens agregadas, portanto a
+interface não inventa totais nem duplica grandes consultas.
+
 ## Solicitação pública de atendimento
 
 O contrato foi confirmado no código, nos testes e em `docs/service-requests.md`

@@ -16,6 +16,7 @@ import {
 } from '../types/contracts'
 
 const PAGE_SIZE = 20
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 function dateStart(value: string | null) {
   return value && /^\d{4}-\d{2}-\d{2}$/.test(value)
@@ -39,6 +40,7 @@ export function AdminServiceRequestsPage() {
   const createdFromInput = params.get('createdFrom') ?? undefined
   const createdToInput = params.get('createdTo') ?? undefined
   const selectedId = params.get('request') ?? undefined
+  const customerId = uuid.test(params.get('customerId') ?? '') ? params.get('customerId') ?? undefined : undefined
   const createdFrom = dateStart(createdFromInput ?? null)
   const createdTo = dateEnd(createdToInput ?? null)
   const validPeriod = !createdFrom || !createdTo || createdFrom <= createdTo
@@ -48,9 +50,10 @@ export function AdminServiceRequestsPage() {
     limit: PAGE_SIZE,
     search,
     status,
+    customerId,
     createdFrom: validPeriod ? createdFrom : undefined,
     createdTo: validPeriod ? createdTo : undefined,
-  }), [createdFrom, createdTo, page, search, status, validPeriod])
+  }), [createdFrom, createdTo, customerId, page, search, status, validPeriod])
   const query = useServiceRequests(filters)
 
   const updateParams = useCallback((updates: Record<string, string | undefined>) => {
