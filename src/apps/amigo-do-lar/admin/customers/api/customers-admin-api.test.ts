@@ -1,0 +1,16 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { HttpError, NetworkError } from '../../../../../shared/http'
+import { authenticatedApiClient } from '../../../api/apiClient'
+import { buildAdminCustomersPath, createAdminCustomer, getAdminCustomer, getAdminCustomers, updateAdminCustomer, updateAdminCustomerStatus } from './customers-admin-api'
+
+const id = '1ad575e6-0225-45ce-bb18-296407bc558b'
+const customer = { id, name: 'João da Silva', phone: '61999999999', email: 'joao@example.com', isActive: true, createdAt: '2026-08-05T10:00:00.000Z', updatedAt: '2026-08-05T10:00:00.000Z' }
+afterEach(() => vi.restoreAllMocks())
+describe('customers admin API', () => {
+  it('monta paginação e somente filtros suportados preenchidos', () => expect(buildAdminCustomersPath({ page: 2, limit: 20, search: '  João ', isActive: false, sortBy: 'createdAt', sortOrder: 'desc' })).toBe('/customers?page=2&limit=20&search=Jo%C3%A3o&isActive=false&sortBy=createdAt&sortOrder=desc'))
+  it('lista com AbortSignal e valida o envelope', async () => { const controller = new AbortController(); const response = { data: [customer], pagination: { page: 1, limit: 20, total: 1, totalPages: 1 } }; const get = vi.spyOn(authenticatedApiClient, 'get').mockResolvedValue(response); await expect(getAdminCustomers({ page: 1, limit: 20 }, controller.signal)).resolves.toEqual(response); expect(get).toHaveBeenCalledWith('/customers?page=1&limit=20', { signal: controller.signal }) })
+  it('usa os endpoints reais e envia somente payload normalizado', async () => { const get = vi.spyOn(authenticatedApiClient, 'get').mockResolvedValue(customer); const post = vi.spyOn(authenticatedApiClient, 'post').mockResolvedValue(customer); const patch = vi.spyOn(authenticatedApiClient, 'patch').mockResolvedValue(customer); await getAdminCustomer(id); await createAdminCustomer({ name: '  João   da Silva ', phone: '(61) 99999-9999', email: ' JOAO@example.com ' }); await updateAdminCustomer(id, { email: '' }); await updateAdminCustomerStatus(id, { isActive: false }); expect(get).toHaveBeenCalledWith(`/customers/${id}`, { signal: undefined }); expect(post).toHaveBeenCalledWith('/customers', { name: 'João da Silva', phone: '61999999999', email: 'joao@example.com' }, { signal: undefined }); expect(patch).toHaveBeenNthCalledWith(1, `/customers/${id}`, { email: null }, { signal: undefined }); expect(patch).toHaveBeenNthCalledWith(2, `/customers/${id}`, { isActive: false }, { signal: undefined }) })
+  it('rejeita respostas com campos extras ou contratos inválidos', async () => { vi.spyOn(authenticatedApiClient, 'get').mockResolvedValue({ ...customer, address: 'inventado' }); await expect(getAdminCustomer(id)).rejects.toMatchObject({ name: 'ZodError' }) })
+  it.each([401, 403, 404, 409])('preserva erro HTTP %s', async (status) => { const error = new HttpError({ status, statusText: 'Error', responseBody: {}, url: 'https://api.example.com/customers', method: 'GET' }); vi.spyOn(authenticatedApiClient, 'get').mockRejectedValue(error); await expect(getAdminCustomers({ page: 1, limit: 20 })).rejects.toBe(error) })
+  it('preserva erro de rede', async () => { const error = new NetworkError(); vi.spyOn(authenticatedApiClient, 'get').mockRejectedValue(error); await expect(getAdminCustomers({ page: 1, limit: 20 })).rejects.toBe(error) })
+})

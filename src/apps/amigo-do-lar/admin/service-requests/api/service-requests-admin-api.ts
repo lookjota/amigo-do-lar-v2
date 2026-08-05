@@ -19,6 +19,7 @@ export function buildAdminServiceRequestsPath(
   const optionalEntries = {
     search: filters.search?.trim(),
     status: filters.status,
+    customerId: filters.customerId,
     serviceId: filters.serviceId,
     createdFrom: filters.createdFrom,
     createdTo: filters.createdTo,
