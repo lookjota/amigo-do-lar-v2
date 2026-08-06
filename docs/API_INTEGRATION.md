@@ -666,3 +666,12 @@ A seleção de solicitações para novo orçamento consulta páginas de 10 regis
 `description` aceita até 2.000 caracteres, `notes` até 4.000 e referência de pagamento até 300. `GET /quotes/:quoteId/payments` retorna diretamente um array estrito de pagamentos, sem envelope de paginação. Datas de pagamento são preenchidas em `datetime-local` no timezone local do navegador e convertidas para ISO 8601 somente no envio. Pagamento `PENDING` não envia `paidAt`; pagamento `PAID` envia o instante ISO correspondente. O formulário existe somente para ADMIN, exige orçamento `APPROVED` e impede valor acima do `remainingCents` conhecido, mantendo a validação concorrente definitiva no backend.
 
 Não há PDF, gateway, PIX automático, armazenamento de dados de cartão, integração bancária, exportação ou estorno externo. Erros financeiros conhecidos são traduzidos para mensagens públicas, sem expor stack, requestId ou detalhes internos.
+# Notificações administrativas
+
+O frontend usa o cliente autenticado existente para `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/:id/read` e `PATCH /notifications/read-all`. A listagem aceita `page`, `limit`, `unreadOnly`, `type`, `resourceType` e `sortOrder`; a paginação e os filtros são processados no servidor. Os PATCH enviam corpo vazio e a leitura individual valida a notificação retornada.
+
+As chaves de cache separam listas e contador. Leituras invalidam somente essas consultas; a leitura em massa também ajusta o contador para zero antes do refetch. O contador atualiza ao montar o layout autenticado, ao retornar o foco à janela e após mutações. Não existe polling automático, WebSocket, SSE ou dados mockados.
+
+ADMIN e OPERATOR acessam apenas as notificações da própria sessão. O backend determina destinatários e visibilidade; o frontend não envia `recipientUserId`. A navegação usa apenas rotas existentes: solicitações e agenda abrem detalhes pelos query params já suportados, financeiro abre orçamento quando há ID seguro e pagamentos sem orçamento conhecido levam à listagem financeira.
+
+Metadata é complementar e analisado defensivamente para status, datas de agendamento e IDs conhecidos. Formatos inválidos são ignorados sem ocultar título, mensagem, data, ator ou tipo. Não há endpoint nem interface para excluir, arquivar, marcar como não lida ou configurar preferências.

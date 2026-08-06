@@ -1601,3 +1601,31 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+.amigo-notification-bell { position: relative; margin-left: .25rem; }
+.amigo-notification-bell > button { position: relative; width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 1px solid var(--amigo-border); border-radius: 50%; color: var(--amigo-green); background: white; }
+.amigo-notification-count { position: absolute; top: -.35rem; right: -.35rem; min-width: 1.35rem; height: 1.35rem; padding: 0 .25rem; display: grid; place-items: center; border: 2px solid white; border-radius: 999px; color: white; background: #a62d2d; font-size: .68rem; font-weight: 800; }
+.amigo-notification-popover { z-index: 40; position: absolute; top: calc(100% + .75rem); right: 0; width: min(28rem, calc(100vw - 1rem)); max-height: min(40rem, calc(100vh - 5rem)); overflow: auto; padding: 1rem; border: 1px solid var(--amigo-border); border-radius: .8rem; background: white; box-shadow: 0 18px 45px rgba(16,46,39,.2); }
+.amigo-notification-popover > header { display: flex; align-items: start; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+.amigo-notification-popover h2 { margin: 0; font-size: 1.2rem; }
+.amigo-notification-popover button, .amigo-notification-actions button { min-height: 2.4rem; color: var(--amigo-green); font-weight: 700; }
+.amigo-notification-see-all { display: block; margin-top: .75rem; padding: .65rem; border-radius: .4rem; text-align: center; font-weight: 750; background: var(--amigo-gold-light); }
+.amigo-notification-list { display: grid; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+.amigo-notification-item { min-width: 0; padding: .9rem; border: 1px solid var(--amigo-border); border-radius: .65rem; background: white; overflow-wrap: anywhere; }
+.amigo-notification-item[data-unread] { border-left: .3rem solid var(--amigo-gold); background: #fffdf6; }
+.amigo-notification-heading { display: flex; align-items: center; gap: .5rem; }
+.amigo-notification-heading strong { min-width: 0; flex: 1; }
+.amigo-notification-dot { width: .55rem; height: .55rem; flex: 0 0 auto; border-radius: 50%; background: #777; }
+.amigo-notification-item[data-unread] .amigo-notification-dot { background: var(--amigo-green); }
+.amigo-notification-state { font-size: .72rem; font-weight: 800; }
+.amigo-notification-item > p { margin: .45rem 0; }
+.amigo-notification-item > small { display: block; color: var(--amigo-muted); }
+.amigo-notification-meta { display: flex; flex-wrap: wrap; gap: .3rem .8rem; margin-top: .6rem; color: var(--amigo-muted); font-size: .76rem; }
+.amigo-notification-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.amigo-notification-actions button { display: inline-flex; align-items: center; gap: .3rem; padding: .35rem .55rem; border: 1px solid var(--amigo-border); border-radius: .4rem; background: white; }
+.amigo-notification-filters { display: grid; gap: .8rem; margin-bottom: 1rem; }
+.amigo-notification-filters label { display: grid; gap: .3rem; color: var(--amigo-muted); font-size: .8rem; font-weight: 700; }
+.amigo-notification-filters select { min-width: 0; min-height: 2.75rem; padding: .5rem; border: 1px solid var(--amigo-border); border-radius: .4rem; background: white; }
+.amigo-notifications-page > .amigo-admin-header > div:last-child { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem; }
+@media (min-width: 48rem) { .amigo-notification-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 39.99rem) { .amigo-admin-user { display: none; } .amigo-notification-popover { position: fixed; top: 4.5rem; right: .5rem; left: .5rem; width: auto; } }

@@ -1,5 +1,6 @@
 import { Menu, ShieldCheck } from 'lucide-react'
 import type { AuthUser } from '../../auth/contracts'
+import { NotificationBell } from '../../admin/notifications/components/NotificationBell'
 
 interface AdminHeaderProps {
   user: AuthUser
@@ -29,6 +30,7 @@ export function AdminHeader({ user, menuOpen, onMenuToggle }: AdminHeaderProps) 
         <div><strong>{user.name}</strong><span>{user.email}</span></div>
         <small>{user.role}</small>
       </div>
+      <NotificationBell />
     </header>
   )
 }

@@ -36,5 +36,6 @@ describe('SEO das rotas administrativas', () => {
     expect(adminRoutes).not.toHaveLength(0)
     expect(adminRoutes.every((route) => route.prerender && !route.robots.index && !route.robots.follow)).toBe(true)
     expect(adminRoutes.map((route) => route.pathname)).toContain('/admin/login')
+    expect(adminRoutes.find((route) => route.pathname === '/admin/notificacoes')).toMatchObject({ prerender: true, robots: { index: false, follow: false } })
   })
 })

@@ -1,10 +1,11 @@
-import { CalendarDays, ClipboardList, Settings, UserPlus, Users } from 'lucide-react'
+import { Bell, CalendarDays, ClipboardList, Settings, UserPlus, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const commonActions = [
   { label: 'Ver solicitações', to: '/admin/solicitacoes', icon: ClipboardList },
   { label: 'Ver agenda', to: '/admin/agenda', icon: CalendarDays },
   { label: 'Novo cliente', to: '/admin/clientes?create=1', icon: UserPlus },
+  { label: 'Ver notificações', to: '/admin/notificacoes', icon: Bell },
 ] as const
 
 const adminActions = [

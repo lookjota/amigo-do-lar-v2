@@ -25,6 +25,7 @@ import { AdminCustomersPage } from './admin/customers/pages/AdminCustomersPage'
 import { AdminServicesPage } from './admin/services/pages/AdminServicesPage'
 import { AdminUsersPage } from './admin/users/pages/AdminUsersPage'
 import { AdminFinancePage } from './admin/finance/pages/AdminFinancePage'
+import { AdminNotificationsPage } from './admin/notifications/pages/AdminNotificationsPage'
 import { AdminLayout } from './components/admin'
 
 export function AmigoDoLarApp() {
@@ -76,6 +77,7 @@ export function AmigoDoLarApplication() {
                 <Route path="/admin/clientes" element={<AdminCustomersPage />} />
                 <Route path="/admin/servicos" element={<AdminServicesPage />} />
                 <Route path="/admin/financeiro" element={<AdminFinancePage />} />
+                <Route path="/admin/notificacoes" element={<AdminNotificationsPage />} />
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                   <Route path="/admin/usuarios" element={<AdminUsersPage />} />
                 </Route>
