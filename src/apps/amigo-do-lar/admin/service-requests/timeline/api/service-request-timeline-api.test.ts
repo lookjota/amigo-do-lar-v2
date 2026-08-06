@@ -1,0 +1,19 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { HttpError, NetworkError } from '../../../../../../shared/http'
+import { authenticatedApiClient } from '../../../../api/apiClient'
+import { buildServiceRequestTimelinePath, createServiceRequestComment, listServiceRequestTimeline } from './service-request-timeline-api'
+
+const requestId = '1ad575e6-0225-45ce-bb18-296407bc558b'
+const event = { id: '2ad575e6-0225-45ce-bb18-296407bc558b', serviceRequestId: requestId, type: 'STATUS_CHANGED', title: 'Status alterado', description: null, metadata: { from: 'PENDING', to: 'CONTACTED' }, createdAt: '2026-08-05T12:00:00.000Z', actor: { id: '3ad575e6-0225-45ce-bb18-296407bc558b', name: 'Ana', email: 'ana@example.com', role: 'ADMIN' } }
+const response = { data: [event], pagination: { page: 1, limit: 10, total: 1, totalPages: 1 } }
+
+afterEach(() => vi.restoreAllMocks())
+describe('API da timeline', () => {
+  it('monta todos os filtros reais', () => expect(buildServiceRequestTimelinePath(requestId, { page: 2, limit: 10, type: 'COMMENT_ADDED', sortOrder: 'asc' })).toBe(`/service-requests/${requestId}/timeline?page=2&limit=10&sortOrder=asc&type=COMMENT_ADDED`))
+  it('usa cliente autenticado, encaminha signal e valida resposta', async () => { const signal = new AbortController().signal; const get = vi.spyOn(authenticatedApiClient, 'get').mockResolvedValue(response); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' }, signal)).resolves.toMatchObject({ data: [{ metadataValid: true }] }); expect(get).toHaveBeenCalledWith(`/service-requests/${requestId}/timeline?page=1&limit=10&sortOrder=desc`, { signal }) })
+  it('envia payload exato do comentário', async () => { const post = vi.spyOn(authenticatedApiClient, 'post').mockResolvedValue({ ...event, type: 'COMMENT_ADDED', metadata: null }); await createServiceRequestComment(requestId, { content: '  Nota interna  ' }); expect(post).toHaveBeenCalledWith(`/service-requests/${requestId}/comments`, { content: 'Nota interna' }) })
+  it('mantém evento com metadata inválido e rejeita campos extras', async () => { const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined); try { vi.spyOn(authenticatedApiClient, 'get').mockResolvedValueOnce({ ...response, data: [{ ...event, metadata: { from: 'INVALID', secret: 'x' } }] }).mockResolvedValueOnce({ ...response, extra: true }); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' })).resolves.toMatchObject({ data: [{ metadata: null, metadataValid: false }] }); if (import.meta.env.DEV) expect(warn).toHaveBeenCalledWith('Timeline metadata inválido', { eventId: event.id, type: event.type }); else expect(warn).not.toHaveBeenCalled(); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' })).rejects.toMatchObject({ name: 'ZodError' }) } finally { warn.mockRestore() } })
+  it('rejeita evento inválido', async () => { vi.spyOn(authenticatedApiClient, 'get').mockResolvedValue({ ...response, data: [{ ...event, id: 'x' }] }); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' })).rejects.toMatchObject({ name: 'ZodError' }) })
+  it.each([401, 403, 404])('preserva HTTP %s', async (status) => { const error = new HttpError({ status, statusText: 'Error', responseBody: {}, url: 'url', method: 'GET' }); vi.spyOn(authenticatedApiClient, 'get').mockRejectedValue(error); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' })).rejects.toBe(error) })
+  it('preserva erro de rede', async () => { const error = new NetworkError(); vi.spyOn(authenticatedApiClient, 'get').mockRejectedValue(error); await expect(listServiceRequestTimeline(requestId, { page: 1, limit: 10, sortOrder: 'desc' })).rejects.toBe(error) })
+})

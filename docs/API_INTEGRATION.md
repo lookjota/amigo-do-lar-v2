@@ -301,6 +301,42 @@ foi inventado nem chamado nesta implementação.
 
 ## Gestão administrativa de solicitações
 
+### Timeline administrativa da solicitação
+
+O drawer de detalhes em `/admin/solicitacoes` consulta, somente depois da
+hidratação no navegador, `GET /service-requests/:id/timeline`. A requisição usa
+o cliente autenticado e envia `page`, `limit`, `sortOrder` (`asc` ou `desc`) e,
+quando selecionado, um único `type`. A interface carrega 10 eventos por página
+com o botão “Carregar mais”; não há carregamento automático ilimitado, polling
+ou WebSocket. ADMIN e OPERATOR podem visualizar, filtrar e comentar, e respostas
+401, 403 e demais falhas continuam no tratamento seguro compartilhado.
+
+Os tipos aceitos são `REQUEST_CREATED`, `STATUS_CHANGED`, `COMMENT_ADDED`,
+`APPOINTMENT_CREATED`, `APPOINTMENT_RESCHEDULED`,
+`APPOINTMENT_STATUS_CHANGED`, `QUOTE_CREATED`, `QUOTE_STATUS_CHANGED`,
+`PAYMENT_CREATED` e `PAYMENT_STATUS_CHANGED`. O envelope contém `data` e
+`pagination`; cada evento possui `id`, `serviceRequestId`, `type`, `title`,
+`description`, `metadata`, `createdAt` e `actor` ADMIN/OPERATOR ou nulo.
+
+Metadata é validado conforme o tipo, usando os enums compartilhados dos módulos
+de solicitações, agenda e financeiro. Mudanças de status usam `from` e `to`;
+agendamentos usam `appointmentId` e datas pertinentes; orçamentos usam
+`quoteId`; pagamentos usam `paymentId` e `quoteId`. Um metadata inválido não
+derruba a timeline nem é exibido como JSON: o evento básico permanece e informa
+que os detalhes adicionais estão indisponíveis. A observabilidade desse caso é
+restrita ao console de desenvolvimento.
+
+Comentários internos são enviados por `POST /service-requests/:id/comments`
+com o payload estrito `{ content: string }`, depois de `trim`, entre 1 e 4000
+caracteres. O texto é renderizado pelo React, sem HTML confiável. Em sucesso são
+invalidados somente a timeline e o detalhe da solicitação; não há atualização
+otimista. O texto é preservado quando ocorre erro.
+
+Nesta versão não existem edição ou exclusão de comentários, anexos, upload,
+timeline pública, backfill de eventos anteriores nem atualização em tempo real.
+Uma integração futura pode adicionar anexos quando houver contrato autenticado
+específico no backend.
+
 A rota protegida `/admin/solicitacoes` usa exclusivamente o
 `authenticatedApiClient`. Ela é prerenderizada apenas como estrutura inicial,
 com `noindex, nofollow`, não consulta a API durante SSR e não integra o sitemap.
