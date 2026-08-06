@@ -57,6 +57,13 @@ export const adminRoutes: AdminRouteMetadata[] = [
     prerender: true,
   },
   {
+    pathname: '/admin/notificacoes',
+    title: 'Notificações — Amigo do Lar',
+    description: 'Centro administrativo de notificações do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
+  {
     pathname: '/admin/usuarios',
     title: 'Usuários — Amigo do Lar',
     description: 'Gestão administrativa de usuários do Amigo do Lar.',

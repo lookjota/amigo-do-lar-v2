@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { AuthContext, type AuthContextValue } from '../../auth/auth-context'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { AuthUser } from '../../auth/contracts'
 import { AdminLayout } from './AdminLayout'
 
@@ -18,6 +19,7 @@ function renderLayout(user: AuthUser, logout = vi.fn()) {
   }
 
   return render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
     <MemoryRouter initialEntries={['/admin']}>
       <AuthContext.Provider value={value}>
         <Routes>
@@ -27,7 +29,8 @@ function renderLayout(user: AuthUser, logout = vi.fn()) {
           <Route path="/admin/login" element={<h1>Acesse sua conta</h1>} />
         </Routes>
       </AuthContext.Provider>
-    </MemoryRouter>,
+    </MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 

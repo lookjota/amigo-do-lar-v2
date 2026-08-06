@@ -89,7 +89,9 @@ function fromHttpError(error: HttpError): UiError {
       return {
         ...base,
         category: 'notFound',
-        userMessage: error.code === 'QUOTE_NOT_FOUND'
+        userMessage: error.code === 'NOTIFICATION_NOT_FOUND'
+          ? 'A notificação não foi encontrada ou não está mais disponível.'
+          : error.code === 'QUOTE_NOT_FOUND'
           ? 'O orçamento não foi encontrado.'
           : error.code === 'PAYMENT_NOT_FOUND'
             ? 'O pagamento não foi encontrado.'
