@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const notificationTypes = ['SERVICE_REQUEST_CREATED', 'SERVICE_REQUEST_STATUS_CHANGED', 'COMMENT_ADDED', 'APPOINTMENT_CREATED', 'APPOINTMENT_RESCHEDULED', 'APPOINTMENT_STATUS_CHANGED', 'QUOTE_CREATED', 'QUOTE_STATUS_CHANGED', 'PAYMENT_CREATED', 'PAYMENT_STATUS_CHANGED'] as const
+export const notificationTypes = ['SERVICE_REQUEST_CREATED', 'SERVICE_REQUEST_STATUS_CHANGED', 'COMMENT_ADDED', 'APPOINTMENT_CREATED', 'APPOINTMENT_RESCHEDULED', 'APPOINTMENT_STATUS_CHANGED', 'QUOTE_CREATED', 'QUOTE_STATUS_CHANGED', 'PAYMENT_CREATED', 'PAYMENT_STATUS_CHANGED', 'ATTACHMENT_ADDED', 'ATTACHMENT_REMOVED'] as const
 export const notificationResourceTypes = ['SERVICE_REQUEST', 'APPOINTMENT', 'QUOTE', 'PAYMENT'] as const
 export const notificationTypeSchema = z.enum(notificationTypes)
 export const notificationResourceTypeSchema = z.enum(notificationResourceTypes)
@@ -25,4 +25,3 @@ export type NotificationType = z.infer<typeof notificationTypeSchema>
 export type NotificationResourceType = z.infer<typeof notificationResourceTypeSchema>
 export type NotificationFilters = z.infer<typeof notificationFiltersSchema>
 export type NotificationListResponse = z.infer<typeof notificationListResponseSchema>
-

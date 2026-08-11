@@ -11,7 +11,7 @@ import { TimelineEvent } from './TimelineEvent'
 
 vi.mock('../api/service-request-timeline-api', () => ({ listServiceRequestTimeline: vi.fn(), createServiceRequestComment: vi.fn() }))
 const requestId = '1ad575e6-0225-45ce-bb18-296407bc558b'
-const ids = { appointmentId: '3ad575e6-0225-45ce-bb18-296407bc558b', quoteId: '4ad575e6-0225-45ce-bb18-296407bc558b', paymentId: '5ad575e6-0225-45ce-bb18-296407bc558b' }
+const ids = { appointmentId: '3ad575e6-0225-45ce-bb18-296407bc558b', quoteId: '4ad575e6-0225-45ce-bb18-296407bc558b', paymentId: '5ad575e6-0225-45ce-bb18-296407bc558b', attachmentId: '8ad575e6-0225-45ce-bb18-296407bc558b' }
 const metadata: Record<TimelineEventType, unknown> = {
   REQUEST_CREATED: null, COMMENT_ADDED: null, STATUS_CHANGED: { from: 'PENDING', to: 'CONTACTED' },
   APPOINTMENT_CREATED: { appointmentId: ids.appointmentId, scheduledAt: '2026-08-06T17:00:00.000Z' },
@@ -19,6 +19,8 @@ const metadata: Record<TimelineEventType, unknown> = {
   APPOINTMENT_STATUS_CHANGED: { appointmentId: ids.appointmentId, from: 'SCHEDULED', to: 'CONFIRMED' },
   QUOTE_CREATED: { quoteId: ids.quoteId }, QUOTE_STATUS_CHANGED: { quoteId: ids.quoteId, from: 'DRAFT', to: 'SENT' },
   PAYMENT_CREATED: { paymentId: ids.paymentId, quoteId: ids.quoteId }, PAYMENT_STATUS_CHANGED: { paymentId: ids.paymentId, quoteId: ids.quoteId, from: 'PENDING', to: 'PAID' },
+  ATTACHMENT_ADDED: { attachmentId: ids.attachmentId, category: 'BEFORE_SERVICE', mimeType: 'image/jpeg' },
+  ATTACHMENT_REMOVED: { attachmentId: ids.attachmentId, category: 'RECEIPT' },
 }
 function event(type: TimelineEventType, actor: 'ADMIN' | 'OPERATOR' | null = 'ADMIN', id = '2ad575e6-0225-45ce-bb18-296407bc558b') { return parseTimelineEvent({ id, serviceRequestId: requestId, type, title: 'Título do backend', description: 'Descrição segura', metadata: metadata[type], createdAt: '2026-08-05T12:00:00.000Z', actor: actor ? { id: '6ad575e6-0225-45ce-bb18-296407bc558b', name: 'Ana', email: 'ana@example.com', role: actor } : null }) }
 function wrapper(children: React.ReactNode) { const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } }); return render(<QueryClientProvider client={client}><MemoryRouter>{children}</MemoryRouter></QueryClientProvider>) }
