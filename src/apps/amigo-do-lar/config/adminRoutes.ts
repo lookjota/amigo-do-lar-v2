@@ -8,6 +8,20 @@ export interface AdminRouteMetadata {
 
 export const adminRoutes: AdminRouteMetadata[] = [
   {
+    pathname: '/admin/conteudos',
+    title: 'Conteúdos — Amigo do Lar',
+    description: 'Gestão editorial interna do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
+  {
+    pathname: '/admin/conteudos/novo',
+    title: 'Novo conteúdo — Amigo do Lar',
+    description: 'Editor editorial interno do Amigo do Lar.',
+    robots: { index: false, follow: false },
+    prerender: true,
+  },
+  {
     pathname: '/admin/login',
     title: 'Acesso administrativo — Amigo do Lar',
     description: 'Acesso restrito ao portal administrativo do Amigo do Lar.',

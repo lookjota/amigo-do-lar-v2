@@ -9,6 +9,7 @@ import {
   Users,
   UserRound,
   Bell,
+  BookOpen,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { hasRole } from '../../auth/authorization'
@@ -23,6 +24,7 @@ const navigation = [
   { label: 'Serviços', to: '/admin/servicos', icon: Settings, end: false },
   { label: 'Financeiro', to: '/admin/financeiro', icon: WalletCards, end: false },
   { label: 'Notificações', to: '/admin/notificacoes', icon: Bell, end: false },
+  { label: 'Conteúdo', to: '/admin/conteudos', icon: BookOpen, end: false },
 ] as const
 
 interface AdminSidebarProps {

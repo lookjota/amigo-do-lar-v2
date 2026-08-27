@@ -19,7 +19,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${sitemapRoutes
   .map(
     (route) =>
-      `  <url><loc>${route.page.metadata.canonicalUrl}</loc></url>`,
+      `  <url><loc>${route.page.metadata.canonicalUrl}</loc>${route.page.metadata.updatedAt ? `<lastmod>${route.page.metadata.updatedAt}</lastmod>` : ''}</url>`,
   )
   .join('\n')}
 </urlset>

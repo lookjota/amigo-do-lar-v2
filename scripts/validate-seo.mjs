@@ -28,6 +28,8 @@ const adminPathnames = [
   '/admin/clientes',
   '/admin/servicos',
   '/admin/usuarios',
+  '/admin/conteudos',
+  '/admin/conteudos/novo',
 ]
 
 function routeFile(pathname) {

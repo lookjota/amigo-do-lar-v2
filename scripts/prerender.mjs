@@ -42,7 +42,7 @@ function createHead(metadata) {
       ? `<link rel="canonical" href="${escapeHtml(metadata.canonicalUrl)}" />`
       : '',
     metaProperty('og:title', metadata.title),
-    metaProperty('og:type', 'website'),
+    metaProperty('og:type', metadata.openGraphType ?? 'website'),
     metaProperty('og:description', metadata.description),
     metaProperty('og:url', metadata.canonicalUrl),
     metaProperty('og:image', metadata.image),

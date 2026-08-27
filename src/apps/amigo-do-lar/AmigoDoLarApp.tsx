@@ -1,5 +1,5 @@
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { PageSectionRegistryProvider } from '../../engine/PageSectionRegistry'
 import { ApiProvider } from './api/ApiProvider'
 import { createQueryClient } from './api/queryClient'
@@ -27,6 +27,11 @@ import { AdminUsersPage } from './admin/users/pages/AdminUsersPage'
 import { AdminFinancePage } from './admin/finance/pages/AdminFinancePage'
 import { AdminNotificationsPage } from './admin/notifications/pages/AdminNotificationsPage'
 import { AdminLayout } from './components/admin'
+import { ContentIndexPage } from './content-cms/pages/ContentIndexPage'
+import { ContentPostPage } from './content-cms/pages/ContentPostPage'
+
+const AdminContentPage = lazy(() => import('./admin/content/pages/AdminContentPage').then((module) => ({ default: module.AdminContentPage })))
+const AdminContentEditorPage = lazy(() => import('./admin/content/pages/AdminContentEditorPage').then((module) => ({ default: module.AdminContentEditorPage })))
 
 export function AmigoDoLarApp() {
   const [queryClient] = useState(createQueryClient)
@@ -58,6 +63,8 @@ export function AmigoDoLarApplication() {
                 path="/solicitacao-enviada"
                 element={<ServiceRequestSuccessPage />}
               />
+              <Route path="/conteudos" element={<ContentIndexPage />} />
+              <Route path="/conteudos/:slug" element={<ContentPostPage />} />
               {routes.map((route) => (
                 <Route
                   key={route.path}
@@ -78,6 +85,9 @@ export function AmigoDoLarApplication() {
                 <Route path="/admin/servicos" element={<AdminServicesPage />} />
                 <Route path="/admin/financeiro" element={<AdminFinancePage />} />
                 <Route path="/admin/notificacoes" element={<AdminNotificationsPage />} />
+                <Route path="/admin/conteudos" element={<Suspense fallback={<p role="status">Carregando…</p>}><AdminContentPage /></Suspense>} />
+                <Route path="/admin/conteudos/novo" element={<Suspense fallback={<p role="status">Carregando…</p>}><AdminContentEditorPage /></Suspense>} />
+                <Route path="/admin/conteudos/:id" element={<Suspense fallback={<p role="status">Carregando…</p>}><AdminContentEditorPage /></Suspense>} />
                 <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                   <Route path="/admin/usuarios" element={<AdminUsersPage />} />
                 </Route>

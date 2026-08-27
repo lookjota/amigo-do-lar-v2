@@ -91,7 +91,7 @@ export function BrowserMetadataRenderer({
     setCanonical(metadata.canonicalUrl)
 
     setMetaByProperty('og:title', metadata.title)
-    setMetaByProperty('og:type', 'website')
+    setMetaByProperty('og:type', metadata.openGraphType ?? 'website')
     setMetaByProperty('og:description', metadata.description)
     setMetaByProperty('og:url', metadata.canonicalUrl)
     setMetaByProperty('og:image', metadata.image)

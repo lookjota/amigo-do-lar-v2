@@ -20,6 +20,7 @@ export interface PageMetadata {
   locale?: string
   canonicalUrl?: string
   image?: string
+  openGraphType?: 'website' | 'article'
   robots?: RobotsMetadata
   publishedAt?: string
   updatedAt?: string
