@@ -1,5 +1,4 @@
 import {
-  ArrowDownRight,
   Check,
   ClipboardCheck,
   MessageCircle,
@@ -45,10 +44,14 @@ export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
           {section.data.motto}
         </p>
       </div>
-      <div className="amigo-hero-panel" aria-hidden="true">
-        <span>Serviço bem combinado.</span>
-        <strong>Cuidado em cada detalhe.</strong>
-        <ArrowDownRight />
+      <div className="amigo-hero-media">
+        <img
+          src="/joao.png"
+          alt="Profissional do Amigo do Lar"
+          width="1448"
+          height="1086"
+          fetchPriority="high"
+        />
       </div>
     </Container>
   </main>
