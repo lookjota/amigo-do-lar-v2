@@ -7,6 +7,7 @@ export const timelineEventTypes = [
   'REQUEST_CREATED', 'STATUS_CHANGED', 'COMMENT_ADDED',
   'APPOINTMENT_CREATED', 'APPOINTMENT_RESCHEDULED', 'APPOINTMENT_STATUS_CHANGED',
   'QUOTE_CREATED', 'QUOTE_STATUS_CHANGED', 'PAYMENT_CREATED', 'PAYMENT_STATUS_CHANGED',
+  'ATTACHMENT_ADDED', 'ATTACHMENT_REMOVED',
 ] as const
 export const timelineEventTypeSchema = z.enum(timelineEventTypes)
 export const timelineSortOrderSchema = z.enum(['asc', 'desc'])
@@ -34,6 +35,8 @@ const metadataSchemas = {
   QUOTE_STATUS_CHANGED: z.object({ quoteId: z.uuid(), from: quoteStatusSchema, to: quoteStatusSchema }).strict(),
   PAYMENT_CREATED: z.object({ paymentId: z.uuid(), quoteId: z.uuid() }).strict(),
   PAYMENT_STATUS_CHANGED: z.object({ paymentId: z.uuid(), quoteId: z.uuid(), from: paymentStatusSchema, to: paymentStatusSchema }).strict(),
+  ATTACHMENT_ADDED: z.object({ attachmentId: z.uuid(), category: z.enum(['BEFORE_SERVICE', 'AFTER_SERVICE', 'RECEIPT', 'DOCUMENT', 'OTHER']), mimeType: z.string() }).strict(),
+  ATTACHMENT_REMOVED: z.object({ attachmentId: z.uuid(), category: z.enum(['BEFORE_SERVICE', 'AFTER_SERVICE', 'RECEIPT', 'DOCUMENT', 'OTHER']) }).strict(),
 } satisfies Record<TimelineEventType, z.ZodType>
 
 const rawTimelineEventSchema = z.object({

@@ -9,6 +9,7 @@ export const timelineTypeLabels: Record<TimelineEventType, string> = {
   APPOINTMENT_STATUS_CHANGED: 'Status do agendamento alterado', QUOTE_CREATED: 'Orçamento criado',
   QUOTE_STATUS_CHANGED: 'Status do orçamento alterado', PAYMENT_CREATED: 'Pagamento registrado',
   PAYMENT_STATUS_CHANGED: 'Status do pagamento alterado',
+  ATTACHMENT_ADDED: 'Anexo adicionado', ATTACHMENT_REMOVED: 'Anexo removido',
 }
 
 export const timelineTypeOptions = timelineTypeLabels

@@ -64,6 +64,22 @@ function fromHttpError(error: HttpError): UiError {
     fieldErrors: apiError?.fieldErrors,
     originalError: error,
   }
+  const attachmentMessages: Record<string, string> = {
+    ATTACHMENT_NOT_FOUND: 'O anexo não foi encontrado ou já foi removido.',
+    ATTACHMENT_FILE_REQUIRED: 'Selecione um arquivo para enviar.',
+    ATTACHMENT_UNSUPPORTED_TYPE: 'Envie uma imagem JPEG, PNG, WebP ou um PDF.',
+    ATTACHMENT_TOO_LARGE: 'O arquivo deve ter no máximo 10 MB.',
+    ATTACHMENT_EMPTY_FILE: 'O arquivo não pode estar vazio.',
+    ATTACHMENT_INVALID_FILENAME: 'O nome do arquivo é inválido.',
+    ATTACHMENT_STORAGE_ERROR: 'Não foi possível acessar o arquivo armazenado. Tente novamente.',
+    ATTACHMENT_UPLOAD_FAILED: 'Não foi possível enviar o anexo. Tente novamente.',
+    ATTACHMENT_ALREADY_REMOVED: 'Este anexo já foi removido.',
+    ATTACHMENT_ACCESS_DENIED: 'Somente administradores podem remover anexos.',
+    SERVICE_REQUEST_NOT_FOUND: 'A solicitação não foi encontrada.',
+  }
+  if (error.code && attachmentMessages[error.code]) {
+    return { ...base, category: error.status === 403 ? 'forbidden' : error.status === 404 ? 'notFound' : error.status === 409 ? 'conflict' : error.status >= 500 ? 'unavailable' : 'validation', userMessage: attachmentMessages[error.code] }
+  }
 
   switch (error.status) {
     case 400:

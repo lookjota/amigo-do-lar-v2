@@ -177,6 +177,17 @@ describe('HttpClient', () => {
     expect(headers.get('x-request-id')).toBe('request-1')
   })
 
+  it('envia FormData sem definir Content-Type manualmente', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })))
+    vi.stubGlobal('fetch', fetchMock)
+    const form = new FormData()
+    form.append('category', 'DOCUMENT')
+    await client().post('/attachments', form)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    expect(init.body).toBe(form)
+    expect(new Headers(init.headers).has('content-type')).toBe(false)
+  })
+
   it('envia Bearer e notifica 401 somente em requisição autenticada', async () => {
     const onUnauthorized = vi.fn()
     const fetchMock = vi.fn().mockResolvedValue(

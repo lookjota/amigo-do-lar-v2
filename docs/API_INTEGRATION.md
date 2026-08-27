@@ -332,10 +332,9 @@ caracteres. O texto é renderizado pelo React, sem HTML confiável. Em sucesso s
 invalidados somente a timeline e o detalhe da solicitação; não há atualização
 otimista. O texto é preservado quando ocorre erro.
 
-Nesta versão não existem edição ou exclusão de comentários, anexos, upload,
-timeline pública, backfill de eventos anteriores nem atualização em tempo real.
-Uma integração futura pode adicionar anexos quando houver contrato autenticado
-específico no backend.
+Nesta versão não existem edição ou exclusão de comentários, timeline pública,
+backfill de eventos anteriores nem atualização em tempo real. Anexos são tratados
+pela integração administrativa descrita abaixo.
 
 A rota protegida `/admin/solicitacoes` usa exclusivamente o
 `authenticatedApiClient`. Ela é prerenderizada apenas como estrutura inicial,
@@ -675,3 +674,37 @@ As chaves de cache separam listas e contador. Leituras invalidam somente essas c
 ADMIN e OPERATOR acessam apenas as notificações da própria sessão. O backend determina destinatários e visibilidade; o frontend não envia `recipientUserId`. A navegação usa apenas rotas existentes: solicitações e agenda abrem detalhes pelos query params já suportados, financeiro abre orçamento quando há ID seguro e pagamentos sem orçamento conhecido levam à listagem financeira.
 
 Metadata é complementar e analisado defensivamente para status, datas de agendamento e IDs conhecidos. Formatos inválidos são ignorados sem ocultar título, mensagem, data, ator ou tipo. Não há endpoint nem interface para excluir, arquivar, marcar como não lida ou configurar preferências.
+# Anexos administrativos de solicitações
+
+Anexos são integrados ao detalhe administrativo por endpoints autenticados em
+`/service-requests/:id/attachments`. A listagem usa `page`, `limit`, `category`
+opcional e `sortOrder` (`asc`/`desc`); o detalhe e o download acrescentam o ID
+do anexo. O upload é `multipart/form-data` com exatamente um campo `file`, um
+`category` e `caption` opcional. O browser gera o boundary: o frontend não
+define `Content-Type` manualmente.
+
+As categorias da interface e da API são `BEFORE_SERVICE`, `AFTER_SERVICE`,
+`RECEIPT`, `DOCUMENT` e `OTHER`, enviadas sem adaptação. São aceitos JPEG, PNG,
+WebP e PDF não vazios, até 10 MiB, e legenda
+com até 500 caracteres. O preview de imagem usa `URL.createObjectURL` local e
+revoga a URL ao trocar/desmontar; PDF recebe apenas um cartão informativo. A
+listagem carrega somente metadados, sem baixar binários, checksum visível ou
+chaves de storage.
+
+O download chama o endpoint autenticado, segue o redirect temporário em memória,
+converte a resposta em blob, usa nome sanitizado e revoga a object URL. URLs
+assinadas nunca entram no cache do TanStack Query, estado persistente ou rota.
+`DELETE` realiza remoção lógica: somente ADMIN vê e executa a ação; OPERATOR
+pode listar, consultar, baixar e enviar. Autoria é definida pelo JWT no backend.
+
+Upload e remoção invalidam anexos, detalhe da solicitação, timeline e
+notificações. O backend cria `ATTACHMENT_ADDED` e `ATTACHMENT_REMOVED`; o
+frontend apenas renderiza esses eventos e não os cria localmente. O endpoint de
+Activity Feed já existe no backend, mas não havia feed no frontend nesta sprint;
+uma integração futura poderá reutilizar as categorias e links para a seção.
+
+As queries administrativas ficam desabilitadas durante SSR (`typeof window`),
+mantendo prerender, `noindex` e sitemap existentes. O envio aceita seleção ou
+drag-and-drop múltiplo, progresso, cancelamento e repetição individual em falha.
+Não há edição, compressão, OCR, câmera, compartilhamento público, URL permanente,
+restauração, exclusão física ou mock de produção.

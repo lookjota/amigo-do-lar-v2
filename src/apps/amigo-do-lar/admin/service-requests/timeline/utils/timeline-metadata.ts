@@ -3,6 +3,7 @@ import type { PaymentStatus, QuoteStatus } from '../../../finance/types/contract
 import type { ServiceRequestStatus } from '../../types/contracts'
 import type { TimelineEvent } from '../types/contracts'
 import { appointmentStatusLabels, paymentLabels, quoteLabels, serviceRequestStatusLabels } from './timeline-labels'
+import { attachmentCategoryLabels } from '../../attachments/utils/attachment-labels'
 
 const dateTime = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 const format = (value: string) => dateTime.format(new Date(value))
@@ -33,6 +34,14 @@ export function timelineMetadataDescription(event: TimelineEvent): string | null
     }
     case 'QUOTE_CREATED': return 'Orçamento vinculado à solicitação'
     case 'PAYMENT_CREATED': return 'Pagamento vinculado ao orçamento'
+    case 'ATTACHMENT_ADDED': {
+      const value = event.metadata as { category: keyof typeof attachmentCategoryLabels; mimeType: string }
+      return `${value.mimeType.startsWith('image/') ? 'Imagem' : 'Documento'} adicionada — ${attachmentCategoryLabels[value.category]}`
+    }
+    case 'ATTACHMENT_REMOVED': {
+      const value = event.metadata as { category: keyof typeof attachmentCategoryLabels }
+      return `Documento removido — ${attachmentCategoryLabels[value.category]}`
+    }
     default: return null
   }
 }
@@ -51,5 +60,6 @@ export function timelineRelatedLink(event: TimelineEvent): { to: string; label: 
     const id = (event.metadata as { quoteId: string }).quoteId
     return { to: `/admin/financeiro?quote=${encodeURIComponent(id)}`, label: 'Abrir orçamento relacionado' }
   }
+  if (event.type === 'ATTACHMENT_ADDED') return { to: '#service-request-attachments', label: 'Abrir anexos' }
   return null
 }

@@ -10,6 +10,7 @@ import {
 } from '../types/contracts'
 import { ServiceRequestStatusBadge } from './ServiceRequestStatusBadge'
 import { ServiceRequestTimeline } from '../timeline/components/ServiceRequestTimeline'
+import { ServiceRequestAttachments } from '../attachments/components/ServiceRequestAttachments'
 
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'long',
@@ -115,6 +116,7 @@ export function ServiceRequestDetails({ id, onClose }: Props) {
             {mutation.isError && <p role="alert" className="amigo-form-message amigo-form-message-error">{toUiError(mutation.error).userMessage}</p>}
           </section>
           {request.status === 'APPROVED' && <Link className="amigo-button" to={`/admin/agenda?serviceRequestId=${encodeURIComponent(request.id)}&create=1`}>Criar agendamento</Link>}
+          <ServiceRequestAttachments serviceRequestId={request.id} />
           <ServiceRequestTimeline serviceRequestId={request.id} />
         </>
       )}

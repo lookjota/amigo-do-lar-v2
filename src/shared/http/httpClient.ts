@@ -13,6 +13,10 @@ export interface RequestOptions {
   signal?: AbortSignal
 }
 
+export interface RawRequestOptions extends RequestOptions {
+  redirect?: RequestRedirect
+}
+
 interface HttpErrorDetails {
   status: number
   statusText: string
@@ -173,10 +177,27 @@ export class HttpClient {
     return this.request<Response>('DELETE', path, options)
   }
 
+  raw(
+    method: HttpMethod,
+    path: string,
+    options: RawRequestOptions = {},
+  ): Promise<Response> {
+    return this.fetchResponse(method, path, options)
+  }
+
   async request<Response>(
     method: HttpMethod,
     path: string,
     options: RequestOptions = {},
+  ): Promise<Response> {
+    const response = await this.fetchResponse(method, path, options)
+    return await readResponseBody(response) as Response
+  }
+
+  private async fetchResponse(
+    method: HttpMethod,
+    path: string,
+    options: RawRequestOptions = {},
   ): Promise<Response> {
     const url = buildRequestUrl(this.baseUrl, path)
     const controller = new AbortController()
@@ -204,7 +225,7 @@ export class HttpClient {
         headers.set('Accept', 'application/json')
       }
 
-      if (hasBody && !headers.has('Content-Type')) {
+      if (hasBody && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json')
       }
 
@@ -216,12 +237,15 @@ export class HttpClient {
       const response = await fetch(url, {
         method,
         headers,
-        body: hasBody ? JSON.stringify(options.body) : undefined,
+        body: hasBody
+          ? options.body instanceof FormData ? options.body : JSON.stringify(options.body)
+          : undefined,
         signal: controller.signal,
+        redirect: options.redirect,
       })
-      const responseBody = await readResponseBody(response)
 
       if (!response.ok) {
+        const responseBody = await readResponseBody(response)
         if (response.status === 401 && accessToken) {
           await this.onUnauthorized?.()
         }
@@ -235,7 +259,7 @@ export class HttpClient {
         })
       }
 
-      return responseBody as Response
+      return response
     } catch (error) {
       if (error instanceof HttpError) {
         throw error
