@@ -10,6 +10,7 @@ import { Container } from '../components/Container'
 import { ContentLink } from '../components/ContentLink'
 import { SectionHeading } from '../components/SectionHeading'
 import { ServiceCard } from '../components/ServiceCard'
+import { Reveal } from '../components/Reveal'
 import { useServices } from '../api/useServices'
 import { createWhatsAppUrl } from '../config/site'
 import { mergeServicesCatalog } from '../data/servicesCatalog'
@@ -17,7 +18,7 @@ import { mergeServicesCatalog } from '../data/servicesCatalog'
 export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
   <main id="conteudo-principal" className="amigo-hero">
     <Container>
-      <div className="amigo-hero-copy">
+      <Reveal className="amigo-hero-copy">
         <p className="amigo-eyebrow">{section.data.eyebrow}</p>
         <h1>{section.data.title}</h1>
         <p>{section.data.description}</p>
@@ -43,8 +44,8 @@ export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
           <ShieldCheck size={18} aria-hidden="true" />
           {section.data.motto}
         </p>
-      </div>
-      <div className="amigo-hero-media">
+      </Reveal>
+      <Reveal className="amigo-hero-media" delay={100}>
         <img
           src="/joao.png"
           alt="Profissional do Amigo do Lar"
@@ -52,7 +53,7 @@ export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
           height="1086"
           fetchPriority="high"
         />
-      </div>
+      </Reveal>
     </Container>
   </main>
 )
@@ -67,12 +68,14 @@ export const TrustFeaturesSection: SectionComponent<'trust-features'> = ({
         title={section.data.title}
       />
       <div className="amigo-feature-grid">
-        {section.data.items.map((item) => (
-          <article key={item.title} className="amigo-feature">
-            <Check size={20} aria-hidden="true" />
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </article>
+        {section.data.items.map((item, index) => (
+          <Reveal key={item.title} delay={index * 55}>
+            <article className="amigo-feature">
+              <Check size={20} aria-hidden="true" />
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          </Reveal>
         ))}
       </div>
     </Container>
@@ -96,13 +99,14 @@ export const ServicesGridSection: SectionComponent<'services-grid'> = ({
           description={section.data.description}
         />
         <div className="amigo-card-grid">
-          {items.map((item) => (
-            <ServiceCard
-              key={item.href}
-              title={item.label}
-              description={item.description}
-              href={item.href}
-            />
+          {items.map((item, index) => (
+            <Reveal key={item.href} delay={(index % 3) * 55}>
+              <ServiceCard
+                title={item.label}
+                description={item.description}
+                href={item.href}
+              />
+            </Reveal>
           ))}
         </div>
       </Container>
@@ -121,18 +125,20 @@ export const ServiceDetailsSection: SectionComponent<'service-details'> = ({
         description={section.data.introduction}
       />
       <div className="amigo-detail-grid">
-        {section.data.groups.map((group) => (
-          <article key={group.title}>
-            <h3>{group.title}</h3>
-            <ul>
-              {group.items.map((item) => (
-                <li key={item}>
-                  <Check size={17} aria-hidden="true" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </article>
+        {section.data.groups.map((group, index) => (
+          <Reveal key={group.title} delay={index * 55}>
+            <article>
+              <h3>{group.title}</h3>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item}>
+                    <Check size={17} aria-hidden="true" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </Reveal>
         ))}
       </div>
       {section.data.notice && (
@@ -154,17 +160,19 @@ export const ProcessStepsSection: SectionComponent<'process-steps'> = ({
         eyebrow={section.data.eyebrow}
         title={section.data.title}
       />
-      <ol className="amigo-process">
-        {section.data.items.map((item, index) => (
-          <li key={item.title}>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <div>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <Reveal>
+        <ol className="amigo-process">
+          {section.data.items.map((item, index) => (
+            <li key={item.title}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Reveal>
     </Container>
   </section>
 )
@@ -180,13 +188,14 @@ export const AreasGridSection: SectionComponent<'areas-grid'> = ({
         description={section.data.description}
       />
       <div className="amigo-area-grid">
-        {section.data.items.map((item) => (
-          <AreaCard
-            key={item.href}
-            title={item.label}
-            description={item.description}
-            href={item.href}
-          />
+        {section.data.items.map((item, index) => (
+          <Reveal key={item.href} delay={(index % 3) * 55}>
+            <AreaCard
+              title={item.label}
+              description={item.description}
+              href={item.href}
+            />
+          </Reveal>
         ))}
       </div>
     </Container>
@@ -221,12 +230,14 @@ export const BenefitsSection: SectionComponent<'benefits'> = ({ section }) => (
         title={section.data.title}
       />
       <div className="amigo-feature-grid">
-        {section.data.items.map((item) => (
-          <article key={item.title} className="amigo-feature">
-            <ClipboardCheck size={20} aria-hidden="true" />
-            <h3>{item.title}</h3>
-            <p>{item.description}</p>
-          </article>
+        {section.data.items.map((item, index) => (
+          <Reveal key={item.title} delay={index * 55}>
+            <article className="amigo-feature">
+              <ClipboardCheck size={20} aria-hidden="true" />
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </article>
+          </Reveal>
         ))}
       </div>
     </Container>
