@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Menu } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { trackEvent } from '../analytics/analytics'
@@ -23,8 +24,17 @@ function NavigationLinks() {
 }
 
 export function Header() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const updateHeader = () => setScrolled(window.scrollY > 12)
+    updateHeader()
+    window.addEventListener('scroll', updateHeader, { passive: true })
+    return () => window.removeEventListener('scroll', updateHeader)
+  }, [])
+
   return (
-    <header className="amigo-header">
+    <header className={`amigo-header ${scrolled ? 'is-scrolled' : ''}`}>
       <div className="amigo-container amigo-header-layout">
         <Link className="amigo-brand" to="/" aria-label="Amigo do Lar, início">
           <span aria-hidden="true">A</span>
