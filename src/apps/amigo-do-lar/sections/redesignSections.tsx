@@ -1,5 +1,7 @@
+import { Check } from 'lucide-react'
 import type { MediaAsset } from '../../../domain/pages/PageSection'
 import type { SectionComponent } from '../../../engine/PageSectionRegistry'
+import { Reveal } from '../components/Reveal'
 import { Container } from '../components/Container'
 import { ContentLink } from '../components/ContentLink'
 import { SectionHeading } from '../components/SectionHeading'
@@ -27,66 +29,87 @@ function SectionMedia({ media }: { media?: MediaAsset }) {
 }
 
 export const ProblemSection: SectionComponent<'problem'> = ({ section }) => (
-  <section id={section.id} className="amigo-section">
+  <section id={section.id} className="amigo-section amigo-problem">
     <Container>
-      <SectionMedia media={section.data.media} />
-      <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
-      {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      <div className="amigo-editorial-grid">
+        <Reveal><SectionMedia media={section.data.media} /></Reveal>
+        <Reveal delay={80}>
+          <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
+          <div className="amigo-editorial-copy">
+            {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+        </Reveal>
+      </div>
     </Container>
   </section>
 )
 
 export const SolutionSection: SectionComponent<'solution'> = ({ section }) => (
-  <section id={section.id} className="amigo-section">
+  <section id={section.id} className="amigo-section amigo-solution">
     <Container>
-      <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
-      {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-      {section.data.action && <ContentLink {...section.data.action} />}
+      <Reveal>
+        <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
+        <div className="amigo-editorial-copy">
+          {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+        {section.data.action && <ContentLink {...section.data.action} className="amigo-text-link" event="whatsapp_click" />}
+      </Reveal>
     </Container>
   </section>
 )
 
 export const HouseListSection: SectionComponent<'house-list'> = ({ section }) => (
-  <section id={section.id} className="amigo-section">
+  <section id={section.id} className="amigo-section amigo-house-list">
     <Container>
-      <SectionHeading
-        eyebrow={section.data.eyebrow}
-        title={section.data.title}
-        description={section.data.description}
-      />
-      <p>{section.data.exampleLabel}</p>
-      <ul>{section.data.items.map((item) => <li key={item}>{item}</li>)}</ul>
-      {section.data.action && <ContentLink {...section.data.action} />}
+      <div className="amigo-editorial-grid">
+        <Reveal>
+          <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} description={section.data.description} />
+          {section.data.action && <ContentLink {...section.data.action} className="amigo-button amigo-button-light" event="whatsapp_click" />}
+        </Reveal>
+        <Reveal delay={80}>
+          <div className="amigo-house-checklist">
+            <p>{section.data.exampleLabel}</p>
+            <ul>{section.data.items.map((item) => <li key={item}><Check size={20} aria-hidden="true" />{item}</li>)}</ul>
+          </div>
+        </Reveal>
+      </div>
     </Container>
   </section>
 )
 
 export const ServiceStandardSection: SectionComponent<'service-standard'> = ({ section }) => (
-  <section id={section.id} className="amigo-section">
+  <section id={section.id} className="amigo-section amigo-standard">
     <Container>
-      <SectionHeading
-        eyebrow={section.data.eyebrow}
-        title={section.data.title}
-        description={section.data.description}
-      />
-      {section.data.stages.map((stage) => (
-        <article key={stage.title}>
-          <h3>{stage.title}</h3>
-          <SectionMedia media={stage.media} />
-          {stage.description && <p>{stage.description}</p>}
-          <ul>{stage.steps.map((step) => <li key={step}>{step}</li>)}</ul>
-        </article>
-      ))}
+      <Reveal><SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} description={section.data.description} /></Reveal>
+      <div className="amigo-standard-grid">
+        {section.data.stages.map((stage, index) => (
+          <Reveal key={stage.title} delay={index * 80}>
+            <article>
+              <span className="amigo-stage-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <h3>{stage.title}</h3>
+              <SectionMedia media={stage.media} />
+              {stage.description && <p>{stage.description}</p>}
+              <ul>{stage.steps.map((step) => <li key={step}>{step}</li>)}</ul>
+            </article>
+          </Reveal>
+        ))}
+      </div>
     </Container>
   </section>
 )
 
 export const FoundersSection: SectionComponent<'founders'> = ({ section }) => (
-  <section id={section.id} className="amigo-section">
+  <section id={section.id} className="amigo-section amigo-founders">
     <Container>
-      <SectionMedia media={section.data.media} />
-      <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
-      {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      <div className="amigo-editorial-grid">
+        <Reveal><SectionMedia media={section.data.media} /></Reveal>
+        <Reveal delay={80}>
+          <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
+          <div className="amigo-editorial-copy">
+            {section.data.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+        </Reveal>
+      </div>
     </Container>
   </section>
 )

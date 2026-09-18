@@ -28,11 +28,11 @@ export function PageRoute({ pageSlug }: { pageSlug: string }) {
   if (!page) return null
 
   return (
-    <>
+    <div className={pageSlug === '/' ? 'amigo-home' : undefined}>
       <Breadcrumbs
         items={buildBreadcrumbs(navigationItems, location.pathname)}
       />
       <PageRenderer page={page} />
-    </>
+    </div>
   )
 }
