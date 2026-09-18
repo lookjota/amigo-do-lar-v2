@@ -357,17 +357,13 @@ export const QuoteRequestSection: SectionComponent<'quote-request'> = ({
       />
       <div className="amigo-actions">
         <ContentLink
-          label="Preencher solicitação"
-          href="/solicitar-atendimento"
-          className="amigo-button amigo-button-primary"
-        />
-        <ContentLink
           label="Falar pelo WhatsApp"
           href={createWhatsAppUrl(
             'Olá! Gostaria de solicitar atendimento residencial.',
           )}
           external
-          className="amigo-button amigo-button-secondary"
+          className="amigo-button amigo-button-primary"
+          event="whatsapp_click"
         />
       </div>
     </Container>

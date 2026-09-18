@@ -11,8 +11,6 @@ import { ApiStatus } from './components/ApiStatus'
 import { routes } from './config/routes'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { PageRoute } from './pages/PageRoute'
-import { ServiceRequestPage } from './pages/ServiceRequestPage'
-import { ServiceRequestSuccessPage } from './pages/ServiceRequestSuccessPage'
 import { pageSectionRegistry } from './registry/pageSectionRegistry'
 import { AuthProvider } from './auth/AuthContext'
 import { ProtectedRoute } from './auth/ProtectedRoute'
@@ -50,14 +48,6 @@ export function AmigoDoLarApplication() {
           </a>
           <Routes>
             <Route element={<PublicLayout />}>
-              <Route
-                path="/solicitar-atendimento"
-                element={<ServiceRequestPage />}
-              />
-              <Route
-                path="/solicitacao-enviada"
-                element={<ServiceRequestSuccessPage />}
-              />
               {routes.map((route) => (
                 <Route
                   key={route.path}

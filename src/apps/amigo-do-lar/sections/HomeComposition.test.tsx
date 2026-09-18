@@ -83,13 +83,13 @@ describe('composição da Home — Etapa 4', () => {
     expect(JSON.stringify(homePage.metadata.structuredData)).toContain('FAQPage')
   })
 
-  it('fecha com WhatsApp primário e formulário secundário', () => {
+  it('fecha com WhatsApp primário', () => {
     const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
     const final = container.querySelector('#solicitar-atendimento') as HTMLElement
     expect(within(final).getByRole('heading', { name: 'O que está esperando para ser resolvido na sua casa?' })).toBeInTheDocument()
     const links = within(final).getAllByRole('link')
     expect(links[0].getAttribute('href')).toContain('wa.me')
-    expect(links[1]).toHaveAttribute('href', '/solicitar-atendimento')
+    expect(links).toHaveLength(1)
   })
 
   it('SSR entrega todas as seções visíveis e não inclui avaliações em JSON-LD', () => {

@@ -97,7 +97,7 @@ function whatsappAction(context: string) {
   }
 }
 
-function ctaSection(context: string, serviceSlug?: string): PageSection {
+function ctaSection(context: string): PageSection {
   return {
     id: 'solicitar-atendimento',
     type: 'call-to-action',
@@ -109,10 +109,6 @@ function ctaSection(context: string, serviceSlug?: string): PageSection {
       primaryAction: {
         ...whatsappAction(context),
         label: 'Pedir orçamento pelo WhatsApp',
-      },
-      secondaryAction: {
-        label: 'Preencher solicitação',
-        href: `/solicitar-atendimento${serviceSlug ? `?servico=${serviceSlug}` : ''}`,
       },
     },
   }
@@ -374,7 +370,6 @@ export const homePage = createPage({
         title: 'O que está esperando para ser resolvido na sua casa?',
         description: 'Envie fotos e conte o que precisa. A partir daí organizamos o próximo passo.',
         primaryAction: { label: 'Pedir orçamento pelo WhatsApp', href: createWhatsAppUrl('Vim pelo site do Amigo do Lar e gostaria de pedir um orçamento.'), external: true },
-        secondaryAction: { label: 'Preencher solicitação', href: '/solicitar-atendimento' },
       },
     },
   ],
@@ -390,10 +385,9 @@ function routeWhatsAppAction(pathname: string) {
 
 function routeCtaSection(
   pathname: string,
-  serviceSlug?: string,
   primaryActionLabel = 'Pedir orçamento pelo WhatsApp',
 ): PageSection {
-  const section = ctaSection('', serviceSlug)
+  const section = ctaSection('')
   if (section.type !== 'call-to-action') return section
   return {
     ...section,
@@ -501,7 +495,6 @@ function createServicePage(service: ServiceDefinition): Page {
               ...routeWhatsAppAction(slug),
               label: 'Pedir orçamento pelo WhatsApp',
             },
-            { label: 'Preencher solicitação', href: `/solicitar-atendimento?servico=${service.slug}` },
           ],
         },
       },
@@ -552,7 +545,7 @@ function createServicePage(service: ServiceDefinition): Page {
           items: related,
         },
       },
-      routeCtaSection(slug, service.slug),
+      routeCtaSection(slug),
     ],
   })
 }
@@ -848,7 +841,7 @@ export const houseListPage = createPage({
       eyebrow: 'Planeje seu atendimento', title: 'Consulte serviços e regiões.',
       items: [{ label: 'Todos os serviços', href: '/servicos' }, { label: 'Áreas atendidas', href: '/areas-atendidas' }],
     } },
-    routeCtaSection('/lista-da-casa', undefined, 'Enviar minha Lista da Casa'),
+    routeCtaSection('/lista-da-casa', 'Enviar minha Lista da Casa'),
   ],
 })
 
@@ -886,7 +879,7 @@ export const contactPage = createPage({
         eyebrow: 'Solicitação de orçamento',
         title: 'Conte o que seu lar precisa.',
         description:
-          'Preencha as informações essenciais para iniciarmos a avaliação. O envio não confirma automaticamente a execução do serviço.',
+          'Envie uma descrição objetiva e, se possível, fotos pelo WhatsApp para iniciarmos a avaliação.',
       },
     },
     {

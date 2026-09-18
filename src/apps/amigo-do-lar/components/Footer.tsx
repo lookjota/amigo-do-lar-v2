@@ -27,7 +27,6 @@ export function Footer() {
             <strong>Amigo do Lar</strong>
             <Link to="/sobre">Sobre</Link>
             <Link to="/contato">Contato</Link>
-            <Link to="/solicitar-atendimento">Solicitar atendimento</Link>
           </nav>
           <nav aria-label="Links legais">
             <strong>Informações</strong>

@@ -20,14 +20,14 @@ const originalPaths = [
   '/areas-atendidas', '/areas-atendidas/taguatinga', '/areas-atendidas/aguas-claras', '/areas-atendidas/guara',
   '/areas-atendidas/asa-sul', '/areas-atendidas/asa-norte', '/areas-atendidas/sudoeste', '/areas-atendidas/noroeste',
   '/areas-atendidas/lago-sul', '/areas-atendidas/lago-norte', '/sobre', '/contato', '/perguntas-frequentes',
-  '/politica-de-privacidade', '/termos-de-uso', '/solicitar-atendimento', '/solicitacao-enviada',
+  '/politica-de-privacidade', '/termos-de-uso',
 ]
 
  describe('Etapa 5: páginas internas públicas', () => {
-  it('preserva as 25 rotas originais e adiciona somente Lista da Casa', () => {
+  it('preserva as rotas editoriais e adiciona somente Lista da Casa', () => {
     expect(publicRoutes.map(route => route.pathname).sort()).toEqual([...originalPaths, '/lista-da-casa'].sort())
-    expect(publicRoutes.filter(route => route.prerender)).toHaveLength(26)
-    expect(publicRoutes.filter(route => route.includeInSitemap && route.page.metadata.robots?.index)).toHaveLength(25)
+    expect(publicRoutes.filter(route => route.prerender)).toHaveLength(24)
+    expect(publicRoutes.filter(route => route.includeInSitemap && route.page.metadata.robots?.index)).toHaveLength(24)
     expect(routes.some(route => route.path === '/lista-da-casa')).toBe(true)
   })
 
@@ -45,6 +45,16 @@ const originalPaths = [
     }
   })
 
+  it('não expõe a jornada pública de formulário dependente da API', () => {
+    expect(publicRoutes.some((route) => route.pathname === '/solicitar-atendimento')).toBe(false)
+    expect(publicRoutes.some((route) => route.pathname === '/solicitacao-enviada')).toBe(false)
+    for (const route of publicRoutes) {
+      const html = renderPage(route.pathname)
+      expect(html).not.toMatch(/href="\/solicitar-atendimento(?:["?])/)
+      expect(html).not.toContain('Preencher solicitação')
+    }
+  })
+
   it('preserva conteúdo factual e links de todos os serviços', () => {
     for (const [index, service] of services.entries()) {
       const page = servicePages[index]
@@ -54,7 +64,7 @@ const originalPaths = [
         const document = new DOMParser().parseFromString(html, 'text/html')
         expect(document.body.textContent).toContain(text)
       }
-      expect(page.sections[0]).toMatchObject({ data: { variant: 'service', actions: [{ href: getContextualWhatsAppUrl(page.slug) }, { href: `/solicitar-atendimento?servico=${service.slug}` }] } })
+      expect(page.sections[0]).toMatchObject({ data: { variant: 'service', actions: [{ href: getContextualWhatsAppUrl(page.slug) }] } })
       expect(page.sections.at(-1)).toMatchObject({ data: { primaryAction: { href: getContextualWhatsAppUrl(page.slug) } } })
     }
   })
