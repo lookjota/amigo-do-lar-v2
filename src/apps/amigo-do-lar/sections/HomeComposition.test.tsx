@@ -49,14 +49,14 @@ describe('composição da Home — Etapa 4', () => {
     expect(section.querySelectorAll('img')).toHaveLength(0)
   })
 
-  it('identifica a checklist como exemplo, usa WhatsApp contextual e não cria rota', () => {
+  it('identifica a checklist como exemplo, usa WhatsApp contextual e preserva a rota Lista da Casa', () => {
     const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
     const house = container.querySelector('#lista-da-casa') as HTMLElement
     expect(within(house).getByText('Exemplo de uma Lista da Casa')).toBeInTheDocument()
     expect(within(house).getAllByRole('listitem')).toHaveLength(5)
     const url = new URL(within(house).getByRole('link').getAttribute('href')!)
     expect(url.searchParams.get('text')).toBe('Quero enviar minha Lista da Casa.')
-    expect(pages.some((page) => page.slug === '/lista-da-casa')).toBe(false)
+    expect(pages.some((page) => page.slug === '/lista-da-casa')).toBe(true)
   })
 
   it('apresenta os três estágios e todos os verbos, com stagger de até 160ms', () => {
