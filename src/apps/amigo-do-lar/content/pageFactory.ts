@@ -3,9 +3,12 @@ import type { Page } from '../../../domain/pages/Page'
 import type {
   FaqItem,
   ImageMediaAsset,
+  PlaceholderMediaAsset,
   PageSection,
 } from '../../../domain/pages/PageSection'
 import { absoluteUrl, createWhatsAppUrl, siteConfig } from '../config/site'
+import { getContextualWhatsAppUrl } from '../config/whatsapp'
+import { houseListSection, serviceStandardSection } from './internalSections'
 import type { ServiceAreaDefinition } from '../data/serviceAreas'
 import {
   findServiceArea,
@@ -328,6 +331,20 @@ export const homePage = createPage({
   ],
 })
 
+function editorialMedia(subject: string): PlaceholderMediaAsset {
+  return { kind: 'placeholder', label: `[ASSET REAL — ${subject}]`, aspectRatio: '4:3' }
+}
+
+function routeWhatsAppAction(pathname: string) {
+  return { label: 'Pedir orçamento pelo WhatsApp', href: getContextualWhatsAppUrl(pathname), external: true }
+}
+
+function routeCtaSection(pathname: string, serviceSlug?: string): PageSection {
+  const section = ctaSection('', serviceSlug)
+  if (section.type !== 'call-to-action') return section
+  return { ...section, data: { ...section.data, primaryAction: routeWhatsAppAction(pathname) } }
+}
+
 export const servicesPage = createPage({
   id: 'amigo-do-lar-services',
   slug: '/servicos',
@@ -346,13 +363,13 @@ export const servicesPage = createPage({
       type: 'hero',
       data: {
         variant: 'internal',
-        media: currentHeroMedia,
+        media: editorialMedia('PROCESSO / PROTEÇÃO'),
         eyebrow: 'Serviços residenciais',
         title: 'A solução certa começa com uma necessidade bem compreendida.',
         description:
           'Explore os serviços disponíveis e veja como cada atendimento é avaliado, combinado e executado.',
         motto: 'Escopo claro e execução cuidadosa.',
-        actions: [whatsappAction('serviços residenciais')],
+        actions: [routeWhatsAppAction('/servicos')],
       },
     },
     {
@@ -362,10 +379,12 @@ export const servicesPage = createPage({
         eyebrow: 'O que fazemos',
         title: 'Serviços para cuidar dos detalhes da sua casa.',
         items: serviceLinks,
+        variant: 'editorial',
       },
     },
-    processSection,
-    ctaSection('serviços residenciais'),
+    houseListSection,
+    serviceStandardSection,
+    routeCtaSection('/servicos'),
   ],
 })
 
@@ -413,14 +432,14 @@ function createServicePage(service: ServiceDefinition): Page {
         type: 'hero',
         data: {
           variant: 'service',
-          media: currentHeroMedia,
+          media: editorialMedia(`${service.name.toUpperCase()} / EXECUÇÃO`),
           eyebrow: 'Serviço residencial',
           title: `${service.name} residencial com avaliação e cuidado.`,
           description: service.introduction,
           motto: 'Atendimento sujeito à avaliação do caso.',
           actions: [
             {
-              ...whatsappAction(`o serviço de ${service.name.toLowerCase()}`),
+              ...routeWhatsAppAction(slug),
               label: 'Pedir orçamento pelo WhatsApp',
             },
             { label: 'Preencher solicitação', href: `/solicitar-atendimento?servico=${service.slug}` },
@@ -443,6 +462,7 @@ function createServicePage(service: ServiceDefinition): Page {
         },
       },
       processSection,
+      serviceStandardSection,
       {
         id: 'areas-atendidas',
         type: 'areas-grid',
@@ -452,6 +472,7 @@ function createServicePage(service: ServiceDefinition): Page {
           description:
             'Consulte as áreas publicadas e confirme a disponibilidade para seu endereço.',
           items: areaLinks.slice(0, 6),
+          variant: 'editorial',
         },
       },
       {
@@ -472,7 +493,7 @@ function createServicePage(service: ServiceDefinition): Page {
           items: related,
         },
       },
-      ctaSection(`serviço de ${service.name.toLowerCase()}`, service.slug),
+      routeCtaSection(slug, service.slug),
     ],
   })
 }
@@ -497,13 +518,13 @@ export const areasPage = createPage({
       type: 'hero',
       data: {
         variant: 'internal',
-        media: currentHeroMedia,
+        media: editorialMedia('PROCESSO / PROTEÇÃO'),
         eyebrow: 'Atendimento local',
         title: 'Serviços residenciais em Brasília e regiões próximas.',
         description:
           'Veja as regiões com informações publicadas e confirme pelo WhatsApp o atendimento no seu endereço.',
         motto: 'Disponibilidade confirmada caso a caso.',
-        actions: [whatsappAction('consultar atendimento na minha região')],
+        actions: [routeWhatsAppAction('/areas-atendidas')],
       },
     },
     {
@@ -513,6 +534,7 @@ export const areasPage = createPage({
         eyebrow: 'Regiões publicadas',
         title: 'Encontre informações sobre sua região.',
         items: areaLinks,
+        variant: 'editorial',
       },
     },
     {
@@ -530,7 +552,7 @@ export const areasPage = createPage({
         ],
       },
     },
-    ctaSection('consultar atendimento na minha região'),
+    routeCtaSection('/areas-atendidas'),
   ],
 })
 
@@ -571,13 +593,13 @@ function createAreaPage(area: ServiceAreaDefinition): Page {
         type: 'hero',
         data: {
           variant: 'location',
-          media: currentHeroMedia,
+          media: editorialMedia('PROCESSO / CUIDADO COM O IMÓVEL'),
           eyebrow: 'Atendimento na sua região',
           title: `Serviços residenciais em ${area.name}.`,
           description:
             'Atendimento organizado para pequenas manutenções e reparos, sempre com confirmação de disponibilidade e avaliação da demanda.',
           motto: 'Serviço combinado de acordo com cada necessidade.',
-          actions: [whatsappAction(`atendimento em ${area.name}`)],
+          actions: [routeWhatsAppAction(slug)],
         },
       },
       {
@@ -599,6 +621,7 @@ function createAreaPage(area: ServiceAreaDefinition): Page {
           eyebrow: 'Serviços disponíveis',
           title: `Demandas residenciais avaliadas em ${area.name}.`,
           items: serviceLinks,
+        variant: 'editorial',
         },
       },
       processSection,
@@ -624,7 +647,7 @@ function createAreaPage(area: ServiceAreaDefinition): Page {
           })),
         },
       },
-      ctaSection(`atendimento em ${area.name}`),
+      routeCtaSection(slug),
     ],
   })
 }
@@ -649,11 +672,11 @@ export const aboutPage = createPage({
       type: 'hero',
       data: {
         variant: 'internal',
-        media: currentHeroMedia,
+        media: editorialMedia('FUNDADORES / JOÃO + PAI / UNIFORME / AMBIENTE RESIDENCIAL'),
         eyebrow: 'Sobre',
-        title: 'Confiança se constrói na forma de atender.',
+        title: 'Uma operação familiar. Um padrão profissional.',
         description:
-          'O Amigo do Lar une comunicação clara, organização e cuidado para tornar a manutenção residencial mais simples.',
+          'João e seu pai estão à frente de uma operação familiar, com comunicação clara, organização e cuidado com a sua casa.',
         motto: 'Respeito pelo imóvel e pela necessidade apresentada.',
         actions: [whatsappAction('conhecer o atendimento')],
       },
@@ -662,7 +685,7 @@ export const aboutPage = createPage({
       id: 'nossa-proposta',
       type: 'about',
       data: {
-        eyebrow: 'Nossa proposta',
+        eyebrow: 'Quem está entrando na sua casa',
         title: 'Um serviço próximo, sem exageros e com responsabilidade.',
         paragraphs: [
           'A casa reúne detalhes que precisam funcionar bem. Quando algo exige atenção, o cliente precisa entender o que será feito e sentir que seu espaço será respeitado.',
@@ -695,7 +718,72 @@ export const aboutPage = createPage({
         ],
       },
     },
-    ctaSection('um serviço residencial'),
+    serviceStandardSection,
+    routeCtaSection('/sobre'),
+  ],
+})
+
+export const houseListPage = createPage({
+  id: 'amigo-do-lar-house-list',
+  slug: '/lista-da-casa',
+  title: 'Lista da Casa — Pequenas pendências em um contato | Amigo do Lar',
+  description: 'Reúna pequenas pendências da casa, envie sua lista e fotos pelo WhatsApp e solicite uma avaliação. Orçamento antes da execução, mediante aprovação.',
+  schemas: [breadcrumbSchema([
+    { name: 'Início', path: '/' },
+    { name: 'Lista da Casa', path: '/lista-da-casa' },
+  ])],
+  sections: [
+    {
+      id: 'inicio', type: 'hero',
+      data: {
+        variant: 'internal',
+        media: editorialMedia('LISTA DA CASA / AMBIENTE RESIDENCIAL'),
+        eyebrow: 'Lista da Casa',
+        title: 'Várias pequenas pendências. Um primeiro contato.',
+        description: 'Reúna o que precisa de atenção na sua casa e envie uma lista para avaliação. Organizamos a conversa sobre as demandas, o escopo e os próximos passos.',
+        motto: 'Orçamento antes da execução. Serviço mediante aprovação.',
+        actions: [routeWhatsAppAction('/lista-da-casa')],
+      },
+    },
+    {
+      id: 'para-quem', type: 'about',
+      data: {
+        eyebrow: 'Para quem serve', title: 'Para quem tem mais de uma coisa para resolver.',
+        paragraphs: [
+          'Uma porta precisando de ajuste, um acessório para instalar, um móvel para montar. A Lista da Casa ajuda a reunir pequenas demandas residenciais em uma solicitação organizada.',
+          'Cada item é avaliado conforme as condições do imóvel e o escopo do serviço. Os exemplos são possibilidades de atendimento, não registros de trabalhos realizados.',
+        ],
+      },
+    },
+    { ...houseListSection, data: { ...houseListSection.data, action: routeWhatsAppAction('/lista-da-casa') } },
+    {
+      id: 'como-funciona', type: 'process-steps',
+      data: {
+        eyebrow: 'Como enviar sua lista', title: 'Da lista ao serviço, com tudo combinado.',
+        items: [
+          { title: 'Liste as pendências', description: 'Descreva cada item, informe sua região e, se possível, envie fotos pelo WhatsApp.' },
+          { title: 'Avaliamos as demandas', description: 'Conversamos sobre as condições, os limites e o que precisa ser verificado em cada item.' },
+          { title: 'Receba o orçamento', description: 'Escopo, orçamento e materiais são combinados antes da execução. A compra de materiais depende da necessidade e do que for acordado.' },
+          { title: 'Aprove para seguir', description: 'A execução acontece mediante aprovação e combinação da disponibilidade, com organização e cuidado com o imóvel.' },
+        ],
+      },
+    },
+    serviceStandardSection,
+    {
+      id: 'informacoes-praticas', type: 'about',
+      data: {
+        eyebrow: 'Antes de solicitar', title: 'Cada lista tem seu próprio escopo.',
+        paragraphs: [
+          'A avaliação define quais demandas podem ser atendidas e as condições de execução. Risco, complexidade ou necessidade de especialização podem limitar o atendimento.',
+          'Materiais e responsabilidade pela compra são combinados conforme a necessidade. A garantia é conforme o serviço.',
+        ],
+      },
+    },
+    { id: 'links-uteis', type: 'related-links', data: {
+      eyebrow: 'Planeje seu atendimento', title: 'Consulte serviços e regiões.',
+      items: [{ label: 'Todos os serviços', href: '/servicos' }, { label: 'Áreas atendidas', href: '/areas-atendidas' }],
+    } },
+    routeCtaSection('/lista-da-casa'),
   ],
 })
 
@@ -717,7 +805,7 @@ export const contactPage = createPage({
       type: 'hero',
       data: {
         variant: 'internal',
-        media: currentHeroMedia,
+        media: editorialMedia('PROCESSO / PROTEÇÃO'),
         eyebrow: 'Contato',
         title: 'Vamos entender o que seu lar precisa.',
         description:
@@ -782,7 +870,7 @@ export const faqPage = createPage({
       type: 'hero',
       data: {
         variant: 'internal',
-        media: currentHeroMedia,
+        media: editorialMedia('PROCESSO / PROTEÇÃO'),
         eyebrow: 'Perguntas frequentes',
         title: 'Informação clara antes de solicitar um serviço.',
         description:
@@ -845,7 +933,7 @@ function createLegalPage(
         type: 'hero',
         data: {
           variant: 'internal',
-          media: currentHeroMedia,
+          media: editorialMedia('PROCESSO / PROTEÇÃO'),
           eyebrow: 'Informações legais',
           title,
           description,
@@ -953,6 +1041,7 @@ export const pages: Page[] = [
   areasPage,
   ...areaPages,
   aboutPage,
+  houseListPage,
   contactPage,
   faqPage,
   privacyPage,

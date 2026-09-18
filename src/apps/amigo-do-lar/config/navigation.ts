@@ -34,6 +34,7 @@ export const navigationItems: NavigationItem[] = [
     order: index + 1,
     visible: false,
   })),
+  { id: 'house-list', label: 'Lista da Casa', path: '/lista-da-casa', parentId: 'home', visible: false },
   {
     id: 'about',
     label: 'Sobre',

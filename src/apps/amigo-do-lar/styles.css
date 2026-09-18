@@ -1987,3 +1987,79 @@
 .amigo-image-modal > img { display: block; max-width: 100%; max-height: calc(100vh - 9rem); margin: auto; object-fit: contain; }
 .amigo-attachment-skeleton { min-height: 8rem; display: grid; place-items: center; margin-block: 1rem; border-radius: .6rem; color: var(--amigo-muted); background: linear-gradient(90deg, #f2f4f3, #fafbfa, #f2f4f3); }
 @media (min-width: 48rem) { .amigo-attachment-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .amigo-attachment-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Internal pages reuse the public tokens and motion; Home remains unchanged. */
+.amigo-internal-page .amigo-hero {
+  min-height: auto;
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
+
+.amigo-internal-page .amigo-hero h1 {
+  font-size: clamp(2rem, 3.8vw, 3.5rem);
+  line-height: 1.12;
+}
+
+.amigo-internal-page .amigo-hero-media > [role='img'],
+.amigo-production-placeholder {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  padding: 2rem;
+  border: 1px dashed var(--amigo-border);
+  border-radius: var(--amigo-radius);
+  color: var(--amigo-text-muted);
+  background: var(--amigo-surface-sand);
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.amigo-internal-page .amigo-section {
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+.amigo-house-list {
+  color: white;
+  background: var(--amigo-brand-deep);
+}
+
+.amigo-house-list .amigo-section-heading h2,
+.amigo-house-list .amigo-section-heading > p:last-child:not(.amigo-eyebrow) {
+  color: white;
+}
+
+.amigo-house-list .amigo-eyebrow { color: var(--amigo-gold-light); }
+.amigo-house-list .amigo-button { margin-top: 1.5rem; }
+.amigo-house-list-examples { padding: 1.5rem; border: 1px solid #ffffff40; border-radius: var(--amigo-radius); }
+.amigo-house-list-examples > p { font-size: 0.875rem; color: var(--amigo-gold-light); }
+.amigo-house-list-examples ul { list-style: none; margin: 1rem 0 0; padding: 0; }
+.amigo-house-list-examples li { padding-block: 0.85rem; border-top: 1px solid #ffffff30; }
+.amigo-standard-grid { display: grid; gap: 1.5rem; }
+.amigo-standard-grid article { height: 100%; border-top: 2px solid var(--amigo-gold); padding-top: 1.25rem; }
+.amigo-standard-grid h3 { color: var(--amigo-text-display); font-size: 1.35rem; }
+.amigo-standard-grid ul { padding-left: 1.2rem; color: var(--amigo-muted); }
+.amigo-standard-grid li { margin-top: 0.75rem; }
+
+.amigo-internal-page .amigo-areas-section.is-editorial .amigo-area-grid { gap: 0 2rem; }
+.amigo-internal-page .amigo-areas-section.is-editorial .amigo-card {
+  min-height: auto;
+  padding: 1.5rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--amigo-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.amigo-internal-page .amigo-areas-section.is-editorial .amigo-card > svg { display: none; }
+.amigo-internal-page .amigo-areas-section.is-editorial h3 { margin-top: 0; }
+.amigo-internal-page .amigo-service-card-content { display: flex; flex-direction: column; height: 100%; }
+.amigo-internal-page .amigo-card a,
+.amigo-internal-page .amigo-related-link { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px; }
+.amigo-internal-page .amigo-card a { margin-top: 1rem; padding-block: 0.5rem; }
+
+@media (min-width: 48rem) {
+  .amigo-standard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .amigo-internal-page .amigo-hero > .amigo-container { gap: 3rem; }
+}

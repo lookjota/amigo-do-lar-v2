@@ -19,6 +19,7 @@ export function Footer() {
           <nav aria-label="Serviços e atendimento">
             <strong>Atendimento</strong>
             <Link to="/servicos">Serviços</Link>
+            <Link to="/lista-da-casa">Lista da Casa</Link>
             <Link to="/areas-atendidas">Áreas atendidas</Link>
             <Link to="/perguntas-frequentes">Perguntas frequentes</Link>
           </nav>

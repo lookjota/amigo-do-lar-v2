@@ -1,16 +1,6 @@
 import { createWhatsAppUrl } from './site'
-
-function humanizeSlug(slug: string): string {
-  const labels: Record<string, string> = {
-    eletrica: 'Elétrica',
-    hidraulica: 'Hidráulica',
-    'montagem-de-moveis': 'Montagem de Móveis',
-    'fechaduras-e-portas': 'Fechaduras e Portas',
-    'pequenos-reparos': 'Pequenos Reparos',
-  }
-  return labels[slug]
-    ?? slug.replaceAll('-', ' ').replace(/(^|\s)\p{L}/gu, (letter) => letter.toUpperCase())
-}
+import { findService } from '../data/services'
+import { findServiceArea } from '../data/serviceAreas'
 
 export function getWhatsAppMessage(pathname: string): string {
   if (pathname === '/') {
@@ -18,13 +8,19 @@ export function getWhatsAppMessage(pathname: string): string {
   }
 
   if (pathname.startsWith('/servicos/')) {
-    const service = humanizeSlug(pathname.split('/')[2] ?? '')
+    const service = findService(pathname.split('/')[2] ?? '')?.name
+    if (!service) return getWhatsAppMessage('/')
     return `Vim pela página de ${service} e preciso de ajuda com...`
   }
 
   if (pathname.startsWith('/areas-atendidas/')) {
-    const region = humanizeSlug(pathname.split('/')[2] ?? '')
+    const region = findServiceArea(pathname.split('/')[2] ?? '')?.name
+    if (!region) return getWhatsAppMessage('/')
     return `Vim pela página de ${region} e gostaria de confirmar atendimento na região.`
+  }
+
+  if (pathname === '/lista-da-casa') {
+    return 'Olá! Vim pela página Lista da Casa do Amigo do Lar e gostaria de enviar minhas pendências para avaliação.'
   }
 
   if (pathname === '/servicos') {
