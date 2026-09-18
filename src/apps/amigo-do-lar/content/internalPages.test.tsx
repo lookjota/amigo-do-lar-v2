@@ -102,10 +102,20 @@ const originalPaths = [
   })
 
   it.each(['idle', 'loading', 'error', 'success'] as const)('mantém URLs e catálogo com API em %s', (status) => {
-    vi.mocked(useServices).mockReturnValue({ status, data: status === 'success' ? [{
-      id: 'api-eletrica', slug: 'eletrica', name: 'Elétrica API', description: 'Descrição API', category: 'ELECTRICAL',
-      isActive: true, createdAt: '', updatedAt: '',
-    }] : undefined, error: undefined, retry: vi.fn() })
+    vi.mocked(useServices).mockReturnValue({
+  status,
+  data: status === 'success' ? [{
+    id: 'api-eletrica',
+    slug: 'eletrica',
+    name: 'Elétrica API',
+    description: 'Descrição API',
+    category: 'ELECTRICAL',
+    isActive: true,
+    createdAt: '',
+    updatedAt: '',
+  }] : undefined,
+  retry: vi.fn(),
+  })
     const section = servicesPage.sections.find(section => section.type === 'services-grid')!
     render(<MemoryRouter><ServicesGridSection section={section} /></MemoryRouter>)
     expect(screen.getAllByRole('link').map(link => link.getAttribute('href'))).toEqual(services.map(service => `/servicos/${service.slug}`))
