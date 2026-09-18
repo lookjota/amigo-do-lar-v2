@@ -90,6 +90,29 @@ const originalPaths = [
     expect(getWhatsAppMessage('/lista-da-casa')).toContain('pendências para avaliação')
   })
 
+  it('usa o label da Lista da Casa somente nos três CTAs primários da experiência', () => {
+    const expectedLabel = 'Enviar minha Lista da Casa'
+    const listPageHtml = renderPage('/lista-da-casa')
+    expect(listPageHtml.match(new RegExp(expectedLabel, 'g'))).toHaveLength(3)
+    expect(listPageHtml).not.toContain('Pedir orçamento pelo WhatsApp')
+
+    const contextualUrl = getContextualWhatsAppUrl('/lista-da-casa')
+    const listPrimaryActions = houseListPage.sections.flatMap((section) => {
+      if (section.type === 'hero') return section.data.actions.slice(0, 1)
+      if (section.type === 'house-list') return section.data.action ? [section.data.action] : []
+      if (section.type === 'call-to-action') return [section.data.primaryAction]
+      return []
+    })
+    expect(listPrimaryActions).toHaveLength(3)
+    expect(listPrimaryActions).toEqual(
+      listPrimaryActions.map((action) => ({ ...action, label: expectedLabel, href: contextualUrl })),
+    )
+
+    for (const route of publicRoutes.filter((route) => !['/', '/lista-da-casa'].includes(route.pathname))) {
+      expect(renderPage(route.pathname)).not.toContain(expectedLabel)
+    }
+  })
+
   it('um clique contextual dispara whatsapp_click uma única vez', () => {
     window.gtag = vi.fn()
     const hero = servicePages[0].sections[0]

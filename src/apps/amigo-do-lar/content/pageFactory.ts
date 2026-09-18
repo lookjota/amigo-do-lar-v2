@@ -388,10 +388,20 @@ function routeWhatsAppAction(pathname: string) {
   return { label: 'Pedir orçamento pelo WhatsApp', href: getContextualWhatsAppUrl(pathname), external: true }
 }
 
-function routeCtaSection(pathname: string, serviceSlug?: string): PageSection {
+function routeCtaSection(
+  pathname: string,
+  serviceSlug?: string,
+  primaryActionLabel = 'Pedir orçamento pelo WhatsApp',
+): PageSection {
   const section = ctaSection('', serviceSlug)
   if (section.type !== 'call-to-action') return section
-  return { ...section, data: { ...section.data, primaryAction: routeWhatsAppAction(pathname) } }
+  return {
+    ...section,
+    data: {
+      ...section.data,
+      primaryAction: { ...routeWhatsAppAction(pathname), label: primaryActionLabel },
+    },
+  }
 }
 
 export const servicesPage = createPage({
@@ -791,7 +801,7 @@ export const houseListPage = createPage({
         title: 'Várias pequenas pendências. Um primeiro contato.',
         description: 'Reúna o que precisa de atenção na sua casa e envie uma lista para avaliação. Organizamos a conversa sobre as demandas, o escopo e os próximos passos.',
         motto: 'Orçamento antes da execução. Serviço mediante aprovação.',
-        actions: [routeWhatsAppAction('/lista-da-casa')],
+        actions: [{ ...routeWhatsAppAction('/lista-da-casa'), label: 'Enviar minha Lista da Casa' }],
       },
     },
     {
@@ -804,7 +814,13 @@ export const houseListPage = createPage({
         ],
       },
     },
-    { ...houseListSection, data: { ...houseListSection.data, action: routeWhatsAppAction('/lista-da-casa') } },
+    {
+      ...houseListSection,
+      data: {
+        ...houseListSection.data,
+        action: { ...routeWhatsAppAction('/lista-da-casa'), label: 'Enviar minha Lista da Casa' },
+      },
+    },
     {
       id: 'como-funciona', type: 'process-steps',
       data: {
@@ -832,7 +848,7 @@ export const houseListPage = createPage({
       eyebrow: 'Planeje seu atendimento', title: 'Consulte serviços e regiões.',
       items: [{ label: 'Todos os serviços', href: '/servicos' }, { label: 'Áreas atendidas', href: '/areas-atendidas' }],
     } },
-    routeCtaSection('/lista-da-casa'),
+    routeCtaSection('/lista-da-casa', undefined, 'Enviar minha Lista da Casa'),
   ],
 })
 
