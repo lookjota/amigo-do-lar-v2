@@ -257,36 +257,45 @@ export const homePage = createPage({
       id: 'confianca',
       type: 'trust-features',
       data: {
+        variant: 'strip',
         eyebrow: 'Confiança na prática',
-        title: 'O cuidado começa antes da execução.',
+        title: 'Condições do atendimento',
         items: [
-          {
-            title: 'Atendimento organizado',
-            description:
-              'Informações e próximos passos apresentados de forma objetiva.',
-          },
-          {
-            title: 'Cuidado com o imóvel',
-            description:
-              'A execução considera o ambiente, as superfícies e a organização do local.',
-          },
-          {
-            title: 'Comunicação clara',
-            description:
-              'Dúvidas, materiais e limitações são alinhados durante o atendimento.',
-          },
-          {
-            title: 'Escopo responsável',
-            description:
-              'O serviço é definido conforme a necessidade e as condições avaliadas.',
-          },
+          { title: 'Orçamento claro', description: '' },
+          { title: 'Pix, dinheiro ou cartão', description: '' },
+          { title: 'Mesmo dia conforme disponibilidade', description: '' },
+          { title: 'Garantia conforme o serviço', description: '' },
         ],
+      },
+    },
+    {
+      id: 'problema',
+      type: 'problem',
+      data: {
+        eyebrow: 'A CASA NÃO PARA',
+        title: 'Manutenção da casa não deveria virar outra tarefa para administrar.',
+        paragraphs: [
+          'Pequenas pendências se acumulam pela casa. Resolver cada uma delas pode significar coordenar diferentes profissionais e atendimentos.',
+        ],
+        media: { kind: 'placeholder', label: '[ASSET EDITORIAL — PEQUENAS PENDÊNCIAS RESIDENCIAIS]', aspectRatio: '4:3' },
+      },
+    },
+    {
+      id: 'solucao',
+      type: 'solution',
+      data: {
+        eyebrow: 'AMIGO DO LAR',
+        title: 'Um contato para cuidar das pequenas demandas da sua casa.',
+        paragraphs: ['Conte o que precisa resolver. Avaliamos a necessidade, organizamos o atendimento e conduzimos o serviço do orçamento à conclusão.'],
+        action: { label: 'Enviar minha necessidade', href: createWhatsAppUrl('Vim pelo site do Amigo do Lar e quero enviar minha necessidade.'), external: true },
       },
     },
     {
       id: 'servicos',
       type: 'services-grid',
       data: {
+        variant: 'editorial',
+        action: { label: 'Ver todos', href: '/servicos' },
         eyebrow: 'Serviços',
         title: 'Soluções para as demandas do dia a dia.',
         description:
@@ -294,11 +303,51 @@ export const homePage = createPage({
         items: serviceLinks,
       },
     },
-    processSection,
+    {
+      id: 'lista-da-casa',
+      type: 'house-list',
+      data: {
+        eyebrow: 'LISTA DA CASA',
+        title: 'Tem várias coisas para resolver? Mande a Lista da Casa.',
+        description: 'Reunimos as demandas, avaliamos em conjunto e organizamos um único atendimento.',
+        exampleLabel: 'Exemplo de uma Lista da Casa',
+        items: ['instalar suporte da TV', 'trocar torneira', 'ajustar porta', 'instalar cortina', 'fixar prateleiras'],
+        action: { label: 'Enviar minha Lista da Casa', href: createWhatsAppUrl('Quero enviar minha Lista da Casa.'), external: true },
+      },
+    },
+    {
+      id: 'como-funciona',
+      type: 'service-standard',
+      data: {
+        eyebrow: 'PADRÃO AMIGO DO LAR',
+        title: 'O serviço começa antes de chegar à sua casa.',
+        description: 'Um padrão para deixar cada etapa mais clara e previsível.',
+        stages: [
+          { title: 'ANTES', steps: ['Entender', 'Avaliar', 'Orçar', 'Agendar'], media: { kind: 'placeholder', label: '[ASSET PROCESSO — ANTES]', aspectRatio: '4:3' } },
+          { title: 'DURANTE', steps: ['Confirmar', 'Proteger', 'Executar', 'Comunicar'], media: { kind: 'placeholder', label: '[ASSET PROCESSO — DURANTE]', aspectRatio: '4:3' } },
+          { title: 'DEPOIS', steps: ['Testar', 'Conferir', 'Organizar', 'Limpar'], media: { kind: 'placeholder', label: '[ASSET PROCESSO — DEPOIS]', aspectRatio: '4:3' } },
+        ],
+      },
+    },
+    {
+      id: 'sobre',
+      type: 'founders',
+      data: {
+        eyebrow: 'QUEM ESTÁ ENTRANDO NA SUA CASA',
+        title: 'Uma operação familiar. Um padrão profissional.',
+        paragraphs: [
+          'O Amigo do Lar nasce para facilitar a manutenção da casa sem transformar uma demanda simples em uma experiência confusa.',
+          'A proposta é compreender a necessidade, combinar um escopo responsável e conduzir a execução com respeito pelo imóvel e por quem vive nele.',
+        ],
+        media: { kind: 'placeholder', label: '[ASSET REAL — JOÃO + PAI UNIFORMIZADOS]', aspectRatio: '5:4' },
+      },
+    },
     {
       id: 'areas-atendidas',
       type: 'areas-grid',
       data: {
+        variant: 'editorial',
+        action: { label: 'Ver áreas atendidas', href: '/areas-atendidas' },
         eyebrow: 'Áreas atendidas',
         title: 'Atendimento em Brasília e regiões próximas.',
         description:
@@ -307,27 +356,27 @@ export const homePage = createPage({
       },
     },
     {
-      id: 'sobre',
-      type: 'about',
-      data: {
-        eyebrow: 'Sobre o Amigo do Lar',
-        title: 'Serviço residencial com presença, clareza e cuidado.',
-        paragraphs: [
-          'O Amigo do Lar nasce para facilitar a manutenção da casa sem transformar uma demanda simples em uma experiência confusa.',
-          'A proposta é compreender a necessidade, combinar um escopo responsável e conduzir a execução com respeito pelo imóvel e por quem vive nele.',
-        ],
-      },
-    },
-    {
       id: 'perguntas-frequentes',
       type: 'faq',
       data: {
+        variant: 'home',
         eyebrow: 'Perguntas frequentes',
         title: 'Informações para solicitar seu atendimento.',
         items: commonFaq,
       },
     },
-    ctaSection('um serviço residencial'),
+    {
+      id: 'solicitar-atendimento',
+      type: 'call-to-action',
+      data: {
+        variant: 'home',
+        eyebrow: 'PRÓXIMO PASSO',
+        title: 'O que está esperando para ser resolvido na sua casa?',
+        description: 'Envie fotos e conte o que precisa. A partir daí organizamos o próximo passo.',
+        primaryAction: { label: 'Pedir orçamento pelo WhatsApp', href: createWhatsAppUrl('Vim pelo site do Amigo do Lar e gostaria de pedir um orçamento.'), external: true },
+        secondaryAction: { label: 'Preencher solicitação', href: '/solicitar-atendimento' },
+      },
+    },
   ],
 })
 

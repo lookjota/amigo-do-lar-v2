@@ -28,7 +28,7 @@ export function PageRoute({ pageSlug }: { pageSlug: string }) {
   if (!page) return null
 
   return (
-    <div className={pageSlug === '/' ? undefined : 'amigo-internal-page'}>
+    <div className={pageSlug === '/' ? 'amigo-home' : 'amigo-internal-page'}>
       <Breadcrumbs
         items={buildBreadcrumbs(navigationItems, location.pathname)}
       />

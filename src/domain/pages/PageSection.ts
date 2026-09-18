@@ -221,6 +221,7 @@ export interface QuoteRequestPayload {
 }
 
 export interface CallToActionPayload {
+  variant?: 'home'
   eyebrow: string
   title: string
   description: string
