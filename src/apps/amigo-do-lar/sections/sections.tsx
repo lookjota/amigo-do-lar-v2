@@ -1,7 +1,11 @@
 import {
+  BadgeCheck,
   Check,
   ClipboardCheck,
+  Clock3,
+  CreditCard,
   MessageCircle,
+  ReceiptText,
   ShieldCheck,
 } from 'lucide-react'
 import type { SectionComponent } from '../../../engine/PageSectionRegistry'
@@ -16,13 +20,22 @@ import { createWhatsAppUrl } from '../config/site'
 import { mergeServicesCatalog } from '../data/servicesCatalog'
 
 export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
-  <main id="conteudo-principal" className="amigo-hero">
+  <main
+    id="conteudo-principal"
+    className="amigo-hero"
+    data-hero-variant={section.data.variant ?? 'internal'}
+    data-media-status={
+      section.data.media?.kind === 'image'
+        ? section.data.media.productionStatus
+        : undefined
+    }
+  >
     <Container>
-      <Reveal className="amigo-hero-copy">
-        <p className="amigo-eyebrow">{section.data.eyebrow}</p>
-        <h1>{section.data.title}</h1>
-        <p>{section.data.description}</p>
-        <div className="amigo-actions">
+      <div className="amigo-hero-copy">
+        <p className="amigo-eyebrow amigo-hero-eyebrow">{section.data.eyebrow}</p>
+        <h1 className="amigo-display-heading">{section.data.title}</h1>
+        <p className="amigo-hero-description">{section.data.description}</p>
+        <div className="amigo-actions amigo-hero-actions">
           {section.data.actions.map((action, index) => (
             <ContentLink
               key={action.href}
@@ -33,54 +46,63 @@ export const HeroSection: SectionComponent<'hero'> = ({ section }) => (
                   : 'amigo-button amigo-button-secondary'
               }
               event={
-                action.external && index === 0
-                  ? 'request_service_click'
-                  : undefined
+                action.external && index === 0 ? 'whatsapp_click' : undefined
               }
             />
           ))}
         </div>
         <p className="amigo-hero-note">
-          <ShieldCheck size={18} aria-hidden="true" />
           {section.data.motto}
         </p>
-      </Reveal>
-      <Reveal className="amigo-hero-media" delay={100}>
-        <img
-          src="/joao.png"
-          alt="Profissional do Amigo do Lar"
-          width="1448"
-          height="1086"
-          fetchPriority="high"
-        />
-      </Reveal>
+      </div>
+      {section.data.media && (
+        <div className="amigo-hero-media">
+          {section.data.media.kind === 'image' ? (
+            <img
+              src={section.data.media.src}
+              alt={section.data.media.alt}
+              width={section.data.media.width}
+              height={section.data.media.height}
+              fetchPriority="high"
+            />
+          ) : (
+            <div role="img" aria-label={section.data.media.label}>
+              {section.data.media.label}
+            </div>
+          )}
+        </div>
+      )}
     </Container>
   </main>
 )
 
 export const TrustFeaturesSection: SectionComponent<'trust-features'> = ({
   section,
-}) => (
-  <section id={section.id} className="amigo-section amigo-section-soft">
+}) => {
+  const icons = [ReceiptText, CreditCard, Clock3, BadgeCheck]
+  const strip = section.data.variant === 'strip'
+
+  return (
+  <section id={section.id} className={strip ? 'amigo-trust-strip' : 'amigo-section amigo-section-soft'}>
     <Container>
-      <SectionHeading
-        eyebrow={section.data.eyebrow}
-        title={section.data.title}
-      />
+      {!strip && <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />}
       <div className="amigo-feature-grid">
-        {section.data.items.map((item, index) => (
-          <Reveal key={item.title} delay={index * 55}>
+        {section.data.items.map((item, index) => {
+          const Icon = icons[index] ?? Check
+          return (
+          <Reveal key={item.title} delay={index * 45}>
             <article className="amigo-feature">
-              <Check size={20} aria-hidden="true" />
+              <Icon size={21} aria-hidden="true" />
               <h3>{item.title}</h3>
-              <p>{item.description}</p>
+              {item.description && <p>{item.description}</p>}
             </article>
           </Reveal>
-        ))}
+        )})}
       </div>
     </Container>
   </section>
-)
+  )
+}
 
 export const ServicesGridSection: SectionComponent<'services-grid'> = ({
   section,
@@ -91,13 +113,12 @@ export const ServicesGridSection: SectionComponent<'services-grid'> = ({
     : section.data.items
 
   return (
-    <section id={section.id} className="amigo-section">
+    <section id={section.id} className={`amigo-section amigo-services-section ${section.data.variant === 'editorial' ? 'is-editorial' : ''}`}>
       <Container>
-        <SectionHeading
-          eyebrow={section.data.eyebrow}
-          title={section.data.title}
-          description={section.data.description}
-        />
+        <div className="amigo-section-heading-row">
+          <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} description={section.data.description} />
+          {section.data.action && <ContentLink {...section.data.action} className="amigo-text-link" />}
+        </div>
         <div className="amigo-card-grid">
           {items.map((item, index) => (
             <Reveal key={item.href} delay={(index % 3) * 55}>
@@ -105,6 +126,7 @@ export const ServicesGridSection: SectionComponent<'services-grid'> = ({
                 title={item.label}
                 description={item.description}
                 href={item.href}
+                media={item.media}
               />
             </Reveal>
           ))}
@@ -180,7 +202,7 @@ export const ProcessStepsSection: SectionComponent<'process-steps'> = ({
 export const AreasGridSection: SectionComponent<'areas-grid'> = ({
   section,
 }) => (
-  <section id={section.id} className="amigo-section amigo-section-soft">
+  <section id={section.id} className={`amigo-section amigo-section-soft amigo-areas-section ${section.data.variant === 'editorial' ? 'is-editorial' : ''}`}>
     <Container>
       <SectionHeading
         eyebrow={section.data.eyebrow}
@@ -198,6 +220,7 @@ export const AreasGridSection: SectionComponent<'areas-grid'> = ({
           </Reveal>
         ))}
       </div>
+      {section.data.action && <ContentLink {...section.data.action} className="amigo-text-link" />}
     </Container>
   </section>
 )
@@ -263,19 +286,18 @@ export const AboutSection: SectionComponent<'about'> = ({ section }) => (
 )
 
 export const FaqSection: SectionComponent<'faq'> = ({ section }) => (
-  <section id={section.id} className="amigo-section amigo-section-soft">
+  <section id={section.id} className={`amigo-section amigo-section-soft amigo-faq-section ${section.data.variant === 'home' ? 'is-home' : ''}`}>
     <Container>
-      <SectionHeading
-        eyebrow={section.data.eyebrow}
-        title={section.data.title}
-      />
-      <div className="amigo-faq">
+      <div className="amigo-faq-layout">
+        <SectionHeading eyebrow={section.data.eyebrow} title={section.data.title} />
+        <div className="amigo-faq">
         {section.data.items.map((item) => (
           <details key={item.question}>
             <summary>{item.question}</summary>
             <p>{item.answer}</p>
           </details>
         ))}
+        </div>
       </div>
     </Container>
   </section>
@@ -344,7 +366,7 @@ export const CallToActionSection: SectionComponent<'call-to-action'> = ({
           className="amigo-button amigo-button-primary"
           event={
             section.data.primaryAction.external
-              ? 'request_service_click'
+              ? 'whatsapp_click'
               : undefined
           }
         />

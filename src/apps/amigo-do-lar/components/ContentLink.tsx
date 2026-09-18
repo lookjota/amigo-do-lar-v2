@@ -18,7 +18,7 @@ export function ContentLink({
   const content = (
     <>
       {label}
-      <ArrowUpRight size={17} aria-hidden="true" />
+      <ArrowUpRight className="amigo-button-arrow" size={17} aria-hidden="true" />
       {external && <span className="sr-only"> (abre em nova aba)</span>}
     </>
   )

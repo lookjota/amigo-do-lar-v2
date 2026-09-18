@@ -16,15 +16,22 @@ export function Footer() {
               cuidado.
             </p>
           </div>
-          <nav aria-label="Links institucionais">
+          <nav aria-label="Serviços e atendimento">
+            <strong>Atendimento</strong>
             <Link to="/servicos">Serviços</Link>
             <Link to="/areas-atendidas">Áreas atendidas</Link>
             <Link to="/perguntas-frequentes">Perguntas frequentes</Link>
           </nav>
+          <nav aria-label="Links institucionais">
+            <strong>Amigo do Lar</strong>
+            <Link to="/sobre">Sobre</Link>
+            <Link to="/contato">Contato</Link>
+            <Link to="/solicitar-atendimento">Solicitar atendimento</Link>
+          </nav>
           <nav aria-label="Links legais">
+            <strong>Informações</strong>
             <Link to="/politica-de-privacidade">Política de privacidade</Link>
             <Link to="/termos-de-uso">Termos de uso</Link>
-            <Link to="/contato">Contato</Link>
             <Link className="amigo-footer-admin-link" to="/admin/login">
               Área administrativa
             </Link>

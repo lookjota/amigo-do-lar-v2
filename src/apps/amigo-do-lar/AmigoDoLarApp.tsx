@@ -67,19 +67,21 @@ export function AmigoDoLarApplication() {
               ))}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
-            <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route element={<ProtectedRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route path="/admin" element={<AdminHomePage />} />
-                <Route path="/admin/solicitacoes" element={<AdminServiceRequestsPage />} />
-                <Route path="/admin/agenda" element={<AdminAppointmentsPage />} />
-                <Route path="/admin/calendario" element={<AdminCalendarPage />} />
-                <Route path="/admin/clientes" element={<AdminCustomersPage />} />
-                <Route path="/admin/servicos" element={<AdminServicesPage />} />
-                <Route path="/admin/financeiro" element={<AdminFinancePage />} />
-                <Route path="/admin/notificacoes" element={<AdminNotificationsPage />} />
-                <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-                  <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+            <Route element={<AdminScope />}>
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AdminLayout />}>
+                  <Route path="/admin" element={<AdminHomePage />} />
+                  <Route path="/admin/solicitacoes" element={<AdminServiceRequestsPage />} />
+                  <Route path="/admin/agenda" element={<AdminAppointmentsPage />} />
+                  <Route path="/admin/calendario" element={<AdminCalendarPage />} />
+                  <Route path="/admin/clientes" element={<AdminCustomersPage />} />
+                  <Route path="/admin/servicos" element={<AdminServicesPage />} />
+                  <Route path="/admin/financeiro" element={<AdminFinancePage />} />
+                  <Route path="/admin/notificacoes" element={<AdminNotificationsPage />} />
+                  <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+                    <Route path="/admin/usuarios" element={<AdminUsersPage />} />
+                  </Route>
                 </Route>
               </Route>
             </Route>
@@ -92,13 +94,23 @@ export function AmigoDoLarApplication() {
 }
 
 function PublicLayout() {
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
-    <>
+    <div className="amigo-public-scope">
       <Analytics />
-      <Header />
+      <Header menuOpen={menuOpen} onMenuOpenChange={setMenuOpen} />
       <Outlet />
       <Footer />
-      <WhatsAppButton />
-    </>
+      <WhatsAppButton menuOpen={menuOpen} />
+    </div>
+  )
+}
+
+function AdminScope() {
+  return (
+    <div className="amigo-admin-scope">
+      <Outlet />
+    </div>
   )
 }

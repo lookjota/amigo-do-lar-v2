@@ -25,7 +25,7 @@ function getObserver() {
           observer?.unobserve(entry.target)
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+      { rootMargin: '0px', threshold: 0.15 },
     )
   }
 
@@ -39,7 +39,7 @@ export function Reveal({ children, delay = 0, className = '' }: RevealProps) {
 
   useEffect(() => {
     const element = elementRef.current
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
     if (!element || reducedMotion || !('IntersectionObserver' in window)) return
 

@@ -2,6 +2,7 @@ import type { JsonLdObject } from '../../../domain/metadata/PageMetadata'
 import type { Page } from '../../../domain/pages/Page'
 import type {
   FaqItem,
+  ImageMediaAsset,
   PageSection,
 } from '../../../domain/pages/PageSection'
 import { absoluteUrl, createWhatsAppUrl, siteConfig } from '../config/site'
@@ -22,6 +23,16 @@ interface PageInput {
   sections: PageSection[]
   schemas?: JsonLdObject[]
   index?: boolean
+}
+
+const currentHeroMedia: ImageMediaAsset = {
+  kind: 'image',
+  src: '/joao.png',
+  alt: 'Profissional do Amigo do Lar',
+  width: 1448,
+  height: 1086,
+  aspectRatio: '4:3',
+  productionStatus: 'temporary-fallback',
 }
 
 const commonFaq: FaqItem[] = [
@@ -92,9 +103,13 @@ function ctaSection(context: string, serviceSlug?: string): PageSection {
       title: 'Conte o que precisa de atenção no seu lar.',
       description:
         'Envie uma descrição e fotos pelo WhatsApp para iniciarmos a avaliação do atendimento.',
-      primaryAction: { label: 'Solicitar atendimento', href: `/solicitar-atendimento${serviceSlug ? `?servico=${serviceSlug}` : ''}` },
-      secondaryAction: {
+      primaryAction: {
         ...whatsappAction(context),
+        label: 'Pedir orçamento pelo WhatsApp',
+      },
+      secondaryAction: {
+        label: 'Preencher solicitação',
+        href: `/solicitar-atendimento${serviceSlug ? `?servico=${serviceSlug}` : ''}`,
       },
     },
   }
@@ -216,14 +231,22 @@ export const homePage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
-        eyebrow: 'Serviços residenciais em Brasília',
-        title: 'Seu lar merece um serviço à altura da sua confiança.',
+        variant: 'home',
+        media: currentHeroMedia,
+        eyebrow: 'SERVIÇOS RESIDENCIAIS EM BRASÍLIA',
+        title: 'Sua casa cuidada com padrão profissional.',
         description:
-          'Pequenos reparos e serviços residenciais conduzidos com clareza, organização e cuidado em cada etapa.',
-        motto: 'Atendimento conforme a necessidade apresentada.',
+          'Reparos, instalações e manutenção residencial com orçamento claro, profissionais bem apresentados e cuidado do início ao fim.',
+        motto: 'Envie fotos e uma breve descrição do que precisa resolver.',
         actions: [
-          { label: 'Solicitar atendimento', href: '/solicitar-atendimento' },
-          whatsappAction('um serviço residencial'),
+          {
+            label: 'Pedir orçamento pelo WhatsApp',
+            href: createWhatsAppUrl(
+              'Vim pelo site do Amigo do Lar e gostaria de pedir um orçamento.',
+            ),
+            external: true,
+          },
+          { label: 'Ver serviços', href: '/servicos' },
         ],
       },
     },
@@ -322,6 +345,8 @@ export const servicesPage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
+        variant: 'internal',
+        media: currentHeroMedia,
         eyebrow: 'Serviços residenciais',
         title: 'A solução certa começa com uma necessidade bem compreendida.',
         description:
@@ -387,13 +412,18 @@ function createServicePage(service: ServiceDefinition): Page {
         id: 'inicio',
         type: 'hero',
         data: {
+          variant: 'service',
+          media: currentHeroMedia,
           eyebrow: 'Serviço residencial',
           title: `${service.name} residencial com avaliação e cuidado.`,
           description: service.introduction,
           motto: 'Atendimento sujeito à avaliação do caso.',
           actions: [
-            { label: 'Solicitar atendimento', href: `/solicitar-atendimento?servico=${service.slug}` },
-            { label: 'Como funciona', href: '#como-funciona' },
+            {
+              ...whatsappAction(`o serviço de ${service.name.toLowerCase()}`),
+              label: 'Pedir orçamento pelo WhatsApp',
+            },
+            { label: 'Preencher solicitação', href: `/solicitar-atendimento?servico=${service.slug}` },
           ],
         },
       },
@@ -466,6 +496,8 @@ export const areasPage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
+        variant: 'internal',
+        media: currentHeroMedia,
         eyebrow: 'Atendimento local',
         title: 'Serviços residenciais em Brasília e regiões próximas.',
         description:
@@ -538,6 +570,8 @@ function createAreaPage(area: ServiceAreaDefinition): Page {
         id: 'inicio',
         type: 'hero',
         data: {
+          variant: 'location',
+          media: currentHeroMedia,
           eyebrow: 'Atendimento na sua região',
           title: `Serviços residenciais em ${area.name}.`,
           description:
@@ -614,6 +648,8 @@ export const aboutPage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
+        variant: 'internal',
+        media: currentHeroMedia,
         eyebrow: 'Sobre',
         title: 'Confiança se constrói na forma de atender.',
         description:
@@ -680,6 +716,8 @@ export const contactPage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
+        variant: 'internal',
+        media: currentHeroMedia,
         eyebrow: 'Contato',
         title: 'Vamos entender o que seu lar precisa.',
         description:
@@ -743,6 +781,8 @@ export const faqPage = createPage({
       id: 'inicio',
       type: 'hero',
       data: {
+        variant: 'internal',
+        media: currentHeroMedia,
         eyebrow: 'Perguntas frequentes',
         title: 'Informação clara antes de solicitar um serviço.',
         description:
@@ -804,6 +844,8 @@ function createLegalPage(
         id: 'inicio',
         type: 'hero',
         data: {
+          variant: 'internal',
+          media: currentHeroMedia,
           eyebrow: 'Informações legais',
           title,
           description,

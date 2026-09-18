@@ -12,7 +12,7 @@ export function SectionHeading({
   return (
     <header className="amigo-section-heading">
       <p className="amigo-eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
+      <h2 className="amigo-display-heading">{title}</h2>
       {description && <p>{description}</p>}
     </header>
   )

@@ -17,6 +17,15 @@ import {
   ServicesGridSection,
   TrustFeaturesSection,
 } from '../sections/sections'
+import {
+  FoundersSection,
+  HouseListSection,
+  ProblemSection,
+  ProofGallerySection,
+  ReviewsSection,
+  ServiceStandardSection,
+  SolutionSection,
+} from '../sections/redesignSections'
 
 export const pageSectionRegistry: PageSectionRegistry = {
   hero: HeroSection,
@@ -35,4 +44,11 @@ export const pageSectionRegistry: PageSectionRegistry = {
   'related-links': RelatedLinksSection,
   'legal-content': LegalContentSection,
   'not-found': NotFoundSection,
+  problem: ProblemSection,
+  solution: SolutionSection,
+  'house-list': HouseListSection,
+  'service-standard': ServiceStandardSection,
+  founders: FoundersSection,
+  'proof-gallery': ProofGallerySection,
+  reviews: ReviewsSection,
 }

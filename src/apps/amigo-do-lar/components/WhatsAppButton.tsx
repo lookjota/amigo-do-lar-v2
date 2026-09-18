@@ -1,20 +1,43 @@
+import { useEffect, useState } from 'react'
 import { MessageCircle } from 'lucide-react'
-import { createWhatsAppUrl } from '../config/site'
+import { useLocation } from 'react-router-dom'
 import { trackEvent } from '../analytics/analytics'
+import { getContextualWhatsAppUrl } from '../config/whatsapp'
 
-export function WhatsAppButton() {
+export function WhatsAppButton({ menuOpen }: { menuOpen: boolean }) {
+  const [visible, setVisible] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>('.amigo-hero')
+    if (!hero) return
+
+    const updateVisibility = () => {
+      const threshold = hero.offsetTop + hero.offsetHeight * 0.8
+      setVisible(window.scrollY >= threshold)
+    }
+    updateVisibility()
+    window.addEventListener('scroll', updateVisibility, { passive: true })
+    window.addEventListener('resize', updateVisibility)
+    return () => {
+      window.removeEventListener('scroll', updateVisibility)
+      window.removeEventListener('resize', updateVisibility)
+    }
+  }, [location.pathname])
+
+  if (!visible || menuOpen) return null
+
   return (
-    <a
-      className="amigo-whatsapp-float"
-      href={createWhatsAppUrl(
-        'Olá! Gostaria de conversar sobre um serviço residencial.',
-      )}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Falar com o Amigo do Lar pelo WhatsApp"
-      onClick={() => trackEvent('whatsapp_click')}
-    >
-      <MessageCircle aria-hidden="true" />
-    </a>
+    <aside className="amigo-mobile-sticky-cta" aria-label="Orçamento pelo WhatsApp">
+      <a
+        href={getContextualWhatsAppUrl(location.pathname)}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackEvent('whatsapp_click', { origin: 'sticky_mobile' })}
+      >
+        <MessageCircle size={20} aria-hidden="true" />
+        Pedir orçamento no WhatsApp
+      </a>
+    </aside>
   )
 }

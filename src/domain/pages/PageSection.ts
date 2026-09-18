@@ -22,6 +22,13 @@ export const pageSectionTypes = [
   'related-links',
   'legal-content',
   'not-found',
+  'problem',
+  'solution',
+  'house-list',
+  'service-standard',
+  'founders',
+  'proof-gallery',
+  'reviews',
 ] as const
 
 export type PageSectionType = (typeof pageSectionTypes)[number]
@@ -44,7 +51,29 @@ export interface HeroPayload {
   description: string
   motto: string
   actions: Link[]
+  variant?: HeroVariant
+  media?: MediaAsset
 }
+
+export type HeroVariant = 'home' | 'internal' | 'service' | 'location'
+
+export interface ImageMediaAsset {
+  kind: 'image'
+  src: string
+  alt: string
+  width: number
+  height: number
+  aspectRatio?: '8:7' | '4:5' | '4:3' | '16:10' | '5:4' | '1:1'
+  productionStatus?: 'approved' | 'temporary-fallback'
+}
+
+export interface PlaceholderMediaAsset {
+  kind: 'placeholder'
+  label: `[ASSET ${string}]`
+  aspectRatio?: '8:7' | '4:5' | '4:3' | '16:10' | '5:4' | '1:1'
+}
+
+export type MediaAsset = ImageMediaAsset | PlaceholderMediaAsset
 
 export interface ResearchArea {
   name: string
@@ -98,6 +127,7 @@ export interface FooterPayload {
 
 export interface ContentLink extends Link {
   description?: string
+  media?: MediaAsset
 }
 
 export interface FeatureItem {
@@ -109,6 +139,7 @@ export interface TrustFeaturesPayload {
   eyebrow: string
   title: string
   items: FeatureItem[]
+  variant?: 'cards' | 'strip'
 }
 
 export interface ServicesGridPayload {
@@ -116,6 +147,8 @@ export interface ServicesGridPayload {
   title: string
   description?: string
   items: ContentLink[]
+  action?: Link
+  variant?: 'cards' | 'editorial'
 }
 
 export interface ServiceDetailsPayload {
@@ -140,6 +173,8 @@ export interface AreasGridPayload {
   title: string
   description?: string
   items: ContentLink[]
+  action?: Link
+  variant?: 'cards' | 'editorial'
 }
 
 export interface LocalAreaIntroductionPayload {
@@ -169,6 +204,7 @@ export interface FaqPayload {
   eyebrow: string
   title: string
   items: FaqItem[]
+  variant?: 'default' | 'home'
 }
 
 export interface ContactPayload {
@@ -215,6 +251,71 @@ export interface NotFoundPayload {
   action: Link
 }
 
+export interface EditorialSectionPayload {
+  eyebrow: string
+  title: string
+  paragraphs: string[]
+  media?: MediaAsset
+}
+
+export type ProblemPayload = EditorialSectionPayload
+
+export interface SolutionPayload extends EditorialSectionPayload {
+  action?: Link
+}
+
+export interface HouseListPayload {
+  eyebrow: string
+  title: string
+  description: string
+  items: string[]
+  exampleLabel: string
+  action?: Link
+}
+
+export interface ServiceStandardStage {
+  title: string
+  steps: string[]
+  description?: string
+  media?: MediaAsset
+}
+
+export interface ServiceStandardPayload {
+  eyebrow: string
+  title: string
+  description?: string
+  stages: ServiceStandardStage[]
+}
+
+export type FoundersPayload = EditorialSectionPayload
+
+export interface ProofGalleryItem {
+  media: ImageMediaAsset
+  service: string
+  region?: string
+  description?: string
+}
+
+export interface ProofGalleryPayload {
+  eyebrow: string
+  title: string
+  items?: ProofGalleryItem[]
+}
+
+export interface ReviewItem {
+  quote: string
+  attribution: string
+  service?: string
+  region?: string
+  rating?: number
+}
+
+export interface ReviewsPayload {
+  eyebrow: string
+  title: string
+  items?: ReviewItem[]
+}
+
 export interface PageSectionPayloadMap {
   navigation: NavigationPayload
   hero: HeroPayload
@@ -239,6 +340,13 @@ export interface PageSectionPayloadMap {
   'related-links': RelatedLinksPayload
   'legal-content': LegalContentPayload
   'not-found': NotFoundPayload
+  problem: ProblemPayload
+  solution: SolutionPayload
+  'house-list': HouseListPayload
+  'service-standard': ServiceStandardPayload
+  founders: FoundersPayload
+  'proof-gallery': ProofGalleryPayload
+  reviews: ReviewsPayload
 }
 
 export type PageSection = {
