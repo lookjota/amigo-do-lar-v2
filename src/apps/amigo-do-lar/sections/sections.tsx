@@ -142,7 +142,7 @@ export const ServicesGridSection: SectionComponent<'services-grid'> = ({
                 title={item.label}
                 description={item.description}
                 href={item.href}
-                media={item.media ?? (section.data.variant === 'editorial' ? { kind: 'placeholder', label: `[ASSET REAL FUTURO — ${item.label.toUpperCase()}]`, aspectRatio: '16:10' } : undefined)}
+                media={item.media ?? (section.data.variant === 'editorial' ? { kind: 'placeholder', label: `[ASSET REAL — ${item.label.toUpperCase()} / EXECUÇÃO]`, aspectRatio: '16:10' } : undefined)}
               />
             </Reveal>
           ))}

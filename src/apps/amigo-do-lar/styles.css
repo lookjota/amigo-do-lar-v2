@@ -987,6 +987,12 @@
   color: var(--amigo-green);
 }
 
+.amigo-breadcrumbs a {
+  min-height: 3rem;
+  display: inline-flex;
+  align-items: center;
+}
+
 .amigo-hero {
   position: relative;
   overflow: hidden;
@@ -2254,8 +2260,9 @@
 .amigo-internal-page .amigo-areas-section.is-editorial h3 { margin-top: 0; }
 .amigo-internal-page .amigo-service-card-content { display: flex; flex-direction: column; height: 100%; }
 .amigo-internal-page .amigo-card a,
-.amigo-internal-page .amigo-related-link { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 48px; }
+.amigo-internal-page .amigo-related-link { min-height: 3rem; display: inline-flex; align-items: center; gap: 0.5rem; }
 .amigo-internal-page .amigo-card a { margin-top: 1rem; padding-block: 0.5rem; }
+.amigo-internal-page .amigo-area-links .amigo-text-link { min-height: 3rem; display: inline-flex; align-items: center; }
 
 @media (min-width: 48rem) {
   .amigo-standard-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
