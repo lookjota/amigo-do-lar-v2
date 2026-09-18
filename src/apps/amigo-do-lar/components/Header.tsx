@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Menu, MessageCircle, X } from 'lucide-react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { trackEvent } from '../analytics/analytics'
+import { getAnalyticsContext, trackEvent } from '../analytics/analytics'
 import { getContextualWhatsAppUrl } from '../config/whatsapp'
 
 const links = [
@@ -53,7 +53,7 @@ export function Header({ menuOpen, onMenuOpenChange }: HeaderProps) {
     }
   }, [menuOpen, onMenuOpenChange])
 
-  const trackWhatsApp = () => trackEvent('whatsapp_click', { origin: 'header' })
+  const trackWhatsApp = () => trackEvent('whatsapp_click', getAnalyticsContext(location.pathname, 'header'))
 
   return (
     <header className={`amigo-header ${scrolled ? 'is-scrolled' : ''}`}>

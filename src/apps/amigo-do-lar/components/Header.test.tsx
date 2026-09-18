@@ -5,8 +5,16 @@ import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { Header } from './Header'
 
-const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
-vi.mock('../analytics/analytics', () => ({ trackEvent }))
+const { getAnalyticsContext, trackEvent } = vi.hoisted(() => ({
+  trackEvent: vi.fn(),
+  getAnalyticsContext: vi.fn((pathname: string, origin?: string) => ({
+    source_path: pathname,
+    service_slug: pathname.split('/')[2],
+    offer_context: 'standard',
+    ...(origin ? { origin } : {}),
+  })),
+}))
+vi.mock('../analytics/analytics', () => ({ getAnalyticsContext, trackEvent }))
 
 function ControlledHeader() {
   const [open, setOpen] = useState(false)
@@ -38,6 +46,11 @@ describe('Header público', () => {
     expect(cta).toHaveAttribute('href', expect.stringContaining('El%C3%A9trica'))
     await user.click(cta)
     expect(trackEvent).toHaveBeenCalledTimes(1)
-    expect(trackEvent).toHaveBeenCalledWith('whatsapp_click', { origin: 'header' })
+    expect(trackEvent).toHaveBeenCalledWith('whatsapp_click', {
+      origin: 'header',
+      source_path: '/servicos/eletrica',
+      service_slug: 'eletrica',
+      offer_context: 'standard',
+    })
   })
 })

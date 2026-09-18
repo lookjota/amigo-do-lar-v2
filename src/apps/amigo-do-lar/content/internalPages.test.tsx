@@ -121,7 +121,10 @@ const originalPaths = [
     const link = screen.getByRole('link', { name: /Pedir orçamento pelo WhatsApp/ })
     expect(link).toHaveAttribute('href', getContextualWhatsAppUrl('/servicos/eletrica'))
     fireEvent.click(link)
-    expect(window.gtag).toHaveBeenCalledExactlyOnceWith('event', 'whatsapp_click', {})
+    expect(window.gtag).toHaveBeenCalledExactlyOnceWith('event', 'whatsapp_click', {
+      source_path: '/',
+      offer_context: 'standard',
+    })
   })
 
   it.each(['idle', 'loading', 'error', 'success'] as const)('mantém URLs e catálogo com API em %s', (status) => {

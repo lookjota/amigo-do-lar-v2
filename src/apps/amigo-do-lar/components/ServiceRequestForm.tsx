@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getServices, type ApiService } from '../api/services-api'
 import { useCreateServiceRequest } from '../api/useCreateServiceRequest'
+import { getAnalyticsContext, trackEvent, type AnalyticsPayload } from '../analytics/analytics'
 import { createWhatsAppUrl } from '../config/site'
 import { publishedServiceAreas } from '../data/serviceAreas'
 import { services } from '../data/services'
@@ -29,6 +30,8 @@ export function ServiceRequestForm() {
   const [serviceSlug, setServiceSlug] = useState('')
   const [errors, setErrors] = useState<FieldErrors>({})
   const formRef = useRef<HTMLFormElement>(null)
+  const formStarted = useRef(false)
+  const submissionContext = useRef<AnalyticsPayload | undefined>(undefined)
 
   useEffect(() => {
     const candidate = new URLSearchParams(location.search).get('servico')
@@ -45,6 +48,26 @@ export function ServiceRequestForm() {
 
   const selectedApiService = useMemo(() => apiServices.find((service) => service.slug === serviceSlug), [apiServices, serviceSlug])
   const whatsappUrl = createWhatsAppUrl('Olá! Não consegui concluir a solicitação pelo site e gostaria de atendimento residencial.')
+
+  function getFormContext(regionSlug?: string): AnalyticsPayload {
+    return {
+      ...getAnalyticsContext(location.pathname),
+      ...(serviceSlug ? { service_slug: serviceSlug } : {}),
+      ...(regionSlug ? { region_slug: regionSlug } : {}),
+    }
+  }
+
+  function handleFormStart() {
+    if (formStarted.current) return
+    formStarted.current = true
+    trackEvent('request_form_start', getFormContext())
+  }
+
+  useEffect(() => {
+    if (mutation.status === 'error' && submissionContext.current) {
+      trackEvent('request_form_error', submissionContext.current)
+    }
+  }, [mutation.status])
 
   function focusFirstError(nextErrors: FieldErrors) {
     const first = fieldOrder.find((field) => nextErrors[field])
@@ -74,6 +97,9 @@ export function ServiceRequestForm() {
       setCatalogUnavailable(true)
       return
     }
+    const context = getFormContext(result.data.serviceAreaSlug)
+    submissionContext.current = context
+    trackEvent('request_form_submit', context)
     const created = await mutation.submit({
       customer: { name: result.data.customerName, phone: result.data.phone, ...(result.data.email ? { email: result.data.email } : {}) },
       serviceId: selectedApiService.id,
@@ -81,13 +107,16 @@ export function ServiceRequestForm() {
       address: `${result.data.address} — ${publishedServiceAreas.find((area) => area.slug === result.data.serviceAreaSlug)?.name ?? ''}`,
       city: 'Brasília',
     })
-    if (created) navigate('/solicitacao-enviada')
+    if (created) {
+      trackEvent('request_form_success', context)
+      navigate('/solicitacao-enviada')
+    }
   }
 
   const errorId = (field: FieldName) => errors[field] ? `${field}-error` : undefined
 
   return (
-    <form ref={formRef} className="amigo-quote-request-form" onSubmit={handleSubmit} noValidate aria-busy={mutation.isSubmitting}>
+    <form ref={formRef} className="amigo-quote-request-form" onSubmit={handleSubmit} onFocus={handleFormStart} onInput={handleFormStart} noValidate aria-busy={mutation.isSubmitting}>
       <div className="amigo-form-grid">
         <label>Nome completo<input name="customerName" type="text" autoComplete="name" maxLength={120} aria-invalid={Boolean(errors.customerName)} aria-describedby={errorId('customerName')} />{errors.customerName && <span id="customerName-error" className="amigo-field-error">{errors.customerName}</span>}</label>
         <label>Telefone<input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={30} aria-invalid={Boolean(errors.phone)} aria-describedby={errorId('phone')} />{errors.phone && <span id="phone-error" className="amigo-field-error">{errors.phone}</span>}</label>

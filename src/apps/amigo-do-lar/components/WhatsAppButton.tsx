@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { MessageCircle } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
-import { trackEvent } from '../analytics/analytics'
+import { getAnalyticsContext, trackEvent } from '../analytics/analytics'
 import { getContextualWhatsAppUrl } from '../config/whatsapp'
 
 export function WhatsAppButton({ menuOpen }: { menuOpen: boolean }) {
@@ -33,7 +33,7 @@ export function WhatsAppButton({ menuOpen }: { menuOpen: boolean }) {
         href={getContextualWhatsAppUrl(location.pathname)}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => trackEvent('whatsapp_click', { origin: 'sticky_mobile' })}
+        onClick={() => trackEvent('whatsapp_click', getAnalyticsContext(location.pathname, 'sticky_mobile'))}
       >
         <MessageCircle size={20} aria-hidden="true" />
         Pedir orçamento no WhatsApp

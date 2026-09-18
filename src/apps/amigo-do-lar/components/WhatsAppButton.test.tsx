@@ -4,8 +4,16 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { WhatsAppButton } from './WhatsAppButton'
 
-const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
-vi.mock('../analytics/analytics', () => ({ trackEvent }))
+const { getAnalyticsContext, trackEvent } = vi.hoisted(() => ({
+  trackEvent: vi.fn(),
+  getAnalyticsContext: vi.fn((pathname: string, origin?: string) => ({
+    source_path: pathname,
+    region_slug: pathname.split('/')[2],
+    offer_context: 'standard',
+    ...(origin ? { origin } : {}),
+  })),
+}))
+vi.mock('../analytics/analytics', () => ({ getAnalyticsContext, trackEvent }))
 
 describe('CTA móvel sticky', () => {
   beforeEach(() => {
@@ -51,6 +59,11 @@ describe('CTA móvel sticky', () => {
     fireEvent.scroll(window)
     await user.click(screen.getByRole('link', { name: /Pedir orçamento/ }))
     expect(trackEvent).toHaveBeenCalledTimes(1)
-    expect(trackEvent).toHaveBeenCalledWith('whatsapp_click', { origin: 'sticky_mobile' })
+    expect(trackEvent).toHaveBeenCalledWith('whatsapp_click', {
+      origin: 'sticky_mobile',
+      source_path: '/areas-atendidas/asa-sul',
+      region_slug: 'asa-sul',
+      offer_context: 'standard',
+    })
   })
 })

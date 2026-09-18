@@ -1,7 +1,7 @@
 import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import type { Link as LinkData } from '../../../domain/pages/PageSection'
-import { trackEvent } from '../analytics/analytics'
+import { getAnalyticsContext, trackEvent } from '../analytics/analytics'
 
 interface ContentLinkProps extends LinkData {
   className?: string
@@ -15,6 +15,7 @@ export function ContentLink({
   className,
   event,
 }: ContentLinkProps) {
+  const location = useLocation()
   const content = (
     <>
       {label}
@@ -22,7 +23,9 @@ export function ContentLink({
       {external && <span className="sr-only"> (abre em nova aba)</span>}
     </>
   )
-  const onClick = event ? () => trackEvent(event) : undefined
+  const onClick = event
+    ? () => trackEvent(event, event === 'whatsapp_click' ? getAnalyticsContext(location.pathname) : {})
+    : undefined
 
   if (external) {
     return (
